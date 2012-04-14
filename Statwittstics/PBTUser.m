@@ -96,15 +96,14 @@ NSUInteger const kPBTRequestMaximum= 3200;
             
             //Twitter wouldn't return badly serilized JSON objects but if anything
             if (!jsonError) {
-                #ifdef VERBOSE_DEBUG
-                NSLog(@"%@", jsonString);
+                #ifdef JSON_STRINGS_DEBUG
+                NSLog(@"PBTUser**:\n%@", jsonString);
                 #endif
                 
                 //All these properties are always in the profile of a user
                 realName=[[NSString alloc] initWithString:[jsonString objectForKey:kPBTRealNameKey]];
                 following=[[jsonString objectForKey:kPBTFollowingKey] intValue];
                 tweetCount=[[jsonString objectForKey:kPBTTweetsKey] intValue];
-                
                 
                 //These properties might as well be returned as NSNull
                 if ( (temp = [jsonString objectForKey:kPBTDescriptionKey]) != [NSNull null] ) {
@@ -148,13 +147,19 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     });//profile picture request block
                 }
             }//JSON error
+            else {
+                //JSON serialization error management
+                NSLog(@"PBTUser(J)**:%@",[jsonError localizedDescription]);
+            }
         }//data request error
     }];//Twitter API request block
 
 }
 
 -(void)requestMostRecentTweets:(NSInteger)numberOfTweets withHandler:(PBTRequestHandler)handler{
-    NSLog(@"Requesting %d", numberOfTweets);
+    #ifdef DEBUG
+    NSLog(@"PBTUSER:**Remaining to get %d", numberOfTweets);
+    #endif
     
     //If the total request needs you to ask for more than 200 tweets, truncate the number, using the ternary operator
     NSString *stringNumberOfTweets=[NSString stringWithFormat:@"%d",(numberOfTweets > 200 ? 200 : numberOfTweets)];
@@ -172,7 +177,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     stringNumberOfTweets, @"count", 
                     @"true", @"include_entities", nil];
     }
-    else {
+    else {        
         parameters=[NSDictionary dictionaryWithObjectsAndKeys:[self username], kPBTUsernameKey, 
                     stringNumberOfTweets, @"count", 
                     @"true", @"include_entities", 
@@ -196,6 +201,10 @@ NSUInteger const kPBTRequestMaximum= 3200;
         if (!error) {
             jsonString=[NSJSONSerialization JSONObjectWithData:responseData options:0 error:&jsonError];
             
+            #ifdef JSON_STRINGS_DEBUG
+            NSLog(@"PBTUser**:%@", jsonString);
+            #endif
+            
             //There is no JSON serialization error, go for it
             if (!jsonError) {
                 for (NSDictionary *object in (NSArray *)jsonString) {
@@ -204,27 +213,39 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     tempTweet=[[PBTweet alloc] initWithJSONData:object];
                     
                     #ifdef VERBOSE_DEBUG
-                    NSLog(@"Twitt text: %@", [tempTweet text]);
-                    NSLog(@"In reply to: %@", [tempTweet inReplyToScreenName]);
-                    NSLog(@"Mentioned users: %@", [tempTweet mentionedScreenNames]);
-                    NSLog(@"Media: %@", [tempTweet mediaURLs]);
+                    NSLog(@"PBTUser:**Twitt text: %@", [tempTweet text]);
+                    
+                    if ( ![[tempTweet inReplyToScreenName] isEqualToString:@""] ) {
+                        NSLog(@"PBTUser:**In reply to: %@", [tempTweet inReplyToScreenName]);
+                    }
+                    
+                    if ( [[tempTweet mentionedScreenNames] count] != 0 ) {
+                        NSLog(@"PBTUser:**Mentioned users: %@", [tempTweet mentionedScreenNames]);
+                    }
+                    
+                    if ([[tempTweet mediaURLs] count] != 0) {
+                        NSLog(@"PBTUser:**Media: %@", [tempTweet mediaURLs]);
+                    }
                     #endif
+                    
                     _lastTweetID=[tempTweet tweetID];
                     [_tempArray addObject:tempTweet];
                     [tempTweet release];
                 }
                 
                 _remainingTweets=_remainingTweets-[stringNumberOfTweets intValue];
-                NSLog(@"Current size %d", [_tempArray count]);
+                
+                #ifdef DEBUG
+                NSLog(@"PBTUser:**Current size %d", [_tempArray count]);
+                #endif
                 
                 //More tweets to retrieve
-                if ( _remainingTweets != 0 ) {
+                if ( _remainingTweets > 0 ) {
                     [self requestMostRecentTweets:_remainingTweets withHandler:^{
                         
                     }];
                 }
                 else {
-                    NSLog(@"Last call ...");
                     //Assign the tweets to the user
                     tweets=[[NSArray alloc] initWithArray:(NSArray *)_tempArray];
                     
@@ -233,10 +254,12 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     [_tempArray release];
                     _remainingTweets=0;
                     
+                    #ifdef DEBUG
+                    NSLog(@"PBTUser:**Last call, total count %d", [tweets count]);
+                    #endif
+                    
                     //Finally call the handler
-                    NSLog(@"Total count %d", [tweets count]);
                     handler();
-                    NSLog(@"What up ...");
                 }
             }
             else {

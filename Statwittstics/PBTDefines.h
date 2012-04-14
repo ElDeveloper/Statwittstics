@@ -9,8 +9,8 @@
 #ifndef Statwittstics_PBTDefines_h
 #define Statwittstics_PBTDefines_h
 
-#define DEBUG
-#define VERBOSE_DEBUG
-#define JSON_STRINGS_DEBUG
+//#define DEBUG
+//#define VERBOSE_DEBUG
+//#define JSON_STRINGS_DEBUG
 
 #endif

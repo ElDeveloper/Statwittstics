@@ -16,7 +16,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        [self setTitle:@"Twittstatistics"];        
+        [self setTitle:@"Statwittstics"];        
         
         /*
          Test data sets creation and inclusion to the main plot

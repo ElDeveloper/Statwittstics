@@ -56,22 +56,21 @@
         for (NSString *plel in array) {
             testUser=[[PBTUser alloc] initWithUsername:plel andAuthorizedAccount:theAccount];
             [testUser requestUserData:^{
+                
+                #ifdef DEBUG
                 NSLog(@"The real name is %@, annoyingly tweeted %d", [testUser realName], [testUser tweetCount]);
                 NSLog(@"Has %d followers and %d friends", [testUser followers], [testUser following]);
                 NSLog(@"The URL is: %@", [testUser bioURL]);
                 NSLog(@"The location is: %@", [testUser location]);
                 NSLog(@"The bio is: %@", [testUser description]);
+                #endif
                 
-                //            [testUser requestAllTweetsWithHandler:^{
-                //                NSLog(@"All tweets were requested, retrieved %d", [[testUser tweets] count]);
-                //            }];
-                
-                [testUser requestMostRecentTweets:2000 withHandler:^{
-                    NSLog(@"Request finished ... ");
+                [testUser requestMostRecentTweets:3 withHandler:^{
+                    NSLog(@"Requested 3, returned %d", [[testUser tweets] count]);
                 }];
                 
             }];
-            [testUser release];
+            //[testUser release];
         }
             
     }];

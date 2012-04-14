@@ -35,6 +35,7 @@
 		5089487A153160F700A66EFA /* PBTUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBTUser.m; sourceTree = "<group>"; };
 		5089487C1531742500A66EFA /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		5089487E1531794600A66EFA /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
+		5093C6DF1539EA49001D279C /* StatwittsticsDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StatwittsticsDefines.h; sourceTree = "<group>"; };
 		50B5DE86152EB92800661492 /* Statwittstics.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Statwittstics.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		50B5DE8A152EB92800661492 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		50B5DE8C152EB92800661492 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -206,6 +207,7 @@
 		50B5DE90152EB92800661492 /* Statwittstics */ = {
 			isa = PBXGroup;
 			children = (
+				5093C6DF1539EA49001D279C /* StatwittsticsDefines.h */,
 				50B5DE99152EB92800661492 /* AppDelegate.h */,
 				50B5DE9A152EB92800661492 /* AppDelegate.m */,
 				50B5DF07152EBBA500661492 /* HomeViewController.h */,
