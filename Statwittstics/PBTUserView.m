@@ -25,7 +25,8 @@ CGSize const KPBTCGSize={.width=500.0f, .height=115.0f};
         
         NSString *testDescription=[NSString stringWithString:@"Random beta-tester for iOS apps. I also enjoy hiking and going out for a beer every now and then."];
         CGSize descriptionSize;
-        //float totalHeight=0.0;
+        float totalHeight=0.0;
+
         
         //Will always first load the default picture
         profilePicture=[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"DefaultUser.png"]];
@@ -47,35 +48,57 @@ CGSize const KPBTCGSize={.width=500.0f, .height=115.0f};
         [screenName setBackgroundColor:[UIColor clearColor]];
         [self addSubview:screenName];
         
-        //We have to calculate the height of the bio of the current twitter user
+        //Initialize the buffer view to fit everything in the container view
+        bufferView=[[UIView alloc] initWithFrame:CGRectMake(0, 0, 400, 1000)];
+        [bufferView setBackgroundColor:[UIColor clearColor]];
+        
+        //Calculate the height of the bio of the current twitter user
         descriptionSize=[testDescription sizeWithFont:[UIFont fontWithName:@"Helvetica" size:13] 
                                     constrainedToSize:CGSizeMake(400, 10000) 
                                         lineBreakMode:UILineBreakModeWordWrap];
         
-        description=[[UILabel alloc] initWithFrame:CGRectMake(110, 60, descriptionSize.width, descriptionSize.height)];
+        description=[[UILabel alloc] initWithFrame:CGRectMake(2, 5, descriptionSize.width, descriptionSize.height)];
         [description setText:testDescription];
         [description setNumberOfLines:0];
         [description setLineBreakMode:UILineBreakModeWordWrap];
         [description setTextColor:[UIColor colorWithRed:0.85 green:0.85 blue:0.85 alpha:1.0]];
         [description setFont:[UIFont fontWithName:@"Helvetica" size:13]];
         [description setBackgroundColor:[UIColor clearColor]];
-        [self addSubview:description];
+        [bufferView addSubview:description];
         
-        bioURL=[[UITextView alloc] initWithFrame:CGRectMake(105, descriptionSize.height+50, 400, 25)];
+        //Update the total height
+        totalHeight=descriptionSize.height+5;
+        
+        bioURL=[[UITextView alloc] initWithFrame:CGRectMake(-5, totalHeight-10, 400, 25)];
         [bioURL setText:@"http://www.johnappleseed.com"];
         [bioURL setContentMode:UIViewContentModeTop];
         [bioURL setEditable:NO];
+        [bioURL setBounces:NO];
+        [bioURL setBouncesZoom:NO];
         [bioURL setDataDetectorTypes:UIDataDetectorTypeAll];
         [bioURL setFont:[UIFont fontWithName:@"Helvetica" size:13]];
         [bioURL setBackgroundColor:[UIColor clearColor]];
-        [self addSubview:bioURL];
+        [bufferView addSubview:bioURL];
         
-        location=[[UILabel alloc] initWithFrame:CGRectMake(110, descriptionSize.height+80, 400, 14)];
+        //Update the total height
+        totalHeight=totalHeight+25;
+        
+        location=[[UILabel alloc] initWithFrame:CGRectMake(0, totalHeight-10, 400, 14)];
         [location setText:@"El Dorado, California."];
         [location setTextColor:[UIColor grayColor]];
         [location setFont:[UIFont fontWithName:@"Helvetica" size:13]];
         [location setBackgroundColor:[UIColor clearColor]];
-        [self addSubview:location];
+        [bufferView addSubview:location];
+        
+        //Update the total height
+        totalHeight=totalHeight+14;
+        [bufferView setFrame:CGRectMake(0, 0, 400, totalHeight-5)];
+        
+        containerView=[[UIScrollView alloc] initWithFrame:CGRectMake(110, 50, 390, 55)];
+        [containerView setBackgroundColor:[UIColor clearColor]];
+        [containerView setContentSize:[bufferView frame].size];
+        [containerView addSubview:bufferView];
+        [self addSubview:containerView];
         
     }
     return self;

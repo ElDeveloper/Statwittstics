@@ -26,6 +26,7 @@ extern CGSize const KPBTCGSize;
     UILabel *tweetCount;
     
     @private UIScrollView *containerView;
+    @private UIView *bufferView;
 }
 
 //Model of the view
