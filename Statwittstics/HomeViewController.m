@@ -71,6 +71,40 @@
 -(void)viewDidLoad{
     [super viewDidLoad];
 
+    //Ask the account store for the twitter account
+    ACAccountStore *astore=[[ACAccountStore alloc] init];
+    ACAccountType *twitterAccountType=[astore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+    
+    //Ask for permission to use the twitter credentials of the user
+    [astore requestAccessToAccountsWithType:twitterAccountType withCompletionHandler:^(BOOL granted, NSError *error){
+        
+        //Request the first twitter account available 
+        NSArray *twitterAccounts=[astore accountsWithAccountType:twitterAccountType];
+        ACAccount *theAccount=[twitterAccounts objectAtIndex:0];
+        
+        //Twitter test
+        PBTUser *testUser=nil;
+        NSArray *array=[NSArray arrayWithObjects:@"analaurad", nil];
+        
+        for (NSString *plel in array) {
+            testUser=[[PBTUser alloc] initWithUsername:plel andAuthorizedAccount:theAccount];
+            [testUser requestUserData:^{
+                
+                #ifdef DEBUG
+                NSLog(@"The real name is %@, annoyingly tweeted %d", [testUser realName], [testUser tweetCount]);
+                NSLog(@"Has %d followers and %d friends", [testUser followers], [testUser following]);
+                NSLog(@"The URL is: %@", [testUser bioURL]);
+                NSLog(@"The location is: %@", [testUser location]);
+                NSLog(@"The bio is: %@", [testUser description]);
+                #endif
+                
+                [mainUserView loadUser:testUser];
+                
+            }];
+            //[testUser release];
+        }
+        
+    }];
     
 }
 

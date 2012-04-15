@@ -45,7 +45,6 @@ extern CGSize const KPBTCGSize;
 
 //The size of the view is fixed, and non-modifiable
 -(id)initWithUser:(PBTUser *)someUser andPositon:(CGPoint)thePosition;
--(void)reloadWithUser:(PBTUser *)someUser;
-
+-(void)loadUser:(PBTUser *)someUser;
 
 @end

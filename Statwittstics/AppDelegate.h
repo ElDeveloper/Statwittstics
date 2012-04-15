@@ -7,10 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <Accounts/Accounts.h>
 #import "StatwittsticsDefines.h"
 #import "HomeViewController.h"
-#import "PBTUser.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
