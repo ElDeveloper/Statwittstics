@@ -8,13 +8,20 @@
 
 #import <UIKit/UIKit.h>
 #import "StatwittsticsDefines.h"
+#import "PBTKit.h"
 #import "PBKit.h"
 
 @interface HomeViewController : UIViewController{
-    IBOutlet PBPlot *mainPlot;
-
+    PBPlot *mainPlot;
+    PBTUser *mainUser;
+    PBTUserView *mainUserView;
 }
 
-@property (nonatomic, retain) IBOutlet PBPlot *mainPlot;
+//Main plot of the user to analyze
+@property (nonatomic, retain) PBPlot *mainPlot;
+
+//The user to analyze (model and view)
+@property (nonatomic, retain) PBTUser *mainUser;
+@property (nonatomic, retain) PBTUserView *mainUserView;
 
 @end

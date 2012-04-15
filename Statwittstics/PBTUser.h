@@ -7,8 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <Accounts/Accounts.h>
-#import <Twitter/Twitter.h>
 #import "PBTDefines.h"
 #import "PBTweet.h"
 

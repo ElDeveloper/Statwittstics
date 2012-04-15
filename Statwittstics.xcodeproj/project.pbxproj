@@ -11,6 +11,7 @@
 		5089487B153160F800A66EFA /* PBTUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5089487A153160F700A66EFA /* PBTUser.m */; };
 		5089487D1531742500A66EFA /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5089487C1531742500A66EFA /* Twitter.framework */; };
 		5089487F1531794600A66EFA /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5089487E1531794600A66EFA /* Accounts.framework */; };
+		5093C6E7153A3F66001D279C /* PBTUserView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5093C6E6153A3F66001D279C /* PBTUserView.m */; };
 		50B5DE8B152EB92800661492 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50B5DE8A152EB92800661492 /* UIKit.framework */; };
 		50B5DE8D152EB92800661492 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50B5DE8C152EB92800661492 /* Foundation.framework */; };
 		50B5DE8F152EB92800661492 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50B5DE8E152EB92800661492 /* CoreGraphics.framework */; };
@@ -36,6 +37,9 @@
 		5089487C1531742500A66EFA /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		5089487E1531794600A66EFA /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		5093C6DF1539EA49001D279C /* StatwittsticsDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StatwittsticsDefines.h; sourceTree = "<group>"; };
+		5093C6E4153A059D001D279C /* PBTKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBTKit.h; sourceTree = "<group>"; };
+		5093C6E5153A3F66001D279C /* PBTUserView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBTUserView.h; sourceTree = "<group>"; };
+		5093C6E6153A3F66001D279C /* PBTUserView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBTUserView.m; sourceTree = "<group>"; };
 		50B5DE86152EB92800661492 /* Statwittstics.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Statwittstics.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		50B5DE8A152EB92800661492 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		50B5DE8C152EB92800661492 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -161,7 +165,10 @@
 		5089487415315C6A00A66EFA /* Twitter */ = {
 			isa = PBXGroup;
 			children = (
+				5093C6E4153A059D001D279C /* PBTKit.h */,
 				503807181533F98600CD6783 /* PBTDefines.h */,
+				5093C6E5153A3F66001D279C /* PBTUserView.h */,
+				5093C6E6153A3F66001D279C /* PBTUserView.m */,
 				5089487615315CB000A66EFA /* PBTweet.h */,
 				5089487715315CB000A66EFA /* PBTweet.m */,
 				50894879153160F700A66EFA /* PBTUser.h */,
@@ -429,6 +436,7 @@
 				50B5DF09152EBBA500661492 /* HomeViewController.m in Sources */,
 				5089487815315CB000A66EFA /* PBTweet.m in Sources */,
 				5089487B153160F800A66EFA /* PBTUser.m in Sources */,
+				5093C6E7153A3F66001D279C /* PBTUserView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

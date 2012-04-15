@@ -9,6 +9,9 @@
 #ifndef Statwittstics_PBTDefines_h
 #define Statwittstics_PBTDefines_h
 
+#import <Accounts/Accounts.h>
+#import <Twitter/Twitter.h>
+
 //#define DEBUG
 //#define VERBOSE_DEBUG
 //#define JSON_STRINGS_DEBUG

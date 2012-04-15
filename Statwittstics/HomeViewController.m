@@ -11,13 +11,14 @@
 @implementation HomeViewController
 
 @synthesize mainPlot;
+@synthesize mainUser, mainUserView;
 
 -(id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
         [self setTitle:@"Statwittstics"];        
-        
+
         /*
          Test data sets creation and inclusion to the main plot
          */
@@ -44,7 +45,7 @@
         [otherDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeHexagon andColor:[CPTColor greenColor]]]; 
         
         //1024 x 768
-        mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(10, 70, 984, 550) andDataSets:[NSArray arrayWithObjects:sinDataSet, otherDataSet, nil]];
+        mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(5, 70, 1005, 550) andDataSets:[NSArray arrayWithObjects:sinDataSet, otherDataSet, nil]];
         
         //Titles
         [mainPlot setGraphTitle:@"Señales"];
@@ -57,21 +58,27 @@
         
         [sinDataSet release];
         [otherDataSet release];
+        
+        // Do any additional setup after loading the view.
+        [[self view] addSubview:mainPlot];
+    
+        mainUserView=[[PBTUserView alloc] initWithUser:nil andPositon:CGPointMake(10, 10)];
+        [[self view] addSubview:mainUserView];
     }
     return self;
 }
 
 -(void)viewDidLoad{
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
-    [[self view] addSubview:mainPlot];
+
     
 }
 
 -(void)dealloc{
-    [super dealloc];
-    
     [mainPlot release];
+    [mainUserView release];
+    
+    [super dealloc];
 }
 
 -(void)viewDidUnload{
