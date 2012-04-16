@@ -84,7 +84,7 @@
         
         //Twitter test
         PBTUser *testUser=nil;
-        NSArray *array=[NSArray arrayWithObjects:@"analaurad", nil];
+        NSArray *array=[NSArray arrayWithObjects:@"yosmark", nil];
         
         for (NSString *plel in array) {
             testUser=[[PBTUser alloc] initWithUsername:plel andAuthorizedAccount:theAccount];
@@ -98,7 +98,8 @@
                 NSLog(@"The bio is: %@", [testUser description]);
                 #endif
                 
-                [mainUserView loadUser:testUser];
+                [mainUserView performSelectorOnMainThread:@selector(loadUser:) withObject:testUser waitUntilDone:YES];
+                //[mainUserView loadUser:testUser];
                 
             }];
             //[testUser release];

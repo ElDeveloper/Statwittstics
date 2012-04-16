@@ -14,22 +14,6 @@
 //the caller is called, the handler won't be called , to avoid conflicts.
 typedef void __block (^PBTRequestHandler)(void);
 
-//Twitter API URLs
-extern NSString *kPBTUsersShow;
-extern NSString *kPBTUserTimeline;
-
-//Keys used for the JSON objects returned by twitter
-extern NSString const *kPBTUsernameKey;
-extern NSString const *kPBTRealNameKey;
-extern NSString const *kPBTDescriptionKey;
-extern NSString const *kPBTLocationKey;
-extern NSString const *kPBTProfilePictureURLKey;
-extern NSString const *kPBTBioURLKey;
-extern NSString const *kPBTFollowingKey;
-extern NSString const *kPBTFollowersKey;
-extern NSString const *kPBTTweetsKey;
-extern NSString const *kPBTProtectedKey;
-
 //General constants
 extern NSUInteger const kPBTRequestMaximum;
 
@@ -41,6 +25,7 @@ extern NSUInteger const kPBTRequestMaximum;
     NSURL *bioURL;
     
     UIImage *profilePic;
+    NSData *imageData;
     
     NSInteger following;
     NSInteger followers;
@@ -66,6 +51,7 @@ extern NSUInteger const kPBTRequestMaximum;
 @property (nonatomic, retain, readonly) NSString *location;
 @property (nonatomic, retain, readonly) NSURL *bioURL;
 @property (nonatomic, retain, readonly) UIImage *profilePic;
+@property (nonatomic, retain, readonly) NSData *imageData;
 @property (nonatomic, assign, readonly) NSInteger following;
 @property (nonatomic, assign, readonly) NSInteger followers;
 @property (nonatomic, assign, readonly) NSInteger tweetCount;
@@ -82,6 +68,8 @@ extern NSUInteger const kPBTRequestMaximum;
 
 //Once you have initialized the user, request it's data and asynchronously wait for the response
 -(void)requestUserData:(PBTRequestHandler)handler;
+
+-(void)requestProfilePictureWithSize:(TAImageSize)size andHandler:(PBTRequestHandler)handler;
 
 //The number of tweets will be truncated to 3,200 and is executed asynchronously
 -(void)requestMostRecentTweets:(NSInteger)numberOfTweets withHandler:(PBTRequestHandler)handler;

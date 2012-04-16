@@ -167,8 +167,7 @@ CGSize const KPBTCGSize={.width=505.0f, .height=115.0f};
         descriptionString=[theUser description];
         bioURLString=[NSString stringWithFormat:@"%@", [theUser bioURL]];
         locationString=[theUser location];
-        
-        [profilePicture setImage:[theUser profilePic]];
+        [profilePicture setImage:[UIImage imageWithData:[theUser imageData]]];
     }
     
     //Set the data of the model, these attributes are always present

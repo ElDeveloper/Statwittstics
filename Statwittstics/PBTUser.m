@@ -8,26 +8,12 @@
 
 #import "PBTUser.h"
 
-NSString *kPBTUsersShow=        @"https://api.twitter.com/1/users/show.json";
-NSString *kPBTUserTimeline=     @"https://api.twitter.com/1/statuses/user_timeline.json";
-
-NSString const *kPBTUsernameKey=      @"screen_name";
-NSString const *kPBTRealNameKey=      @"name";
-NSString const *kPBTDescriptionKey=   @"description";
-NSString const *kPBTLocationKey=      @"location";
-NSString const *kPBTProfilePictureURL=@"profile_image_url";
-NSString const *kPBTBioURLKey=        @"url";
-NSString const *kPBTFollowingKey=     @"friends_count";
-NSString const *kPBTFollowersKey=     @"followers_count";
-NSString const *kPBTTweetsKey=        @"statuses_count";
-NSString const *kPBTProtectedKey=     @"protected";
-
 NSUInteger const kPBTRequestMaximum= 3200;
 
 @implementation PBTUser
 
 @synthesize username, realName, description, location, bioURL;
-@synthesize profilePic;
+@synthesize profilePic, imageData;
 @synthesize following, followers, tweetCount;
 @synthesize requiresAuthentication;
 @synthesize tweets;
@@ -74,8 +60,8 @@ NSUInteger const kPBTRequestMaximum= 3200;
 
 -(void)requestUserData:(PBTRequestHandler)handler{
     //URL, parameters and request object initialized to retrieve the data
-    NSURL *userDataRequest=[NSURL URLWithString:kPBTUsersShow];
-    NSDictionary *parameters=[NSDictionary dictionaryWithObjectsAndKeys:[self username], kPBTUsernameKey, @"false", @"include_entities", nil];
+    NSURL *userDataRequest=[NSURL URLWithString:TAUUsersShow];
+    NSDictionary *parameters=[NSDictionary dictionaryWithObjectsAndKeys:[self username], TAKeyUsername, @"false", @"include_entities", nil];
     TWRequest *userData=[[TWRequest alloc] initWithURL:userDataRequest parameters:parameters requestMethod:TWRequestMethodGET];
     
     //Authorize if provided
@@ -101,24 +87,24 @@ NSUInteger const kPBTRequestMaximum= 3200;
                 #endif
                 
                 //All these properties are always in the profile of a user
-                realName=[[NSString alloc] initWithString:[jsonString objectForKey:kPBTRealNameKey]];
-                following=[[jsonString objectForKey:kPBTFollowingKey] intValue];
-                tweetCount=[[jsonString objectForKey:kPBTTweetsKey] intValue];
+                realName=[[NSString alloc] initWithString:[jsonString objectForKey:TAKeyRealName]];
+                following=[[jsonString objectForKey:TAKeyFollowing] intValue];
+                tweetCount=[[jsonString objectForKey:TAKeyTweets] intValue];
                 
                 //These properties might as well be returned as NSNull
-                if ( (temp = [jsonString objectForKey:kPBTDescriptionKey]) != [NSNull null] ) {
+                if ( (temp = [jsonString objectForKey:TAKeyDescription]) != [NSNull null] ) {
                     description=[[NSString alloc] initWithString:temp];
                 }
                 else {
                     description=[[NSString alloc] initWithString:@""];
                 }
-                if ( (temp = [jsonString objectForKey:kPBTLocationKey]) != [NSNull null] ) {
+                if ( (temp = [jsonString objectForKey:TAKeyLocation]) != [NSNull null] ) {
                     location=[[NSString alloc] initWithString:temp];
                 }
                 else {
                     location=[[NSString alloc] initWithString:@""];
                 }
-                if ( (temp = [jsonString objectForKey:kPBTBioURLKey]) != [NSNull null] ) {
+                if ( (temp = [jsonString objectForKey:TAKeyBioURL]) != [NSNull null] ) {
                     bioURL=[[NSURL alloc] initWithString:temp];
                 }
                 else {
@@ -128,24 +114,18 @@ NSUInteger const kPBTRequestMaximum= 3200;
                 
                 //If the user is not protected, you can ask for the number of followers he/she has, the use of the
                 //ternary operator is merely to fit everything in one line, and cast the int value to a BOOL
-                if ( (requiresAuthentication = ( [[jsonString objectForKey:kPBTProtectedKey] intValue] ? YES : NO)) ) {
+                if ( (requiresAuthentication = ( [[jsonString objectForKey:TAKeyProtected] intValue] ? YES : NO)) ) {
                     followers=0;
                 }
                 else {
-                    followers=[[jsonString objectForKey:kPBTFollowersKey] intValue];
-                }
+                    followers=[[jsonString objectForKey:TAKeyFollowers] intValue];
+                }    
                 
-                //The request of the image won't stop the application, but rather it can ask for the data
-                //and get it back sometime soon
-                if ( (temp = [jsonString objectForKey:kPBTProfilePictureURL]) != [NSNull null]) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        NSData *tempData=[NSData dataWithContentsOfURL:[NSURL URLWithString:temp]];
-                        profilePic=[UIImage imageWithData:tempData];
-                    
-                        //Finally when everything is done, perform the handler
-                        handler();
-                    });//profile picture request block
-                }
+                [self requestProfilePictureWithSize:TAImageSizeNormal andHandler:^{
+                    //Finally when everything is done, perform the handler
+                    handler();
+                }];
+
             }//JSON error
             else {
                 //JSON serialization error management
@@ -154,6 +134,26 @@ NSUInteger const kPBTRequestMaximum= 3200;
         }//data request error
     }];//Twitter API request block
 
+}
+
+-(void)requestProfilePictureWithSize:(TAImageSize)size andHandler:(PBTRequestHandler)handler{
+    NSURL *userDataRequest=[NSURL URLWithString:TAUImageData];
+    NSDictionary *parameters=[NSDictionary dictionaryWithObjectsAndKeys:[self username], TAKeyUsername, size, @"size", nil];
+    TWRequest *userData=[[TWRequest alloc] initWithURL:userDataRequest parameters:parameters requestMethod:TWRequestMethodGET];
+    
+    [userData performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+        #ifdef DEBUG
+        NSLog(@"%@", [urlResponse URL]);
+        #endif
+        
+        if (!error) {
+            imageData=[NSData dataWithData:responseData];
+            handler();
+        }
+        else {
+            NSLog(@"PBTUser(I)**:%@", [error localizedDescription]);
+        }
+    }];
 }
 
 -(void)requestMostRecentTweets:(NSInteger)numberOfTweets withHandler:(PBTRequestHandler)handler{
@@ -165,7 +165,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     NSString *stringNumberOfTweets=[NSString stringWithFormat:@"%d",(numberOfTweets > 200 ? 200 : numberOfTweets)];
     
     //URL, parameters and request object initialized to retrieve the data
-    NSURL *userDataRequest=[NSURL URLWithString:kPBTUserTimeline];
+    NSURL *userDataRequest=[NSURL URLWithString:TAUUserTimeline];
     NSDictionary *parameters=nil;
     
     //These variables get re-usede in recursive calls, so they shall be initialized every first time this 
@@ -173,12 +173,12 @@ NSUInteger const kPBTRequestMaximum= 3200;
     if (_lastTweetID == nil) {
         _tempArray=[[NSMutableArray alloc] init];
         _remainingTweets=numberOfTweets;
-        parameters=[NSDictionary dictionaryWithObjectsAndKeys:[self username], kPBTUsernameKey, 
+        parameters=[NSDictionary dictionaryWithObjectsAndKeys:[self username], TAKeyUsername, 
                     stringNumberOfTweets, @"count", 
                     @"true", @"include_entities", nil];
     }
     else {        
-        parameters=[NSDictionary dictionaryWithObjectsAndKeys:[self username], kPBTUsernameKey, 
+        parameters=[NSDictionary dictionaryWithObjectsAndKeys:[self username], TAKeyUsername, 
                     stringNumberOfTweets, @"count", 
                     @"true", @"include_entities", 
                     _lastTweetID, @"max_id", nil];
