@@ -8,18 +8,6 @@
 
 #import "PBTweet.h"
 
-NSString *kPBTEntitiesKey=@"entities";
-NSString *kPBTInToReplyScreenNameKey=@"in_reply_to_screen_name";
-NSString *kPBTIsRetweetKey=@"retweeted";
-NSString *kPBTMediaKey=@"media";
-NSString *kPBTMediaURLKey=@"media_url";
-NSString *kPBTMentionsKey=@"user_mentions";
-NSString *kPBTPostDateKey=@"created_at";
-NSString *kPBTScreenName=@"screen_name";
-NSString *kPBTSourceKey=@"source";
-NSString *kPBTTextKey=@"text";
-NSString *kPBTTweetIDKey=@"id_str";
-
 @implementation PBTweet
 
 @synthesize text, postDate, source, isRetweet;
@@ -35,24 +23,24 @@ NSString *kPBTTweetIDKey=@"id_str";
         NSMutableArray *tempMediaURLs=[NSMutableArray array];
         
         //These properties are always present
-        text=[[NSString alloc] initWithString:[jsonString objectForKey:kPBTTextKey]];
-        source=[[NSString alloc] initWithString:[jsonString objectForKey:kPBTSourceKey]];
-        tweetID=[[NSString alloc] initWithString:[jsonString objectForKey:kPBTTweetIDKey]];
+        text=[[NSString alloc] initWithString:[jsonString objectForKey:TAKeyText]];
+        source=[[NSString alloc] initWithString:[jsonString objectForKey:TAKeySource]];
+        tweetID=[[NSString alloc] initWithString:[jsonString objectForKey:TAKeyTweetID]];
         
         //Post date ... yet to be assigned
         //First set the type of format for the date
         dateFromatter=[[NSDateFormatter alloc] init];
         [dateFromatter setDateStyle:NSDateFormatterFullStyle];
         [dateFromatter setDateFormat:@"yyyyMMdd"];
-        postDate=[[dateFromatter dateFromString:[jsonString objectForKey:kPBTPostDateKey]] copy];
+        postDate=[[dateFromatter dateFromString:[jsonString objectForKey:TAKeyPostDate]] copy];
         
         //Has picture attribute has to be determined from the entities array 
         
         //Ternary operator to set the isRetweet attribute, from a string
-        isRetweet=([[jsonString objectForKey:kPBTIsRetweetKey] intValue] ? YES : NO);
+        isRetweet=([[jsonString objectForKey:TAKeyIsRetweet] intValue] ? YES : NO);
         
         //Only create the object if there is something in the dictionary
-        if ( (temp=[jsonString objectForKey:kPBTInToReplyScreenNameKey]) != [NSNull null]) {
+        if ( (temp=[jsonString objectForKey:TAKeyInToReplyScreenName]) != [NSNull null]) {
             inReplyToScreenName=[[NSString alloc] initWithString:temp];
         }
         else {
@@ -61,10 +49,10 @@ NSString *kPBTTweetIDKey=@"id_str";
         
         //Check if the mentions array even exists, if you request for an object with a non-existing key
         //the result is going to be nil
-        if ( (temp=[[jsonString objectForKey:kPBTEntitiesKey] objectForKey:kPBTMentionsKey]) != nil ) {
+        if ( (temp=[[jsonString objectForKey:TAKeyEntities] objectForKey:TAKeyMentions]) != nil ) {
             //Go through all the users and get the screen names
             for (NSDictionary *dict in (NSArray *)temp) {
-                [tempScreenNames addObject:[dict objectForKey:kPBTScreenName]];
+                [tempScreenNames addObject:[dict objectForKey:TAKeyScreenName]];
             }
             
             //Finally add everything to the property
@@ -76,13 +64,13 @@ NSString *kPBTTweetIDKey=@"id_str";
         
         //Check if the media array even exists, if you request for an object with a non-existing key
         //the result is going to be nil
-        if ( (temp=[[jsonString objectForKey:kPBTEntitiesKey] objectForKey:kPBTMediaKey]) != nil ) {
+        if ( (temp=[[jsonString objectForKey:TAKeyEntities] objectForKey:TAKeyMedia]) != nil ) {
             //First thing first, this tweet has media
             hasPicture=YES;
             
             //Go through all the incedences of media
             for (NSDictionary *dict in (NSArray *)temp ) {
-                [tempMediaURLs addObject:[NSURL URLWithString:[dict objectForKey:kPBTMediaURLKey]]];
+                [tempMediaURLs addObject:[NSURL URLWithString:[dict objectForKey:TAKeyMediaURL]]];
             }
             
             //Finally add everything to the property

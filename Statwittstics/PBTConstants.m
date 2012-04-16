@@ -28,5 +28,17 @@ TAKey TAKeyFollowers=@"followers_count";
 TAKey TAKeyTweets=@"statuses_count";
 TAKey TAKeyProtected=@"protected";
 
+TAKey TAKeyEntities=@"entities";
+TAKey TAKeyInToReplyScreenName=@"in_reply_to_screen_name";
+TAKey TAKeyIsRetweet=@"retweeted";
+TAKey TAKeyMedia=@"media";
+TAKey TAKeyMediaURL=@"media_url";
+TAKey TAKeyMentions=@"user_mentions";
+TAKey TAKeyPostDate=@"created_at";
+TAKey TAKeyScreenName=@"screen_name";
+TAKey TAKeySource=@"source";
+TAKey TAKeyText=@"text";
+TAKey TAKeyTweetID=@"id_str";
+
 @implementation PBTConstants
 @end

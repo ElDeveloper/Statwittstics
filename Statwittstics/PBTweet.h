@@ -9,19 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "PBTDefines.h"
 
-//API keys 
-extern NSString *kPBTEntitiesKey;
-extern NSString *kPBTInToReplyScreenNameKey;
-extern NSString *kPBTIsRetweetKey;
-extern NSString *kPBTMediaKey;
-extern NSString *kPBTMediaURLKey;
-extern NSString *kPBTMentionsKey;
-extern NSString *kPBTPostDateKey;
-extern NSString *kPBTScreenName;
-extern NSString *kPBTSourceKey;
-extern NSString *kPBTTextKey;
-extern NSString *kPBTTweetIDKey;
-
 @interface PBTweet : NSObject{
     NSString *text;
     NSDate *postDate;

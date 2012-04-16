@@ -13,7 +13,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
 @implementation PBTUser
 
 @synthesize username, realName, description, location, bioURL;
-@synthesize profilePic, imageData;
+@synthesize imageData;
 @synthesize following, followers, tweetCount;
 @synthesize requiresAuthentication;
 @synthesize tweets;
@@ -22,7 +22,6 @@ NSUInteger const kPBTRequestMaximum= 3200;
 -(id)initWithUsername:(NSString *)theUsername andAuthorizedAccount:(ACAccount *)accountOrNil{
     if (self = [super init]) {
         username=[[NSString alloc] initWithString:theUsername];
-        profilePic=[UIImage imageNamed:@"DefaultUser.png"];
         
         //Keep a copy for yourself only if it is provided
         if (accountOrNil) {
@@ -34,7 +33,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
         description=nil;
         location=nil;
         bioURL=nil;
-        profilePic=nil;
+        imageData=nil;
         tweets=nil;
         following=0;
         followers=0;
@@ -121,7 +120,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     followers=[[jsonString objectForKey:TAKeyFollowers] intValue];
                 }    
                 
-                [self requestProfilePictureWithSize:TAImageSizeNormal andHandler:^{
+                [self requestProfilePictureWithSize:TAImageSizeOriginal andHandler:^{
                     //Finally when everything is done, perform the handler
                     handler();
                 }];

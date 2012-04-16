@@ -24,7 +24,6 @@ extern NSUInteger const kPBTRequestMaximum;
     NSString *location;
     NSURL *bioURL;
     
-    UIImage *profilePic;
     NSData *imageData;
     
     NSInteger following;
@@ -50,7 +49,6 @@ extern NSUInteger const kPBTRequestMaximum;
 @property (nonatomic, retain, readonly) NSString *description;
 @property (nonatomic, retain, readonly) NSString *location;
 @property (nonatomic, retain, readonly) NSURL *bioURL;
-@property (nonatomic, retain, readonly) UIImage *profilePic;
 @property (nonatomic, retain, readonly) NSData *imageData;
 @property (nonatomic, assign, readonly) NSInteger following;
 @property (nonatomic, assign, readonly) NSInteger followers;
@@ -69,6 +67,7 @@ extern NSUInteger const kPBTRequestMaximum;
 //Once you have initialized the user, request it's data and asynchronously wait for the response
 -(void)requestUserData:(PBTRequestHandler)handler;
 
+//Request the profile picture of the current user, with a specified size, this is done asynchronously
 -(void)requestProfilePictureWithSize:(TAImageSize)size andHandler:(PBTRequestHandler)handler;
 
 //The number of tweets will be truncated to 3,200 and is executed asynchronously

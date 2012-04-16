@@ -24,7 +24,6 @@ CGSize const KPBTCGSize={.width=505.0f, .height=115.0f};
         [self setBackgroundColor:[UIColor darkGrayColor]];
         
         UILabel *temp1=nil;
-        
         theUser=nil;
         
         //Will always first load the default picture
@@ -155,7 +154,7 @@ CGSize const KPBTCGSize={.width=505.0f, .height=115.0f};
         tweetCountString=@"10,200";
         descriptionString=@"Location ...";
         bioURLString=@"http://www.twitter.com";
-        locationString=@"Silicon Valley, Ca.";
+        locationString=@"Palo Alto, Ca.";
     }
     //We have a user, fill properly
     else {
@@ -167,7 +166,12 @@ CGSize const KPBTCGSize={.width=505.0f, .height=115.0f};
         descriptionString=[theUser description];
         bioURLString=[NSString stringWithFormat:@"%@", [theUser bioURL]];
         locationString=[theUser location];
-        [profilePicture setImage:[UIImage imageWithData:[theUser imageData]]];
+        
+        //Only change the image if the new image has already been 
+        //retrieved, else leave the placeholder in the view 
+        if ([theUser imageData] != nil) {
+            [profilePicture setImage:[UIImage imageWithData:[theUser imageData]]];
+        }
     }
     
     //Set the data of the model, these attributes are always present
@@ -178,7 +182,6 @@ CGSize const KPBTCGSize={.width=505.0f, .height=115.0f};
     [tweetCount setText:tweetCountString];
     
     //Only sum the heights for the strings that are not empty (location, bio and URL)
-    
     [description setText:descriptionString];
     if ( ![descriptionString isEqualToString:@""] ) {
         //Calculate the height of the bio of the current twitter user
