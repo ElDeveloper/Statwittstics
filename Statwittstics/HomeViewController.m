@@ -12,12 +12,30 @@
 
 @synthesize mainPlot;
 @synthesize mainUser, mainUserView;
+@synthesize optionsActionSheet;
 
 -(id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        [self setTitle:@"Statwittstics"];        
+        [self setTitle:@"Statwittstics"];  
+        
+        optionsActionSheet=nil;
+        UIBarButtonItem *optionsBarButton=[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Options", @"Options String") 
+                                                                           style:UIBarButtonItemStyleBordered 
+                                                                          target:self 
+                                                                          action:@selector(optionsButtonPressed:)];
+        
+        UIBarButtonItem *aboutBarButton=[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"About", @"About String") 
+                                                                         style:UIBarButtonItemStyleBordered 
+                                                                        target:self 
+                                                                        action:@selector(aboutButtonPressed:)];
+        
+        [[self navigationItem] setRightBarButtonItem:optionsBarButton];
+        [optionsBarButton release];
+        
+        [[self navigationItem] setLeftBarButtonItem:aboutBarButton];
+        [aboutBarButton release];
 
         /*
          Test data sets creation and inclusion to the main plot
@@ -110,6 +128,10 @@
 -(void)dealloc{
     [mainPlot release];
     [mainUserView release];
+
+    if (optionsActionSheet != nil) {
+        [optionsActionSheet release];
+    }
     
     [super dealloc];
 }
@@ -122,5 +144,30 @@
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{
 	return YES;
 }
+
+-(void)optionsButtonPressed:(id)sender{
+    
+    //Do not cause overhead, the user could probably not use the options therefore you would be creating an action sheet when not needed
+    if ( optionsActionSheet == nil) {
+        optionsActionSheet=[[UIActionSheet alloc] initWithTitle:NSLocalizedString(@"Options", @"Options String") 
+                                                 delegate:self 
+                                        cancelButtonTitle:NSLocalizedString(@"Cancel", @"Cancel String") 
+                                   destructiveButtonTitle:NSLocalizedString(@"Hide", @"Hide String") 
+                                        otherButtonTitles:NSLocalizedString(@"New Subject", @"New Subject String"), NSLocalizedString(@"Share on Twitter", @"Share on Twitter String"), nil];
+    }
+      
+    if ( ![optionsActionSheet isVisible]) {
+        [optionsActionSheet showFromBarButtonItem:[[self navigationItem] rightBarButtonItem] animated:YES];
+    }
+    else {
+        //Hide it using the "Hide button"
+        [optionsActionSheet dismissWithClickedButtonIndex:0 animated:YES];
+    }
+}
+
+-(void)aboutButtonPressed:(id)sender{
+    NSLog(@"About button pressed");
+}
+
 
 @end

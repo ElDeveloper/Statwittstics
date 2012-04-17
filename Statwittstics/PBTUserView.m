@@ -8,7 +8,12 @@
 
 #import "PBTUserView.h"
 
-CGSize const KPBTCGSize={.width=505.0f, .height=115.0f};
+#ifdef EXPANDED_LAYOUT
+CGSize const KPBTCGSize={.width=510.0f, .height=115.0f};
+#endif
+#ifdef COMPACTED_LAYOUT
+CGSize const KPBTCGSize={.width=510.0f, .height=115.0f};
+#endif
 
 @implementation PBTUserView
 
@@ -21,24 +26,45 @@ CGSize const KPBTCGSize={.width=505.0f, .height=115.0f};
     self = [super initWithFrame:CGRectMake(thePosition.x, thePosition.y, KPBTCGSize.width, KPBTCGSize.height)];
     if (self) {
         // Initialization code
-        [self setBackgroundColor:[UIColor darkGrayColor]];
+        [self setBackgroundColor:[UIColor colorWithRed:0.2 green:0.42 blue:0.12 alpha:1]];
+        [[self layer] setCornerRadius:12.0f];
+        [[self layer] setMasksToBounds:YES];
         
         UILabel *temp1=nil;
         theUser=nil;
         
         //Will always first load the default picture
         profilePicture=[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"DefaultUser.png"]];
+        
+        #ifdef EXPANDED_LAYOUT
         [profilePicture setFrame:CGRectMake(5, 7.5, 95, 100)];
+        #endif
+        #ifdef COMPACTED_LAYOUT
+        [profilePicture setFrame:CGRectMake(110, 2, 44, 44)];
+        #endif
+        
         [profilePicture setContentMode:UIViewContentModeScaleAspectFit];
         [self addSubview:profilePicture];
         
+        #ifdef EXPANDED_LAYOUT
         realName=[[UILabel alloc] initWithFrame:CGRectMake(110, 5, 390, 24)];
+        #endif
+        #ifdef COMPACTED_LAYOUT
+        realName=[[UILabel alloc] initWithFrame:CGRectMake(160, 5, 342, 24)];
+        #endif
+        
         [realName setTextColor:[UIColor whiteColor]];
         [realName setFont:[UIFont fontWithName:@"Helvetica-Bold" size:23]];
         [realName setBackgroundColor:[UIColor clearColor]];
         [self addSubview:realName];
         
+        #ifdef EXPANDED_LAYOUT
         screenName=[[UILabel alloc] initWithFrame:CGRectMake(110, 30, 390, 17)];
+        #endif
+        #ifdef COMPACTED_LAYOUT
+        screenName=[[UILabel alloc] initWithFrame:CGRectMake(160, 30, 342, 17)];
+        #endif
+        
         [screenName setTextColor:[UIColor grayColor]];
         [screenName setFont:[UIFont fontWithName:@"Helvetica" size:16]];
         [screenName setBackgroundColor:[UIColor clearColor]];
@@ -116,7 +142,7 @@ CGSize const KPBTCGSize={.width=505.0f, .height=115.0f};
         [location setBackgroundColor:[UIColor clearColor]];
         [bufferView addSubview:location];
         
-        containerView=[[UIScrollView alloc] initWithFrame:CGRectMake(110, 66, 390, 44)];
+        containerView=[[UIScrollView alloc] initWithFrame:CGRectMake(110, 70, 390, 44)];
         [containerView setBackgroundColor:[UIColor clearColor]];
         [containerView setContentSize:[bufferView frame].size];
         [containerView setAlwaysBounceHorizontal:NO];

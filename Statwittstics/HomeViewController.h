@@ -11,10 +11,12 @@
 #import "PBTKit.h"
 #import "PBKit.h"
 
-@interface HomeViewController : UIViewController{
+@interface HomeViewController : UIViewController <UIActionSheetDelegate>{
     PBPlot *mainPlot;
     PBTUser *mainUser;
     PBTUserView *mainUserView;
+    
+    @private UIActionSheet *optionsActionSheet;
 }
 
 //Main plot of the user to analyze
@@ -23,5 +25,11 @@
 //The user to analyze (model and view)
 @property (nonatomic, retain) PBTUser *mainUser;
 @property (nonatomic, retain) PBTUserView *mainUserView;
+
+//General private attributes of the ViewController
+@property (nonatomic, weak) UIActionSheet *optionsActionSheet;
+
+-(void)optionsButtonPressed:(id)sender;
+-(void)aboutButtonPressed:(id)sender;
 
 @end

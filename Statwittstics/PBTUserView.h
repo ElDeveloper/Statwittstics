@@ -7,8 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <QuartzCore/QuartzCore.h>
 #import "PBTDefines.h"
 #import "PBTUser.h"
+
+#define EXPANDED_LAYOUT
+//#define COMPACTED_LAYOUT
 
 extern CGSize const KPBTCGSize;
 

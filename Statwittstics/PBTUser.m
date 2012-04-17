@@ -115,12 +115,17 @@ NSUInteger const kPBTRequestMaximum= 3200;
                 //ternary operator is merely to fit everything in one line, and cast the int value to a BOOL
                 if ( (requiresAuthentication = ( [[jsonString objectForKey:TAKeyProtected] intValue] ? YES : NO)) ) {
                     followers=0;
+                    
+                    //Check just in case you have permission to see the profile
+                    if ([[jsonString objectForKey:TAKeyFollowers] intValue] != 0){
+                        followers=[[jsonString objectForKey:TAKeyFollowers] intValue];
+                    }
                 }
                 else {
                     followers=[[jsonString objectForKey:TAKeyFollowers] intValue];
                 }    
                 
-                [self requestProfilePictureWithSize:TAImageSizeOriginal andHandler:^{
+                [self requestProfilePictureWithSize:TAImageSizeBigger andHandler:^{
                     //Finally when everything is done, perform the handler
                     handler();
                 }];
