@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "StatwittsticsDefines.h"
+#import "AboutViewController.h"
 #import "PBTKit.h"
 #import "PBKit.h"
 

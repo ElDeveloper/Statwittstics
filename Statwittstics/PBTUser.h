@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "PBTDefines.h"
 #import "PBTweet.h"
+#import "PBKit.h"
 
 //General handler for the blocks, if an error occurs in the in the method where
 //the caller is called, the handler won't be called , to avoid conflicts.
@@ -78,5 +79,9 @@ extern NSUInteger const kPBTRequestMaximum;
 
 //This method parses the array of tweets looking for tweets containing the indicated string
 -(NSArray *)tweetsMentioning:(NSString *)string;
+
+//Returns a PBDataSet, containing as many points in the x axis as different days when a twitt was
+//posted and the counts of twitts in the y axis
+-(PBDataSet *)generateLinePlotDataSet;
 
 @end

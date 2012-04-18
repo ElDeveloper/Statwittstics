@@ -102,7 +102,7 @@
         
         //Twitter test
         PBTUser *testUser=nil;
-        NSArray *array=[NSArray arrayWithObjects:@"analaurad", nil];
+        NSArray *array=[NSArray arrayWithObjects:@"yosmark", nil];
         
         for (NSString *plel in array) {
             testUser=[[PBTUser alloc] initWithUsername:plel andAuthorizedAccount:theAccount];
@@ -117,10 +117,11 @@
                 #endif
                 
                 [mainUserView performSelectorOnMainThread:@selector(loadUser:) withObject:testUser waitUntilDone:YES];
+                
+                [testUser requestMostRecentTweets:10 withHandler:^{}];
             }];
             //[testUser release];
         }
-        
     }];
     
 }
@@ -142,6 +143,12 @@
 }
 
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{
+
+    //Do not allow portrait, only landscape
+    if (interfaceOrientation == UIInterfaceOrientationPortrait || interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) {
+        return NO;
+    }
+    
 	return YES;
 }
 
@@ -167,6 +174,11 @@
 
 -(void)aboutButtonPressed:(id)sender{
     NSLog(@"About button pressed");
+    
+    AboutViewController *viewController=[[AboutViewController alloc] initWithNibName:@"AboutViewController" bundle:nil];
+    [[self navigationController] presentModalViewController:viewController animated:YES];
+    [viewController release];
+    
 }
 
 

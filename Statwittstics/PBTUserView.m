@@ -26,7 +26,7 @@ CGSize const KPBTCGSize={.width=510.0f, .height=115.0f};
     self = [super initWithFrame:CGRectMake(thePosition.x, thePosition.y, KPBTCGSize.width, KPBTCGSize.height)];
     if (self) {
         // Initialization code
-        [self setBackgroundColor:[UIColor colorWithRed:0.2 green:0.42 blue:0.12 alpha:1]];
+        [self setBackgroundColor:[UIColor darkGrayColor]];
         [[self layer] setCornerRadius:12.0f];
         [[self layer] setMasksToBounds:YES];
         

@@ -19,6 +19,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
 @synthesize tweets;
 @synthesize account;
 
+#pragma mark - Object Lifecycle
 -(id)initWithUsername:(NSString *)theUsername andAuthorizedAccount:(ACAccount *)accountOrNil{
     if (self = [super init]) {
         username=[[NSString alloc] initWithString:theUsername];
@@ -57,6 +58,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     [super dealloc];
 }
 
+#pragma mark - Data Request Methods
 -(void)requestUserData:(PBTRequestHandler)handler{
     //URL, parameters and request object initialized to retrieve the data
     NSURL *userDataRequest=[NSURL URLWithString:TAUUsersShow];
@@ -218,6 +220,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     
                     #ifdef VERBOSE_DEBUG
                     NSLog(@"PBTUser:**Twitt text: %@", [tempTweet text]);
+                    NSLog(@"PBTUser:**Created at: %@", [tempTweet postDate]);
                     
                     if ( ![[tempTweet inReplyToScreenName] isEqualToString:@""] ) {
                         NSLog(@"PBTUser:**In reply to: %@", [tempTweet inReplyToScreenName]);
@@ -283,8 +286,8 @@ NSUInteger const kPBTRequestMaximum= 3200;
     NSUInteger requestedTwitts=tweetCount;
     
     //The API is limitted to 3,200 twitts, so clamp that
-    if (tweetCount > 3200) {
-        requestedTwitts=3200;
+    if (tweetCount > kPBTRequestMaximum) {
+        requestedTwitts=kPBTRequestMaximum;
         NSLog(@"PBTUser**:Warning: Clamping the requested number of tweets to %d.", tweetCount);
     }
     
@@ -297,5 +300,13 @@ NSUInteger const kPBTRequestMaximum= 3200;
 -(NSArray *)tweetsMentioning:(NSString *)string{
     return nil;
 }
+
+#pragma mark - PBDataSet Methods
+-(PBDataSet *)generateLinePlotDataSet{
+    
+
+    return nil;
+}
+
 
 @end

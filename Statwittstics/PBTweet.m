@@ -18,7 +18,8 @@
 -(id)initWithJSONData:(NSDictionary *)jsonString{
     if (self = [super init]) {
         id temp=nil;
-        NSDateFormatter *dateFromatter=nil;
+        NSDateFormatter *dateFormatter=nil;
+        NSLocale *usLocale=nil;
         NSMutableArray *tempScreenNames=[NSMutableArray array];
         NSMutableArray *tempMediaURLs=[NSMutableArray array];
         
@@ -27,14 +28,19 @@
         source=[[NSString alloc] initWithString:[jsonString objectForKey:TAKeySource]];
         tweetID=[[NSString alloc] initWithString:[jsonString objectForKey:TAKeyTweetID]];
         
-        //Post date ... yet to be assigned
-        //First set the type of format for the date
-        dateFromatter=[[NSDateFormatter alloc] init];
-        [dateFromatter setDateStyle:NSDateFormatterFullStyle];
-        [dateFromatter setDateFormat:@"yyyyMMdd"];
-        postDate=[[dateFromatter dateFromString:[jsonString objectForKey:TAKeyPostDate]] copy];
+        //The date come from twitter in the following format Mon Apr 16 00:57:16 +0000 2012
+        //therefore, our formatter has to know it is a US formatted date
+        dateFormatter=[[NSDateFormatter alloc] init];
+        usLocale=[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+        [dateFormatter setLocale:usLocale]; 
+        [dateFormatter setDateStyle:NSDateFormatterLongStyle];
+        [dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
         
-        //Has picture attribute has to be determined from the entities array 
+        //For further information look here: http://unicode.org/reports/tr35/tr35-6.html#Date_Format_Patterns
+        [dateFormatter setDateFormat: @"EEE MMM dd HH:mm:ss +0000 yyyy"];
+        
+        //Assign the post date 
+        postDate=[[dateFormatter dateFromString:[jsonString objectForKey:TAKeyPostDate]] copy];
         
         //Ternary operator to set the isRetweet attribute, from a string
         isRetweet=([[jsonString objectForKey:TAKeyIsRetweet] intValue] ? YES : NO);
@@ -81,8 +87,9 @@
             hasPicture=NO;
         }
         
-        
-        
+        //Date memory management
+        [usLocale release];
+        [dateFormatter release];
     }
     return self;
 }
