@@ -78,10 +78,16 @@ extern NSUInteger const kPBTRequestMaximum;
 -(void)requestAllTweetsWithHandler:(PBTRequestHandler)handler;
 
 //This method parses the array of tweets looking for tweets containing the indicated string
--(NSArray *)tweetsMentioning:(NSString *)string;
+-(NSArray *)tweetsMentioningUsername:(NSString *)someUsername;
 
 //Returns a PBDataSet, containing as many points in the x axis as different days when a twitt was
 //posted and the counts of twitts in the y axis
 -(PBDataSet *)generateLinePlotDataSet;
+
+//Helper function, returns the number of days between two NSDates, as a side-note:
+//this is not worth as a category for NSCalendar or NSDate
+NSInteger daysBetweenDates(NSDate *fromDate, NSDate *toDate);
+NSMutableArray* vectorOfZerosWithLength(NSUInteger length);
+NSMutableArray* linearSpace(float from, float to, NSUInteger elements);
 
 @end

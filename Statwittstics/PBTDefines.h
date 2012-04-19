@@ -17,8 +17,8 @@
 #import "PBTConstants.h"
 
 //Different levels of debugging flags
-//#define DEBUG
-//#define VERBOSE_DEBUG
+#define DEBUG
+#define VERBOSE_DEBUG
 //#define JSON_STRINGS_DEBUG
 
 #endif

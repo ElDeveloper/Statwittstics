@@ -264,7 +264,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     #ifdef DEBUG
                     NSLog(@"PBTUser:**Last call, total count %d", [tweets count]);
                     #endif
-                    
+                    [self generateLinePlotDataSet];
                     //Finally call the handler
                     handler();
                 }
@@ -297,16 +297,88 @@ NSUInteger const kPBTRequestMaximum= 3200;
     }];
 }
 
--(NSArray *)tweetsMentioning:(NSString *)string{
-    return nil;
+-(NSArray *)tweetsMentioningUsername:(NSString *)someUsername{
+    //Since this is a return value, we better create an auto-released version of it
+    NSMutableArray *outputArray=[NSMutableArray array];
+    
+    //Do not even search, the tweets haven't been retrieved
+    if (tweets == nil) {
+        return nil;
+    }
+    
+    //Go through all the tweets 
+    for ( PBTweet *tweet in [self tweets] ) {
+        //In each tweet go through all the usernames
+        for( NSString *oneScreenName in [tweet mentionedScreenNames]){
+            //If you find a username in that tweet, add that tweet
+            if ([oneScreenName isEqualToString:someUsername]) {
+                [outputArray addObject:tweet];
+                
+                //Do not do any more search this tweet already mentions the desired
+                //username, go to the next one
+                break;
+            }
+        }
+    }
+    
+    //Cast to it's un-mutable representation
+    return (NSArray *)outputArray;
 }
 
 #pragma mark - PBDataSet Methods
 -(PBDataSet *)generateLinePlotDataSet{
+    NSUInteger totalDays=0;
+    NSDate *startDate, *endDate;
+    startDate=[[tweets objectAtIndex:0] postDate];
+    endDate=[[tweets objectAtIndex:[tweets count]-1] postDate];
+    totalDays=daysBetweenDates(endDate, startDate);
     
+    #ifdef DEBUG
+    NSLog(@"%@ && %@", startDate, endDate);
+    NSLog(@"Total difference  %d", totalDays);
+    #endif
+    
+    NSUInteger i=0, totalTweets=[tweets count];
+    NSMutableArray *xData=linearSpace(0, totalDays, totalDays), *yData=vectorOfZerosWithLength(totalDays);
+    
+    //Got through each tweet and count the number of tweets that are in a same day
+    for (i=0; i<totalTweets; i++) {
 
+    }
+    
     return nil;
 }
 
+NSInteger daysBetweenDates(NSDate *fromDate, NSDate *toDate){
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    
+    [calendar rangeOfUnit:NSDayCalendarUnit startDate:&fromDate interval:NULL forDate:fromDate];
+    [calendar rangeOfUnit:NSDayCalendarUnit startDate:&toDate interval:NULL forDate:toDate];
+    
+    NSDateComponents *difference = [calendar components:NSDayCalendarUnit fromDate:fromDate toDate:toDate options:0];
+    
+    return [difference day];    
+}
+
+NSMutableArray* vectorOfZerosWithLength(NSUInteger length){
+    NSMutableArray *outArray=[NSMutableArray arrayWithCapacity:length];
+    NSUInteger i=0;
+
+    for (i=0; i<length; i++) {
+        [outArray addObject:[NSNumber numberWithFloat:0]];
+    }
+    return outArray;
+}
+
+NSMutableArray* linearSpace(float from, float to, NSUInteger elements){
+    NSMutableArray *outArray=[NSMutableArray arrayWithCapacity:elements];
+    NSUInteger i=0;
+    float interval=(to-from)/elements;
+    
+    for (i=0; i<elements; i++) {
+        [outArray addObject:[NSNumber numberWithFloat:i*interval]];
+    }
+    return outArray;
+}
 
 @end

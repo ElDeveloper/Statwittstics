@@ -118,7 +118,9 @@
                 
                 [mainUserView performSelectorOnMainThread:@selector(loadUser:) withObject:testUser waitUntilDone:YES];
                 
-                [testUser requestMostRecentTweets:10 withHandler:^{}];
+                [testUser requestMostRecentTweets:20 withHandler:^{
+                    NSLog(@"This has been called what up.");
+                }];
             }];
             //[testUser release];
         }
