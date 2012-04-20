@@ -35,6 +35,8 @@ CGSize const KPBTCGSize={.width=510.0f, .height=115.0f};
         
         //Will always first load the default picture
         profilePicture=[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"DefaultUser.png"]];
+        [[profilePicture layer] setCornerRadius:10];
+        [[profilePicture layer] setMasksToBounds:YES];
         
         #ifdef EXPANDED_LAYOUT
         [profilePicture setFrame:CGRectMake(5, 7.5, 95, 100)];

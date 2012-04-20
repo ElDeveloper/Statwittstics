@@ -43,6 +43,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
         
         _lastTweetID=nil;
         _tempArray=nil;
+        //_vamooseHandler=^{};
     }
     return self;
 }
@@ -149,7 +150,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     
     [userData performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
         #ifdef DEBUG
-        NSLog(@"%@", [urlResponse URL]);
+        NSLog(@"PBTUser(I)**:%@", [urlResponse URL]);
         #endif
         
         if (!error) {
@@ -179,6 +180,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     if (_lastTweetID == nil) {
         _tempArray=[[NSMutableArray alloc] init];
         _remainingTweets=numberOfTweets;
+
         parameters=[NSDictionary dictionaryWithObjectsAndKeys:[self username], TAKeyUsername, 
                     stringNumberOfTweets, @"count", 
                     @"true", @"include_entities", nil];
@@ -248,9 +250,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
                 
                 //More tweets to retrieve
                 if ( _remainingTweets > 0 ) {
-                    [self requestMostRecentTweets:_remainingTweets withHandler:^{
-                        
-                    }];
+                    [self requestMostRecentTweets:_remainingTweets withHandler:^{}];
                 }
                 else {
                     //Assign the tweets to the user
@@ -262,11 +262,15 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     _remainingTweets=0;
                     
                     #ifdef DEBUG
-                    NSLog(@"PBTUser:**Last call, total count %d", [tweets count]);
+                    NSLog(@"PBTUser:**Last call, total number of tweets %d", [tweets count]);
                     #endif
-                    [self generateLinePlotDataSet];
-                    //Finally call the handler
+                    //[self generateLinePlotDataSet];
                     handler();
+                    //Finally call the handler
+                    //_vamooseHandler();
+                    
+                    //Clean it ...
+                    //_vamooseHandler=^{};
                 }
             }
             else {
@@ -327,26 +331,54 @@ NSUInteger const kPBTRequestMaximum= 3200;
 
 #pragma mark - PBDataSet Methods
 -(PBDataSet *)generateLinePlotDataSet{
-    NSUInteger totalDays=0;
-    NSDate *startDate, *endDate;
+    PBDataSet *outDataSet=nil;
+    
+    NSUInteger totalDays=0, i=0, totalTweets=0, newIndex=0, *bufferArray=NULL;
+    NSDate *startDate=nil, *endDate=nil;
+    NSMutableArray *xData=nil, *yData=nil;
+    
+    //General usage constants, helps you build the linear space and plot
     startDate=[[tweets objectAtIndex:0] postDate];
     endDate=[[tweets objectAtIndex:[tweets count]-1] postDate];
     totalDays=daysBetweenDates(endDate, startDate);
     
+    //Actual data holders
+    totalTweets=[tweets count];
+    xData=linearSpace(0, totalDays, totalDays); 
+    yData=[NSMutableArray arrayWithCapacity:totalDays];
+    
+    //Get rid of some of the overhead of using a NSArray object and just use a C array
+    bufferArray=malloc(sizeof(NSUInteger)*totalDays);
+    
+    //Just plain and old array cleaning
+    for (i=0; i<totalDays; i++) {
+        bufferArray[i]=0;
+    }
+    
     #ifdef DEBUG
-    NSLog(@"%@ && %@", startDate, endDate);
     NSLog(@"Total difference  %d", totalDays);
     #endif
     
-    NSUInteger i=0, totalTweets=[tweets count];
-    NSMutableArray *xData=linearSpace(0, totalDays, totalDays), *yData=vectorOfZerosWithLength(totalDays);
-    
     //Got through each tweet and count the number of tweets that are in a same day
     for (i=0; i<totalTweets; i++) {
-
+        //Get the current difference
+        newIndex=daysBetweenDates([[tweets objectAtIndex:i] postDate], startDate);
+        bufferArray[newIndex]=bufferArray[newIndex]+1;
     }
     
-    return nil;
+    //Now add these values to the array of the y data
+    for (i=0; i<totalDays; i++) {
+        [yData addObject:[NSNumber numberWithInt:bufferArray[i]]];
+    }
+    
+    //Create the return value
+    outDataSet=[[PBDataSet alloc] initWithXData:xData yData:yData andTitle:[NSString stringWithFormat:@"Tweets per Day for %@", [self realName]]];
+    [outDataSet setLineColor:[CPTColor whiteColor]];
+    
+    //Free your mallocs
+    free(bufferArray);
+    
+    return [outDataSet autorelease];
 }
 
 NSInteger daysBetweenDates(NSDate *fromDate, NSDate *toDate){

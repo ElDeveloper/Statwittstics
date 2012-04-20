@@ -42,6 +42,7 @@ extern NSUInteger const kPBTRequestMaximum;
     NSMutableArray *_tempArray;
     NSUInteger _remainingTweets;
     NSString *_lastTweetID;
+    PBTRequestHandler _vamooseHandler;
 }
 
 //Basic information found in the profile of a Twitter user
