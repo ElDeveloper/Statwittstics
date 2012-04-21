@@ -61,7 +61,7 @@
         ACAccount *theAccount=[twitterAccounts objectAtIndex:0];
         
         //Twitter test
-        NSArray *array=[NSArray arrayWithObjects:@"yosmark", nil];
+        NSArray *array=[NSArray arrayWithObjects:@"wcervantes", nil];
         
         for (NSString *plel in array) {
             mainUser=[[PBTUser alloc] initWithUsername:plel andAuthorizedAccount:theAccount];
@@ -75,9 +75,10 @@
                 NSLog(@"The bio is: %@", [mainUser description]);
                 #endif
                 
+                //Load the view
                 [mainUserView performSelectorOnMainThread:@selector(loadUser:) withObject:mainUser waitUntilDone:YES];
                 
-                [mainUser requestMostRecentTweets:100 withHandler:^{
+                [mainUser requestMostRecentTweets:3000 withHandler:^{
                     NSLog(@"This has been called what up.");
                     
                     //Go to the main thread and perform the GUI changes

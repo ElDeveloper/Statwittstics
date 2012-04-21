@@ -168,6 +168,11 @@ NSUInteger const kPBTRequestMaximum= 3200;
     NSLog(@"PBTUSER:**Remaining to get %d", numberOfTweets);
     #endif
     
+    //In case the user requests more than what you can actually get
+    if ([self tweetCount] < numberOfTweets) {
+        numberOfTweets=tweetCount;
+    }
+    
     //If the total request needs you to ask for more than 200 tweets, truncate the number, using the ternary operator
     NSString *stringNumberOfTweets=[NSString stringWithFormat:@"%d",(numberOfTweets > 200 ? 200 : numberOfTweets)];
     
@@ -180,6 +185,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     if (_lastTweetID == nil) {
         _tempArray=[[NSMutableArray alloc] init];
         _remainingTweets=numberOfTweets;
+        _vamooseHandler=Block_copy(handler);
 
         parameters=[NSDictionary dictionaryWithObjectsAndKeys:[self username], TAKeyUsername, 
                     stringNumberOfTweets, @"count", 
@@ -264,13 +270,9 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     #ifdef DEBUG
                     NSLog(@"PBTUser:**Last call, total number of tweets %d", [tweets count]);
                     #endif
-                    //[self generateLinePlotDataSet];
-                    handler();
                     //Finally call the handler
-                    //_vamooseHandler();
-                    
-                    //Clean it ...
-                    //_vamooseHandler=^{};
+                    _vamooseHandler();
+                    //#warning This probably needs to be released and figured out :S
                 }
             }
             else {
