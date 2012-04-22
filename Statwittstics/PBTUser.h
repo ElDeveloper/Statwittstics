@@ -83,12 +83,17 @@ extern NSUInteger const kPBTRequestMaximum;
 
 //Returns a PBDataSet, containing as many points in the x axis as different days when a twitt was
 //posted and the counts of twitts in the y axis
--(PBDataSet *)generateLinePlotDataSet;
+-(PBDataSet *)tweetsPerDayDataSet;
 
 //Helper function, returns the number of days between two NSDates, as a side-note:
 //this is not worth as a category for NSCalendar or NSDate
-NSInteger daysBetweenDates(NSDate *fromDate, NSDate *toDate);
-NSMutableArray* vectorOfZerosWithLength(NSUInteger length);
-NSMutableArray* linearSpace(float from, float to, NSUInteger elements);
+NSInteger PBTDaysBetweenDates(NSDate *fromDate, NSDate *toDate);
+
+//MATLAB-ish like general use functions
+NSMutableArray* PBTZeros(NSUInteger length);
+NSMutableArray* PBTLinspace(float from, float to, NSUInteger elements);
+
+//Recursive way to request as many tweets as needed, requesting them in chunks of 200 tweets
+void PBTRequestTweets(PBTUser *client, NSUInteger numberOfTweets,  NSString *lastTweetID, NSMutableArray **tweetsBuffer, PBTRequestHandler handler);
 
 @end

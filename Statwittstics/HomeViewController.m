@@ -61,7 +61,7 @@
         ACAccount *theAccount=[twitterAccounts objectAtIndex:0];
         
         //Twitter test
-        NSArray *array=[NSArray arrayWithObjects:@"wcervantes", nil];
+        NSArray *array=[NSArray arrayWithObjects:@"yosmark", nil];
         
         for (NSString *plel in array) {
             mainUser=[[PBTUser alloc] initWithUsername:plel andAuthorizedAccount:theAccount];
@@ -78,7 +78,7 @@
                 //Load the view
                 [mainUserView performSelectorOnMainThread:@selector(loadUser:) withObject:mainUser waitUntilDone:YES];
                 
-                [mainUser requestMostRecentTweets:3000 withHandler:^{
+                [mainUser requestMostRecentTweets:300 withHandler:^{
                     NSLog(@"This has been called what up.");
                     
                     //Go to the main thread and perform the GUI changes
@@ -118,6 +118,7 @@
 	return YES;
 }
 
+#pragma mark - Button Callbacks
 -(void)optionsButtonPressed:(id)sender{
     
     //Do not cause overhead, the user could probably not use the options therefore you would be creating an action sheet when not needed
@@ -147,9 +148,12 @@
     
 }
 
+#pragma mark - Plot Loading
 -(void)loadPlotWithUser{
-    PBDataSet *someDataSet=[mainUser generateLinePlotDataSet];
-    //[someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeHexagon size:12 andColor:[CPTColor blackColor]]];
+    PBDataSet *someDataSet=[mainUser tweetsPerDayDataSet];
+    
+    NSLog(@"The data set has %d", [someDataSet dataSetLength]);
+    [someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeHexagon size:12 andColor:[CPTColor blackColor]]];
     
     mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(5, 70, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
     

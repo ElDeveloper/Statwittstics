@@ -185,7 +185,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     if (_lastTweetID == nil) {
         _tempArray=[[NSMutableArray alloc] init];
         _remainingTweets=numberOfTweets;
-        _vamooseHandler=Block_copy(handler);
+        _vamooseHandler=[handler copy];
 
         parameters=[NSDictionary dictionaryWithObjectsAndKeys:[self username], TAKeyUsername, 
                     stringNumberOfTweets, @"count", 
@@ -261,18 +261,21 @@ NSUInteger const kPBTRequestMaximum= 3200;
                 else {
                     //Assign the tweets to the user
                     tweets=[[NSArray alloc] initWithArray:(NSArray *)_tempArray];
+                    [_tempArray release];
+                    _tempArray=nil;
                     
                     //Re-initialize the properties
                     _lastTweetID=nil;
-                    [_tempArray release];
                     _remainingTweets=0;
+
+                    //Finally call the handler, release and re-start the variable
+                    _vamooseHandler();
+                    [_vamooseHandler release];
+                    _vamooseHandler=nil;
                     
                     #ifdef DEBUG
                     NSLog(@"PBTUser:**Last call, total number of tweets %d", [tweets count]);
                     #endif
-                    //Finally call the handler
-                    _vamooseHandler();
-                    //#warning This probably needs to be released and figured out :S
                 }
             }
             else {
@@ -332,7 +335,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
 }
 
 #pragma mark - PBDataSet Methods
--(PBDataSet *)generateLinePlotDataSet{
+-(PBDataSet *)tweetsPerDayDataSet{
     PBDataSet *outDataSet=nil;
     
     NSUInteger totalDays=0, i=0, totalTweets=0, newIndex=0, *bufferArray=NULL;
@@ -342,12 +345,14 @@ NSUInteger const kPBTRequestMaximum= 3200;
     //General usage constants, helps you build the linear space and plot
     startDate=[[tweets objectAtIndex:0] postDate];
     endDate=[[tweets objectAtIndex:[tweets count]-1] postDate];
-    totalDays=daysBetweenDates(endDate, startDate);
+    totalDays=PBTDaysBetweenDates(endDate, startDate);
     
     //Actual data holders
     totalTweets=[tweets count];
-    xData=linearSpace(0, totalDays, totalDays); 
-    yData=[NSMutableArray arrayWithCapacity:totalDays];
+    xData=[PBTLinspace(0, totalDays, totalDays) retain]; 
+    yData=[[NSMutableArray alloc] initWithCapacity:totalDays];
+
+    //printf("The total days is %d, the size of the x array is %d and the size of the y array is %d\n", totalDays, [xData count], [yData count]);
     
     //Get rid of some of the overhead of using a NSArray object and just use a C array
     bufferArray=malloc(sizeof(NSUInteger)*totalDays);
@@ -358,13 +363,13 @@ NSUInteger const kPBTRequestMaximum= 3200;
     }
     
     #ifdef DEBUG
-    NSLog(@"Total difference  %d", totalDays);
+    NSLog(@"Days between first and last tweet %d", totalDays);
     #endif
     
     //Got through each tweet and count the number of tweets that are in a same day
     for (i=0; i<totalTweets; i++) {
         //Get the current difference
-        newIndex=daysBetweenDates([[tweets objectAtIndex:i] postDate], startDate);
+        newIndex=PBTDaysBetweenDates([[tweets objectAtIndex:i] postDate], startDate);
         bufferArray[newIndex]=bufferArray[newIndex]+1;
     }
     
@@ -380,10 +385,14 @@ NSUInteger const kPBTRequestMaximum= 3200;
     //Free your mallocs
     free(bufferArray);
     
+    [xData release];
+    [yData release];
+    
     return [outDataSet autorelease];
 }
 
-NSInteger daysBetweenDates(NSDate *fromDate, NSDate *toDate){
+#pragma mark - General Use Functions
+NSInteger PBTDaysBetweenDates(NSDate *fromDate, NSDate *toDate){
     NSCalendar *calendar = [NSCalendar currentCalendar];
     
     [calendar rangeOfUnit:NSDayCalendarUnit startDate:&fromDate interval:NULL forDate:fromDate];
@@ -394,7 +403,7 @@ NSInteger daysBetweenDates(NSDate *fromDate, NSDate *toDate){
     return [difference day];    
 }
 
-NSMutableArray* vectorOfZerosWithLength(NSUInteger length){
+NSMutableArray* PBTZeros(NSUInteger length){
     NSMutableArray *outArray=[NSMutableArray arrayWithCapacity:length];
     NSUInteger i=0;
 
@@ -404,7 +413,7 @@ NSMutableArray* vectorOfZerosWithLength(NSUInteger length){
     return outArray;
 }
 
-NSMutableArray* linearSpace(float from, float to, NSUInteger elements){
+NSMutableArray* PBTLinspace(float from, float to, NSUInteger elements){
     NSMutableArray *outArray=[NSMutableArray arrayWithCapacity:elements];
     NSUInteger i=0;
     float interval=(to-from)/elements;
@@ -413,6 +422,115 @@ NSMutableArray* linearSpace(float from, float to, NSUInteger elements){
         [outArray addObject:[NSNumber numberWithFloat:i*interval]];
     }
     return outArray;
+}
+
+void PBTRequestTweets(PBTUser *client, NSUInteger numberOfTweets,  NSString *lastTweetID, NSMutableArray **tweetsBuffer, PBTRequestHandler handler){
+    //If the total request needs you to ask for more than 200 tweets, truncate the number, using the ternary operator
+    NSString *stringNumberOfTweets=[NSString stringWithFormat:@"%d",(numberOfTweets > 200 ? 200 : numberOfTweets)];
+    
+    //URL, parameters and request object initialized to retrieve the data
+    NSURL *userDataRequest=[NSURL URLWithString:TAUUserTimeline];
+    NSDictionary *parameters=nil;
+    
+    __block PBTUser *_client=client;
+    __block NSUInteger _numberOfTweets=numberOfTweets;
+    __block NSString *_lastTweetID=lastTweetID;
+    __block NSMutableArray *_tweetsBuffer=*(tweetsBuffer);
+    PBTRequestHandler _handler;
+    
+    //These variables get re-usede in recursive calls, so they shall be initialized every first time this 
+    //is called, for the first call you don't have a max_id property so, the dict goes as follows ...
+    if (lastTweetID == nil) {
+        _handler=Block_copy(handler);
+        parameters=[NSDictionary dictionaryWithObjectsAndKeys:[client username], TAKeyUsername, 
+                    stringNumberOfTweets, @"count", 
+                    @"true", @"include_entities", nil];
+    }
+    else {        
+        parameters=[NSDictionary dictionaryWithObjectsAndKeys:[client username], TAKeyUsername, 
+                    stringNumberOfTweets, @"count", 
+                    @"true", @"include_entities", 
+                    _lastTweetID, @"max_id", nil];
+    }
+    
+    //Depending on the run use the parameters initialized
+    TWRequest *userData=[[TWRequest alloc] initWithURL:userDataRequest parameters:parameters requestMethod:TWRequestMethodGET];
+    
+    //Authorize if provided
+    if ([client account] != nil) {
+        [userData setAccount:[client account]];
+    }
+    
+    [userData performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+        id jsonString=nil;
+        NSError *jsonError=nil;
+        PBTweet *tempTweet=nil;
+        
+        //There is no connection error, go for it
+        if (!error) {
+            jsonString=[NSJSONSerialization JSONObjectWithData:responseData options:0 error:&jsonError];
+            
+            #ifdef JSON_STRINGS_DEBUG
+            NSLog(@"PBTUser**:%@", jsonString);
+            #endif
+            
+            //There is no JSON serialization error, go for it
+            if (!jsonError) {
+                for (NSDictionary *object in (NSArray *)jsonString) {
+                    
+                    //Store one tweet in a object, add it to a temporary array, then release it
+                    tempTweet=[[PBTweet alloc] initWithJSONData:object];
+                    
+                    #ifdef VERBOSE_DEBUG
+                    NSLog(@"PBTUser:**Twitt text: %@", [tempTweet text]);
+                    NSLog(@"PBTUser:**Created at: %@", [tempTweet postDate]);
+                    
+                    if ( ![[tempTweet inReplyToScreenName] isEqualToString:@""] ) {
+                        NSLog(@"PBTUser:**In reply to: %@", [tempTweet inReplyToScreenName]);
+                    }
+                    
+                    if ( [[tempTweet mentionedScreenNames] count] != 0 ) {
+                        NSLog(@"PBTUser:**Mentioned users: %@", [tempTweet mentionedScreenNames]);
+                    }
+                    
+                    if ([[tempTweet mediaURLs] count] != 0) {
+                        NSLog(@"PBTUser:**Media: %@", [tempTweet mediaURLs]);
+                    }
+                    #endif
+                    
+                    _lastTweetID=[tempTweet tweetID];
+                    [_tweetsBuffer addObject:tempTweet];
+                    [tempTweet release];
+                }
+                
+                _numberOfTweets=_numberOfTweets-[stringNumberOfTweets intValue];
+                
+                #ifdef DEBUG
+                NSLog(@"PBTUser:**Current size %d", [_tweetsBuffer count]);
+                #endif
+                
+                //More tweets to retrieve
+                if ( _numberOfTweets > 0 ) {
+                    PBTRequestTweets(_client, _numberOfTweets, _lastTweetID, &_tweetsBuffer, _handler);
+                }
+                else {
+                    _handler();
+                    
+                    #ifdef DEBUG
+                    NSLog(@"PBTUser:**Last call, total number of tweets %d", [_tweetsBuffer count]);
+                    #endif
+                }
+            }
+            else {
+                //JSON serialization error management
+                NSLog(@"PBTUser(J)**:%@",[jsonError localizedDescription]);
+            }
+        }
+        else {
+            //Connection error managment 
+            NSLog(@"PBTUser(R)**:%@", [error localizedDescription]);
+        }
+    }];
 }
 
 @end
