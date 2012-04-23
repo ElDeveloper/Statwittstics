@@ -182,7 +182,7 @@
     NSLog(@"The data set has %d", [someDataSet dataSetLength]);
     [someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeHexagon size:12 andColor:[CPTColor blackColor]]];
     
-    mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(5, 70, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
+    mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(9, 145, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
     
     //Plot attributes
     [mainPlot setAxisWithRangeFactor:1.3];

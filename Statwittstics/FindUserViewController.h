@@ -7,7 +7,21 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "StatwittsticsDefines.h"
 
-@interface FindUserViewController : UITableViewController
+@interface FindUserViewController : UITableViewController <UISearchDisplayDelegate, UISearchBarDelegate>{
+    UISearchBar *theSearchBar;
+    
+    @private UIActivityIndicatorView *spinner;
+    @private NSMutableArray *searchResults;
+}
+
+@property (nonatomic, retain) UISearchBar *theSearchBar;
+
+//Private appearance properties
+@property (nonatomic, retain) UIActivityIndicatorView *spinner;
+@property (nonatomic, retain) NSMutableArray *searchResults;
+
+-(void)willFilterContentForSearchText:(NSString*)searchText scope:(NSString*)scope;
 
 @end

@@ -20,6 +20,7 @@ typedef NSString* TAUString;
 extern TAUString TAUUsersShow;      //Returns the profile information for a user
 extern TAUString TAUUserTimeline;   //Returns the N most recent statuses for a user
 extern TAUString TAUImageData;      //Returns the data representation of the profile picture of a user
+extern TAUString TAUUsersLookup;    //Returns up to 100 users worth of extended information
 
 //Twitter API keys used for the JSON dictionaries that represent a user
 typedef NSString* const TAKey;

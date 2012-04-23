@@ -29,6 +29,7 @@
 		50B5DF09152EBBA500661492 /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B5DF08152EBBA500661492 /* HomeViewController.m */; };
 		50B5DF0E152EC1EC00661492 /* DefaultUser.png in Resources */ = {isa = PBXBuildFile; fileRef = 50B5DF0D152EC1EC00661492 /* DefaultUser.png */; };
 		50CAAC451544F0A300641D90 /* FindUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CAAC441544F0A300641D90 /* FindUserViewController.m */; };
+		50CAAC52154525A600641D90 /* PBTUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CAAC51154525A600641D90 /* PBTUtilities.m */; };
 		50CD10C2153BC640004F7229 /* PBTConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CD10C1153BC640004F7229 /* PBTConstants.m */; };
 /* End PBXBuildFile section */
 
@@ -151,6 +152,8 @@
 		50B5DF0D152EC1EC00661492 /* DefaultUser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = DefaultUser.png; path = Statwittstics/DefaultUser.png; sourceTree = "<group>"; };
 		50CAAC431544F0A300641D90 /* FindUserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindUserViewController.h; sourceTree = "<group>"; };
 		50CAAC441544F0A300641D90 /* FindUserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindUserViewController.m; sourceTree = "<group>"; };
+		50CAAC50154525A600641D90 /* PBTUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBTUtilities.h; sourceTree = "<group>"; };
+		50CAAC51154525A600641D90 /* PBTUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBTUtilities.m; sourceTree = "<group>"; };
 		50CD10C0153BC640004F7229 /* PBTConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBTConstants.h; sourceTree = "<group>"; };
 		50CD10C1153BC640004F7229 /* PBTConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBTConstants.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -186,6 +189,8 @@
 				5089487715315CB000A66EFA /* PBTweet.m */,
 				50894879153160F700A66EFA /* PBTUser.h */,
 				5089487A153160F700A66EFA /* PBTUser.m */,
+				50CAAC50154525A600641D90 /* PBTUtilities.h */,
+				50CAAC51154525A600641D90 /* PBTUtilities.m */,
 			);
 			name = Twitter;
 			sourceTree = "<group>";
@@ -459,6 +464,7 @@
 				50CD10C2153BC640004F7229 /* PBTConstants.m in Sources */,
 				5029638F153E6C3500DFD6AF /* AboutViewController.m in Sources */,
 				50CAAC451544F0A300641D90 /* FindUserViewController.m in Sources */,
+				50CAAC52154525A600641D90 /* PBTUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

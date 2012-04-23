@@ -27,6 +27,10 @@ NSString *  const   PBPlotAxisOrthogonal=@"0.0";
         // Initialization code
         int i=0, sizeHelper=[[theDataSets objectAtIndex:0] dataSetLength];
         
+        [self setBackgroundColor:[UIColor clearColor]];
+        [[self layer] setCornerRadius:12.0f];
+        [[self layer] setMasksToBounds:YES];
+        
         PBDataSet *currentDataSet=nil;
         delegate = nil;
         
@@ -37,7 +41,7 @@ NSString *  const   PBPlotAxisOrthogonal=@"0.0";
         identifiers=[[NSMutableArray alloc] init];
         
         //Set the hosting view, in this case it won't be resizable
-        CPTGraphHostingView *hostingView = [[CPTGraphHostingView alloc] initWithFrame:frame];
+        CPTGraphHostingView *hostingView = [[CPTGraphHostingView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
         [hostingView setBackgroundColor:[UIColor clearColor]];
         
         //Create and allocate the graph, it will be re-sized as needed

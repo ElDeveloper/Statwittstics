@@ -11,6 +11,7 @@
 TAUString TAUUsersShow=@"https://api.twitter.com/1/users/show.json";
 TAUString TAUUserTimeline=@"https://api.twitter.com/1/statuses/user_timeline.json";
 TAUString TAUImageData=@"https://api.twitter.com/1/users/profile_image/";
+TAUString TAUUsersLookup=@"http://api.twitter.com/1/users/lookup.json";
 
 TAImageSize TAImageSizeMini=@"mini";
 TAImageSize TAImageSizeNormal=@"normal";
