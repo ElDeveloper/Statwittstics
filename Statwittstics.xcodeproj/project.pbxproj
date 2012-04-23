@@ -28,6 +28,7 @@
 		50B5DF06152EBB8500661492 /* Home.xib in Resources */ = {isa = PBXBuildFile; fileRef = 50B5DF05152EBB8500661492 /* Home.xib */; };
 		50B5DF09152EBBA500661492 /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B5DF08152EBBA500661492 /* HomeViewController.m */; };
 		50B5DF0E152EC1EC00661492 /* DefaultUser.png in Resources */ = {isa = PBXBuildFile; fileRef = 50B5DF0D152EC1EC00661492 /* DefaultUser.png */; };
+		50CAAC451544F0A300641D90 /* FindUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CAAC441544F0A300641D90 /* FindUserViewController.m */; };
 		50CD10C2153BC640004F7229 /* PBTConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CD10C1153BC640004F7229 /* PBTConstants.m */; };
 /* End PBXBuildFile section */
 
@@ -148,6 +149,8 @@
 		50B5DF07152EBBA500661492 /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
 		50B5DF08152EBBA500661492 /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
 		50B5DF0D152EC1EC00661492 /* DefaultUser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = DefaultUser.png; path = Statwittstics/DefaultUser.png; sourceTree = "<group>"; };
+		50CAAC431544F0A300641D90 /* FindUserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindUserViewController.h; sourceTree = "<group>"; };
+		50CAAC441544F0A300641D90 /* FindUserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindUserViewController.m; sourceTree = "<group>"; };
 		50CD10C0153BC640004F7229 /* PBTConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBTConstants.h; sourceTree = "<group>"; };
 		50CD10C1153BC640004F7229 /* PBTConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBTConstants.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -229,6 +232,8 @@
 				50B5DE9A152EB92800661492 /* AppDelegate.m */,
 				50B5DF07152EBBA500661492 /* HomeViewController.h */,
 				50B5DF08152EBBA500661492 /* HomeViewController.m */,
+				50CAAC431544F0A300641D90 /* FindUserViewController.h */,
+				50CAAC441544F0A300641D90 /* FindUserViewController.m */,
 				5029638C153E6C3500DFD6AF /* AboutViewController.h */,
 				5029638D153E6C3500DFD6AF /* AboutViewController.m */,
 				5089487415315C6A00A66EFA /* Twitter */,
@@ -453,6 +458,7 @@
 				5093C6E7153A3F66001D279C /* PBTUserView.m in Sources */,
 				50CD10C2153BC640004F7229 /* PBTConstants.m in Sources */,
 				5029638F153E6C3500DFD6AF /* AboutViewController.m in Sources */,
+				50CAAC451544F0A300641D90 /* FindUserViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

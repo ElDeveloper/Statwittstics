@@ -8,9 +8,17 @@
 
 #import <UIKit/UIKit.h>
 #import "StatwittsticsDefines.h"
+
 #import "AboutViewController.h"
+#import "FindUserViewController.h"
+
 #import "PBTKit.h"
 #import "PBKit.h"
+
+typedef enum {
+    HVCActionSheetButtonNew=1,
+    HVCActionSheetButtonShare=2
+}HVCActionSheetButton;
 
 @interface HomeViewController : UIViewController <UIActionSheetDelegate>{
     PBPlot *mainPlot;
@@ -32,5 +40,6 @@
 
 -(void)optionsButtonPressed:(id)sender;
 -(void)aboutButtonPressed:(id)sender;
+-(void)drawTweetsPerDayPlot;
 
 @end

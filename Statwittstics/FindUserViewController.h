@@ -1,0 +1,13 @@
+//
+//  FindUserViewController.h
+//  Statwittstics
+//
+//  Created by Yoshiki - Vázquez Baeza on 22/04/12.
+//  Copyright (c) 2012 Polar Bears Nanotechnology Research ©. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface FindUserViewController : UITableViewController
+
+@end

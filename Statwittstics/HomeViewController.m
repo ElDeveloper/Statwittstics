@@ -82,7 +82,7 @@
                     NSLog(@"This has been called what up.");
                     
                     //Go to the main thread and perform the GUI changes
-                    [self performSelectorOnMainThread:@selector(loadPlotWithUser) withObject:nil waitUntilDone:YES];
+                    [self performSelectorOnMainThread:@selector(drawTweetsPerDayPlot) withObject:nil waitUntilDone:YES];
                     
                 }];
             }];
@@ -128,8 +128,12 @@
                                         cancelButtonTitle:NSLocalizedString(@"Cancel", @"Cancel String") 
                                    destructiveButtonTitle:NSLocalizedString(@"Hide", @"Hide String") 
                                         otherButtonTitles:NSLocalizedString(@"New Subject", @"New Subject String"), NSLocalizedString(@"Share on Twitter", @"Share on Twitter String"), nil];
+        
+        //The only implementation needed is the actionSheet:clickedButtonAtIndex: method
+        [optionsActionSheet setDelegate:self];
     }
-      
+    
+    //Implement an XOR behavior, to check whether or not the UIActionSheet is visible
     if ( ![optionsActionSheet isVisible]) {
         [optionsActionSheet showFromBarButtonItem:[[self navigationItem] rightBarButtonItem] animated:YES];
     }
@@ -140,16 +144,39 @@
 }
 
 -(void)aboutButtonPressed:(id)sender{
-    NSLog(@"About button pressed");
-    
+    //Load the AboutViewController and release it
     AboutViewController *viewController=[[AboutViewController alloc] initWithNibName:@"AboutViewController" bundle:nil];
     [[self navigationController] presentModalViewController:viewController animated:YES];
     [viewController release];
     
 }
 
+#pragma mark - UIActionSheetDelegate Methods
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    //Load a view controller ... if needed
+    id viewController=nil;
+    
+    switch (buttonIndex) {
+        case HVCActionSheetButtonNew:
+            viewController=[[FindUserViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            [[self navigationController] presentModalViewController:viewController animated:YES];
+            [viewController release];
+            
+            break;
+        
+        case HVCActionSheetButtonShare:
+            
+            break;
+            
+        default:
+            break;
+    }
+    
+    return;
+}
+
 #pragma mark - Plot Loading
--(void)loadPlotWithUser{
+-(void)drawTweetsPerDayPlot{
     PBDataSet *someDataSet=[mainUser tweetsPerDayDataSet];
     
     NSLog(@"The data set has %d", [someDataSet dataSetLength]);
