@@ -21,6 +21,7 @@ extern TAUString TAUUsersShow;      //Returns the profile information for a user
 extern TAUString TAUUserTimeline;   //Returns the N most recent statuses for a user
 extern TAUString TAUImageData;      //Returns the data representation of the profile picture of a user
 extern TAUString TAUUsersLookup;    //Returns up to 100 users worth of extended information
+extern TAUString TAUUsersSearch;    //Returns the first 100 users matching a query (no operators accepted)
 
 //Twitter API keys used for the JSON dictionaries that represent a user
 typedef NSString* const TAKey;
@@ -34,6 +35,7 @@ extern TAKey TAKeyFollowing;
 extern TAKey TAKeyFollowers;
 extern TAKey TAKeyTweets;
 extern TAKey TAKeyProtected;
+extern TAKey TAKeyQuery;
 
 //Keys used for the JSON dictionaries that represent a tweet
 extern TAKey TAKeyEntities;

@@ -22,4 +22,7 @@
 //PBTUser and the PBTweet class to work properly
 #import "PBTUserView.h"
 
+//Wrapper class for some of the requests that currently don't fit a classification
+#import "PBTUtilities.h"
+
 #endif

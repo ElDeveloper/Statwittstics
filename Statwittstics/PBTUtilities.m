@@ -10,17 +10,47 @@
 
 @implementation PBTUtilities
 
-+(void)requestUsersWithKeyword:(NSString *)keyword andResponseHandler:(PBTSearchResult)handler{
-    //URL, parameters and request object initialized to retrieve the data
-    NSURL *userDataRequest=[NSURL URLWithString:TAUUsersLookup];
-    NSDictionary *parameters=[NSDictionary dictionaryWithObjectsAndKeys:@"", TAKeyUsername, @"false", @"include_entities", nil];
-    TWRequest *userData=[[TWRequest alloc] initWithURL:userDataRequest parameters:parameters requestMethod:TWRequestMethodGET];
++(void)user:(PBTUser *)user requestUsersWithKeyword:(NSString *)keyword andResponseHandler:(PBTSearchResult)handler{
+    //URL, parameters and request object initialized to retrieve the data, see PBTConstants for the definitions
+    NSURL *userSearchURL=[NSURL URLWithString:TAUUsersShow];
+    NSDictionary *parameters=[NSDictionary dictionaryWithObjectsAndKeys:keyword, TAKeyQuery, nil];
+    TWRequest *userSearchRequest=[[TWRequest alloc] initWithURL:userSearchURL parameters:parameters requestMethod:TWRequestMethodGET];
     
+    //Authorize if provided
+    if ([user account] != nil) {
+        [userSearchRequest setAccount:[user account]];
+    }
     
     //Request the data
-    [userData performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
-    
-    
+    [userSearchRequest performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+        NSError *jsonError=nil;
+        id jsonString=nil;
+        
+        NSLog(@"%@", [urlResponse URL]);
+        
+        //Check for errors in the request
+        if (!error) {
+            
+            //The JSON object is a Dictionary
+            jsonString=[NSJSONSerialization JSONObjectWithData:responseData options:0 error:&jsonError];
+            
+            //Twitter wouldn't return badly serilized JSON objects but if anything
+            if (!jsonError) {
+                #ifdef DEBUG
+                NSLog(@"USER_SEARCH: %@", jsonString);
+                #endif
+                
+                handler(nil);
+            }
+            else {
+                //JSON serialization error management
+                NSLog(@"PBTUtilities(J)**:%@",[jsonError localizedDescription]);
+            }
+        }
+        else {
+            //Request connection error
+            NSLog(@"PBTUtilities(R)**:%@",[error localizedDescription]);
+        }
     }];
 }
 

@@ -12,6 +12,7 @@ TAUString TAUUsersShow=@"https://api.twitter.com/1/users/show.json";
 TAUString TAUUserTimeline=@"https://api.twitter.com/1/statuses/user_timeline.json";
 TAUString TAUImageData=@"https://api.twitter.com/1/users/profile_image/";
 TAUString TAUUsersLookup=@"http://api.twitter.com/1/users/lookup.json";
+TAUString TAUUsersSearch=@"http://api.twitter.com/1/users/search.json";
 
 TAImageSize TAImageSizeMini=@"mini";
 TAImageSize TAImageSizeNormal=@"normal";
@@ -28,6 +29,7 @@ TAKey TAKeyFollowing=@"friends_count";
 TAKey TAKeyFollowers=@"followers_count";
 TAKey TAKeyTweets=@"statuses_count";
 TAKey TAKeyProtected=@"protected";
+TAKey TAKeyQuery=@"q";
 
 TAKey TAKeyEntities=@"entities";
 TAKey TAKeyInToReplyScreenName=@"in_reply_to_screen_name";

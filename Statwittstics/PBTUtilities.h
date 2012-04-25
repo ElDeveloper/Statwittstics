@@ -16,6 +16,7 @@
 //the caller is called, the handler won't be called , to avoid conflicts.
 typedef void __block (^PBTSearchResult)(NSArray *arrayOfSubjects);
 
-+(void)requestUsersWithKeyword:(NSString *)keyword andResponseHandler:(PBTSearchResult)handler;
+//These utilities requier of a vailid PBTUser, otherwise you won't be able to make the request
++(void)user:(PBTUser *)user requestUsersWithKeyword:(NSString *)keyword andResponseHandler:(PBTSearchResult)handler;
 
 @end
