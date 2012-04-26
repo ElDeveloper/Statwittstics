@@ -16,7 +16,8 @@
 //the caller is called, the handler won't be called , to avoid conflicts.
 typedef void __block (^PBTSearchResult)(NSArray *arrayOfSubjects);
 
-//These utilities requier of a vailid PBTUser, otherwise you won't be able to make the request
+//These utilities requiere of a vailid PBTUser, otherwise you won't be able to
+//make the request; this method returns an auto-released array via the handler
 +(void)user:(PBTUser *)user requestUsersWithKeyword:(NSString *)keyword andResponseHandler:(PBTSearchResult)handler;
 
 @end

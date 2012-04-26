@@ -66,6 +66,15 @@
 }
 
 #pragma mark - FindUserViewController Behavioral Methods
+-(void)loadResults{
+    //Upadate the GUI, remember the GUI can only be updated in the Main Thread    
+    [[self tableView] beginUpdates];
+    [[self tableView] reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationBottom];
+    [[self tableView] endUpdates];
+    
+    [[self searchDisplayController] setActive:NO animated:YES];
+}
+
 -(void)willFilterContentForSearchText:(NSString*)searchText scope:(NSString*)scope{
     
 }
@@ -87,10 +96,12 @@
     
     // Configure the cell...
     if (cell == nil) {
-        cell=[[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier] autorelease];
+        cell=[[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
     }
     
-    [[cell textLabel] setText:[NSString stringWithFormat:@"Label %d", [indexPath row]]];
+    //Load the PBTUser ...
+    [[cell textLabel] setText:[[searchResults objectAtIndex:[indexPath row]] username]];
+    [[cell detailTextLabel] setText:[[searchResults objectAtIndex:[indexPath row]] realName]];
     
     return cell;
 }
@@ -105,10 +116,6 @@
 }
 
 #pragma mark - UISearchDisplayControllerDelegate Methods
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString{
-    return NO;
-}
-
 -(BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchScope:(NSInteger)searchOption{
     NSLog(@"%s", __PRETTY_FUNCTION__);
     if (searchOption == -1) {
@@ -128,6 +135,17 @@
     [requestArray autorelease];
     
     //Begin search ...
+    [PBTUtilities user:nil requestUsersWithKeyword:[searchBar text] andResponseHandler:^(NSArray *arrayOfSubjects) {
+        
+        //There is something inside the array
+        if ([searchResults count] != 0) {
+            //Clear it
+            [searchResults removeAllObjects];
+        }
+        
+        //Now add all the new objects at the beginning
+        [searchResults insertObjects:arrayOfSubjects atIndexes:0];
+    }]; 
     
 }
 

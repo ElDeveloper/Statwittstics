@@ -20,16 +20,11 @@ NSUInteger const kPBTRequestMaximum= 3200;
 @synthesize account;
 
 #pragma mark - Object Lifecycle
--(id)initWithUsername:(NSString *)theUsername andAuthorizedAccount:(ACAccount *)accountOrNil{
-    if (self = [super init]) {
-        username=[[NSString alloc] initWithString:theUsername];
-        
-        //Keep a copy for yourself only if it is provided
-        if (accountOrNil) {
-            account=[accountOrNil retain];
-        }
-        
+-(id)init{
+    if( self = [super init] ){
         //Set everything to nil or a netural value
+        username=nil;
+        account=nil;
         realName=nil;
         description=nil;
         location=nil;
@@ -43,9 +38,76 @@ NSUInteger const kPBTRequestMaximum= 3200;
         
         _lastTweetID=nil;
         _tempArray=nil;
-        //_vamooseHandler=^{};
+        _vamooseHandler=nil;
     }
     return self;
+}
+
+-(id)initWithUsername:(NSString *)theUsername andAuthorizedAccount:(ACAccount *)accountOrNil{
+    if (self = [self init]) {
+        username=[[NSString alloc] initWithString:theUsername];
+        //Keep a copy for yourself only if it is provided
+        if (accountOrNil) {
+            account=[accountOrNil retain];
+        }
+    }
+    return self;
+}
+
+-(id)initWithJSONString:(NSString *)jsonString{
+    if ( self = [self init] ) {
+        [self loadFromJSONString:jsonString];
+    }
+    return self;
+}
+
+-(void)loadFromJSONString:(id)jsonString{
+    id temp=nil;
+    
+    //Sometimes you have this property, sometimes you don't depending on the type of initialization
+    if (username == nil) {
+        username=[[NSString alloc] initWithString:[jsonString objectForKey:TAKeyUsername]];
+    }
+    
+    //All these properties are always in the profile of a user
+    realName=[[NSString alloc] initWithString:[jsonString objectForKey:TAKeyRealName]];
+    following=[[jsonString objectForKey:TAKeyFollowing] intValue];
+    tweetCount=[[jsonString objectForKey:TAKeyTweets] intValue];
+    
+    //These properties might as well be returned as NSNull
+    if ( (temp = [jsonString objectForKey:TAKeyDescription]) != [NSNull null] ) {
+        description=[[NSString alloc] initWithString:temp];
+    }
+    else {
+        description=[[NSString alloc] initWithString:@""];
+    }
+    if ( (temp = [jsonString objectForKey:TAKeyLocation]) != [NSNull null] ) {
+        location=[[NSString alloc] initWithString:temp];
+    }
+    else {
+        location=[[NSString alloc] initWithString:@""];
+    }
+    if ( (temp = [jsonString objectForKey:TAKeyBioURL]) != [NSNull null] ) {
+        bioURL=[[NSURL alloc] initWithString:temp];
+    }
+    else {
+        bioURL=[[NSURL alloc] initWithString:@""];
+    }
+    
+    //If the user is not protected, you can ask for the number of followers he/she has, the use of the
+    //ternary operator is merely to fit everything in one line, and cast the int value to a BOOL
+    if ( (requiresAuthentication = ( [[jsonString objectForKey:TAKeyProtected] intValue] ? YES : NO)) ) {
+        followers=0;
+        
+        //Check just in case you have permission to see the profile
+        if ([[jsonString objectForKey:TAKeyFollowers] intValue] != 0){
+            followers=[[jsonString objectForKey:TAKeyFollowers] intValue];
+        }
+    }
+    else {
+        followers=[[jsonString objectForKey:TAKeyFollowers] intValue];
+    }
+    
 }
 
 -(void)dealloc{
@@ -74,7 +136,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     //Make the call
     [userData performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
         NSError *jsonError=nil;
-        id jsonString=nil, temp=nil;
+        id jsonString=nil;
         
         //Check for errors in the request
         if (!error) {
@@ -88,45 +150,8 @@ NSUInteger const kPBTRequestMaximum= 3200;
                 NSLog(@"PBTUser**:\n%@", jsonString);
                 #endif
                 
-                //All these properties are always in the profile of a user
-                realName=[[NSString alloc] initWithString:[jsonString objectForKey:TAKeyRealName]];
-                following=[[jsonString objectForKey:TAKeyFollowing] intValue];
-                tweetCount=[[jsonString objectForKey:TAKeyTweets] intValue];
-                
-                //These properties might as well be returned as NSNull
-                if ( (temp = [jsonString objectForKey:TAKeyDescription]) != [NSNull null] ) {
-                    description=[[NSString alloc] initWithString:temp];
-                }
-                else {
-                    description=[[NSString alloc] initWithString:@""];
-                }
-                if ( (temp = [jsonString objectForKey:TAKeyLocation]) != [NSNull null] ) {
-                    location=[[NSString alloc] initWithString:temp];
-                }
-                else {
-                    location=[[NSString alloc] initWithString:@""];
-                }
-                if ( (temp = [jsonString objectForKey:TAKeyBioURL]) != [NSNull null] ) {
-                    bioURL=[[NSURL alloc] initWithString:temp];
-                }
-                else {
-                    bioURL=[[NSURL alloc] initWithString:@""];
-                }
-                
-                
-                //If the user is not protected, you can ask for the number of followers he/she has, the use of the
-                //ternary operator is merely to fit everything in one line, and cast the int value to a BOOL
-                if ( (requiresAuthentication = ( [[jsonString objectForKey:TAKeyProtected] intValue] ? YES : NO)) ) {
-                    followers=0;
-                    
-                    //Check just in case you have permission to see the profile
-                    if ([[jsonString objectForKey:TAKeyFollowers] intValue] != 0){
-                        followers=[[jsonString objectForKey:TAKeyFollowers] intValue];
-                    }
-                }
-                else {
-                    followers=[[jsonString objectForKey:TAKeyFollowers] intValue];
-                }    
+                //Load the information from the JSON string
+                [self loadFromJSONString:jsonString];
                 
                 [self requestProfilePictureWithSize:TAImageSizeBigger andHandler:^{
                     //Finally when everything is done, perform the handler

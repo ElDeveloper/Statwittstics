@@ -35,14 +35,13 @@ extern NSUInteger const kPBTRequestMaximum;
     
     BOOL requiresAuthentication;
     
-    @private
-    ACAccount *account;
+    @private ACAccount *account;
     
     //Used for the recursive request
-    NSMutableArray *_tempArray;
-    NSUInteger _remainingTweets;
-    NSString *_lastTweetID;
-    PBTRequestHandler _vamooseHandler;
+    @private NSMutableArray *_tempArray;
+    @private NSUInteger _remainingTweets;
+    @private NSString *_lastTweetID;
+    @private PBTRequestHandler _vamooseHandler;
 }
 
 //Basic information found in the profile of a Twitter user
@@ -63,8 +62,15 @@ extern NSUInteger const kPBTRequestMaximum;
 //Grant access to some private features from within the API
 @property (nonatomic, retain) ACAccount *account;
 
-//Retrieve the information from twitter, return nil if the user does not exit, plus you can either authorize or not the request
+//Basic constructor
+-(id)init;
+
+//Various forms of initializing the object
 -(id)initWithUsername:(NSString *)theUsername andAuthorizedAccount:(ACAccount *)accountOrNil;
+-(id)initWithJSONString:(id)jsonString;
+
+//Generalize the loading of a user from a JSON string
+-(void)loadFromJSONString:(NSString *)jsonString;
 
 //Once you have initialized the user, request it's data and asynchronously wait for the response
 -(void)requestUserData:(PBTRequestHandler)handler;

@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "StatwittsticsDefines.h"
 
+#import "PBTKit.h"
+
 @interface FindUserViewController : UITableViewController <UISearchDisplayDelegate, UISearchBarDelegate>{
     UISearchBar *theSearchBar;
     
@@ -22,6 +24,7 @@
 @property (nonatomic, retain) UIActivityIndicatorView *spinner;
 @property (nonatomic, retain) NSMutableArray *searchResults;
 
+-(void)loadResults;
 -(void)willFilterContentForSearchText:(NSString*)searchText scope:(NSString*)scope;
 
 @end

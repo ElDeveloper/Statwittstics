@@ -162,9 +162,9 @@
             [[self navigationController] presentModalViewController:viewController animated:YES];
             [viewController release];
             
-            [PBTUtilities user:mainUser requestUsersWithKeyword:@"yoshiki" andResponseHandler:^(NSArray *arrayOfSubjects) {
-                NSLog(@"AWESOME_SAUCE");
-            }];
+//            [PBTUtilities user:mainUser requestUsersWithKeyword:@"waldo cervantes" andResponseHandler:^(NSArray *arrayOfSubjects) {
+//                NSLog(@"AWESOME_SAUCE");
+//            }];
             
             break;
         
