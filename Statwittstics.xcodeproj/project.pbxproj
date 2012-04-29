@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		5029638F153E6C3500DFD6AF /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5029638D153E6C3500DFD6AF /* AboutViewController.m */; };
 		50296390153E6C3500DFD6AF /* AboutViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5029638E153E6C3500DFD6AF /* AboutViewController.xib */; };
+		503B4E24154C977400A6C141 /* ProfilePicturePlaceholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 503B4E23154C977400A6C141 /* ProfilePicturePlaceholder.png */; };
+		503B6D59154D0832003904F9 /* GIDAAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 503B6D58154D0831003904F9 /* GIDAAlertView.m */; };
 		5089487815315CB000A66EFA /* PBTweet.m in Sources */ = {isa = PBXBuildFile; fileRef = 5089487715315CB000A66EFA /* PBTweet.m */; };
 		5089487B153160F800A66EFA /* PBTUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5089487A153160F700A66EFA /* PBTUser.m */; };
 		5089487D1531742500A66EFA /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5089487C1531742500A66EFA /* Twitter.framework */; };
@@ -38,6 +40,9 @@
 		5029638D153E6C3500DFD6AF /* AboutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutViewController.m; sourceTree = "<group>"; };
 		5029638E153E6C3500DFD6AF /* AboutViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutViewController.xib; sourceTree = "<group>"; };
 		503807181533F98600CD6783 /* PBTDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBTDefines.h; sourceTree = "<group>"; };
+		503B4E23154C977400A6C141 /* ProfilePicturePlaceholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ProfilePicturePlaceholder.png; sourceTree = "<group>"; };
+		503B6D57154D0831003904F9 /* GIDAAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIDAAlertView.h; sourceTree = "<group>"; };
+		503B6D58154D0831003904F9 /* GIDAAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GIDAAlertView.m; sourceTree = "<group>"; };
 		5089487615315CB000A66EFA /* PBTweet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBTweet.h; sourceTree = "<group>"; };
 		5089487715315CB000A66EFA /* PBTweet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBTweet.m; sourceTree = "<group>"; };
 		50894879153160F700A66EFA /* PBTUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBTUser.h; sourceTree = "<group>"; };
@@ -176,6 +181,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		503B6D5B154D0838003904F9 /* Uitilities */ = {
+			isa = PBXGroup;
+			children = (
+				503B6D57154D0831003904F9 /* GIDAAlertView.h */,
+				503B6D58154D0831003904F9 /* GIDAAlertView.m */,
+			);
+			name = Uitilities;
+			sourceTree = "<group>";
+		};
 		5089487415315C6A00A66EFA /* Twitter */ = {
 			isa = PBXGroup;
 			children = (
@@ -241,6 +255,7 @@
 				50CAAC441544F0A300641D90 /* FindUserViewController.m */,
 				5029638C153E6C3500DFD6AF /* AboutViewController.h */,
 				5029638D153E6C3500DFD6AF /* AboutViewController.m */,
+				503B6D5B154D0838003904F9 /* Uitilities */,
 				5089487415315C6A00A66EFA /* Twitter */,
 				50B5DF00152EBAA700661492 /* PBKit */,
 			);
@@ -382,6 +397,7 @@
 		50B5DF0F152EC1F200661492 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				503B4E23154C977400A6C141 /* ProfilePicturePlaceholder.png */,
 				50B5DF0D152EC1EC00661492 /* DefaultUser.png */,
 			);
 			name = Resources;
@@ -442,6 +458,7 @@
 				50B5DF06152EBB8500661492 /* Home.xib in Resources */,
 				50B5DF0E152EC1EC00661492 /* DefaultUser.png in Resources */,
 				50296390153E6C3500DFD6AF /* AboutViewController.xib in Resources */,
+				503B4E24154C977400A6C141 /* ProfilePicturePlaceholder.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -465,6 +482,7 @@
 				5029638F153E6C3500DFD6AF /* AboutViewController.m in Sources */,
 				50CAAC451544F0A300641D90 /* FindUserViewController.m in Sources */,
 				50CAAC52154525A600641D90 /* PBTUtilities.m in Sources */,
+				503B6D59154D0832003904F9 /* GIDAAlertView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -10,21 +10,28 @@
 
 @implementation FindUserViewController
 
-@synthesize theSearchBar, searchResults, spinner;
+@synthesize researchFellow, theSearchBar, searchResults, alertView;
 
 #pragma mark - UITableViewController Life-cycle
--(id)initWithStyle:(UITableViewStyle)style{
-    self = [super initWithStyle:style];
+
+-(id)initWithResearchFellow:(PBTUser *)theResearchFellow{
+    //The class only implements UITableViewStylePlain, this is a direct dependency
+    //over the fact that the users are presented in custom plain-style cells
+    self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
-        // Custom initialization
+        //Allow the wide-use of the account
+        researchFellow=[theResearchFellow retain];
+        alertView=[[GIDAAlertView alloc] initAlertWithSpinnerAndMessage:NSLocalizedString(@"Searching For Users", @"Searching For Users String")];
+        [alertView setCenter:CGPointMake(270, 160)];
+        
         //This class is only defined with a modal behavior
         [self setModalPresentationStyle:UIModalPresentationFormSheet];
         [self setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
         
         //Create and init the toolbar
-        theSearchBar=[[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+        theSearchBar=[[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, 540, 44)];
         [theSearchBar setShowsScopeBar:YES];
-        [theSearchBar setTintColor:[UIColor darkGrayColor]];
+        [theSearchBar setTintColor:[UIColor blackColor]];
         [theSearchBar setScopeButtonTitles:[NSArray arrayWithObjects:NSLocalizedString(@"Users", @"Users String"), NSLocalizedString(@"Friends", @"Friends String"), nil]];
         [theSearchBar setDelegate:self];
         [theSearchBar setShowsCancelButton:YES];
@@ -46,17 +53,20 @@
     return self;
 }
 
+//Allow the keyboard to be hidden after every search done by the user
+-(BOOL)disablesAutomaticKeyboardDismissal {
+    return NO;
+}
+
 -(void)viewDidLoad{
     [super viewDidLoad];
 }
 
--(void)viewDidUnload{
-    [super viewDidUnload];
-}
-
 -(void)dealloc{
+    [researchFellow release];
     [theSearchBar release];
     [searchResults release];
+    [alertView release];
     
     [super dealloc];
 }
@@ -72,11 +82,17 @@
     [[self tableView] reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationBottom];
     [[self tableView] endUpdates];
     
-    [[self searchDisplayController] setActive:NO animated:YES];
+    //Download have stopped, let the user know about this
+    [alertView hideAlertWithSpinner];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
 
--(void)willFilterContentForSearchText:(NSString*)searchText scope:(NSString*)scope{
-    
+-(void)updateProfilePictureForCellAtIndex:(NSIndexPath *)indexPath{
+    //Avoid a big oneliner by dividing it into various pieces
+    UITableViewCell *needsUpdate=[[self tableView] cellForRowAtIndexPath:indexPath];
+    NSData *theImageData=[[searchResults objectAtIndex:[indexPath row]] imageData];    
+    UIImage *theImage=[UIImage imageWithData:theImageData];
+    [[needsUpdate imageView] setImage:theImage];
 }
 
 #pragma mark - UITableViewControllerDataSource Methods
@@ -92,16 +108,46 @@
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     static NSString *CellIdentifier = @"Cell";
+    static NSData *placeHolderData;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];    
+    PBTUser *currentUser=nil;
     
     // Configure the cell...
     if (cell == nil) {
         cell=[[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
+        [[cell imageView] setContentMode:UIViewContentModeCenter];
+        [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
     }
     
-    //Load the PBTUser ...
-    [[cell textLabel] setText:[[searchResults objectAtIndex:[indexPath row]] username]];
-    [[cell detailTextLabel] setText:[[searchResults objectAtIndex:[indexPath row]] realName]];
+    //This is an static variable, fixed with the data representation of the user-placeholder
+    if (placeHolderData == nil) {
+        placeHolderData=UIImagePNGRepresentation([UIImage imageNamed:@"ProfilePicturePlaceholder.png"]);
+    }
+    
+    //Load the PBTUser to avoid some overhead
+    currentUser=[searchResults objectAtIndex:[indexPath row]];
+    
+    //Update the interface
+    [[cell textLabel] setText:[currentUser username]];
+    [[cell detailTextLabel] setText:[currentUser realName]];
+    
+    //Check if the request has already been completed
+    if ([currentUser imageData] == nil) {
+        //Set the placeholder into place
+        [currentUser setImageData:placeHolderData];
+        [[cell imageView] setImage:[UIImage imageWithData:[currentUser imageData]]];
+    
+        //Asycnchronously request the image in a regular size
+        [currentUser requestProfilePictureWithSize:TAImageSizeNormal andHandler:^{
+            
+            //When we get the data back, call on the main thread the update of the user interface
+            [self performSelectorOnMainThread:@selector(updateProfilePictureForCellAtIndex:) withObject:indexPath waitUntilDone:NO];
+        }];
+    }
+    else {
+        //If we already have the data, just show it
+        [[cell imageView] setImage:[UIImage imageWithData:[currentUser imageData]]];
+    }
     
     return cell;
 }
@@ -113,6 +159,9 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    //Dismiss the view controller
+    [self dismissModalViewControllerAnimated:YES];
 }
 
 #pragma mark - UISearchDisplayControllerDelegate Methods
@@ -134,19 +183,28 @@
                                     [NSString stringWithFormat:@"%@",[searchBar text]], nil];
     [requestArray autorelease];
     
+    //Hide the search controller, this will lead to the keyboard to be dismissed
+    [[self searchDisplayController] setActive:NO animated:YES];
+    
+    //User interface changes to show that data is being downloaded
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    [alertView presentAlertWithSpinner];
+    
     //Begin search ...
-    [PBTUtilities user:nil requestUsersWithKeyword:[searchBar text] andResponseHandler:^(NSArray *arrayOfSubjects) {
+    [PBTUtilities user:researchFellow requestUsersWithKeyword:[searchBar text] andResponseHandler:^(NSArray *arrayOfSubjects) {
         
-        //There is something inside the array
+        //If there is something inside the array (try to avoid some over-head)
         if ([searchResults count] != 0) {
             //Clear it
             [searchResults removeAllObjects];
         }
         
         //Now add all the new objects at the beginning
-        [searchResults insertObjects:arrayOfSubjects atIndexes:0];
+        [searchResults addObjectsFromArray:arrayOfSubjects];
+        
+        //Update the interface on the main thread
+        [self performSelectorOnMainThread:@selector(loadResults) withObject:nil waitUntilDone:NO];
     }]; 
-    
 }
 
 //This method is called when the cancel button is pressed

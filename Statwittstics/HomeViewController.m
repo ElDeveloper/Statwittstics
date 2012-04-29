@@ -78,12 +78,11 @@
                 //Load the view
                 [mainUserView performSelectorOnMainThread:@selector(loadUser:) withObject:mainUser waitUntilDone:YES];
                 
-                [mainUser requestMostRecentTweets:300 withHandler:^{
+                [mainUser requestMostRecentTweets:40 withHandler:^{
                     NSLog(@"This has been called what up.");
                     
                     //Go to the main thread and perform the GUI changes
                     [self performSelectorOnMainThread:@selector(drawTweetsPerDayPlot) withObject:nil waitUntilDone:YES];
-                    
                 }];
             }];
             //[testUser release];
@@ -158,14 +157,9 @@
     
     switch (buttonIndex) {
         case HVCActionSheetButtonNew:
-            viewController=[[FindUserViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            viewController=[[FindUserViewController alloc] initWithResearchFellow:mainUser];
             [[self navigationController] presentModalViewController:viewController animated:YES];
             [viewController release];
-            
-//            [PBTUtilities user:mainUser requestUsersWithKeyword:@"waldo cervantes" andResponseHandler:^(NSArray *arrayOfSubjects) {
-//                NSLog(@"AWESOME_SAUCE");
-//            }];
-            
             break;
         
         case HVCActionSheetButtonShare:

@@ -50,7 +50,7 @@ extern NSUInteger const kPBTRequestMaximum;
 @property (nonatomic, retain, readonly) NSString *description;
 @property (nonatomic, retain, readonly) NSString *location;
 @property (nonatomic, retain, readonly) NSURL *bioURL;
-@property (nonatomic, retain, readonly) NSData *imageData;
+@property (atomic, retain) NSData *imageData;
 @property (nonatomic, assign, readonly) NSInteger following;
 @property (nonatomic, assign, readonly) NSInteger followers;
 @property (nonatomic, assign, readonly) NSInteger tweetCount;

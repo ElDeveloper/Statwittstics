@@ -117,6 +117,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     [description release];
     [location release];
     [bioURL release];
+    [imageData release];
     
     [super dealloc];
 }
@@ -179,7 +180,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
         #endif
         
         if (!error) {
-            imageData=[NSData dataWithData:responseData];
+            imageData=[[NSData alloc] initWithData:responseData];
             handler();
         }
         else {

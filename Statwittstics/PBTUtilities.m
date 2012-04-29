@@ -30,7 +30,9 @@
         NSMutableArray *bufferArray=[NSMutableArray array];
         PBTUser *temp=nil;
         
+        #ifdef DEBUG
         NSLog(@"%@", [urlResponse URL]);
+        #endif
         
         //Check for errors in the request
         if (!error) {

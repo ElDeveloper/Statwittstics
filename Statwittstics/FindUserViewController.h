@@ -10,21 +10,27 @@
 #import "StatwittsticsDefines.h"
 
 #import "PBTKit.h"
+#import "GIDAAlertView.h"
 
 @interface FindUserViewController : UITableViewController <UISearchDisplayDelegate, UISearchBarDelegate>{
+    PBTUser *researchFellow;
     UISearchBar *theSearchBar;
     
-    @private UIActivityIndicatorView *spinner;
     @private NSMutableArray *searchResults;
+    @private GIDAAlertView *alertView;
 }
 
+@property (nonatomic, retain) PBTUser *researchFellow;
 @property (nonatomic, retain) UISearchBar *theSearchBar;
 
 //Private appearance properties
-@property (nonatomic, retain) UIActivityIndicatorView *spinner;
 @property (nonatomic, retain) NSMutableArray *searchResults;
+@property (nonatomic, retain) GIDAAlertView *alertView;
+
+//The initializer carries a user that allows search queries to be sent to twitter
+-(id)initWithResearchFellow:(PBTUser *)theResearchFellow;
 
 -(void)loadResults;
--(void)willFilterContentForSearchText:(NSString*)searchText scope:(NSString*)scope;
+-(void)updateProfilePictureForCellAtIndex:(NSIndexPath *)indexPath;
 
 @end
