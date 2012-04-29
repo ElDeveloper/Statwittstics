@@ -10,17 +10,18 @@
 
 @implementation FindUserViewController
 
-@synthesize researchFellow, theSearchBar, searchResults, alertView;
+@synthesize researchFellow, theSearchBar, searchResults, alertView, previousViewController;
 
 #pragma mark - UITableViewController Life-cycle
 
--(id)initWithResearchFellow:(PBTUser *)theResearchFellow{
+-(id)initWithResearchFellow:(PBTUser *)theResearchFellow andViewController:(HomeViewController *)someViewController{
     //The class only implements UITableViewStylePlain, this is a direct dependency
     //over the fact that the users are presented in custom plain-style cells
     self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
         //Allow the wide-use of the account
         researchFellow=[theResearchFellow retain];
+        [self setPreviousViewController:someViewController];
         alertView=[[GIDAAlertView alloc] initAlertWithSpinnerAndMessage:NSLocalizedString(@"Searching For Users", @"Searching For Users String")];
         [alertView setCenter:CGPointMake(270, 160)];
         
@@ -67,6 +68,7 @@
     [theSearchBar release];
     [searchResults release];
     [alertView release];
+    [previousViewController release];
     
     [super dealloc];
 }
@@ -162,6 +164,8 @@
     
     //Dismiss the view controller
     [self dismissModalViewControllerAnimated:YES];
+    
+    [previousViewController loadUser:[searchResults objectAtIndex:[indexPath row]]];
 }
 
 #pragma mark - UISearchDisplayControllerDelegate Methods

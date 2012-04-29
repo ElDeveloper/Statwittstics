@@ -12,6 +12,8 @@
 #define STATWITTSTICS_VERSION @"1.0"
 #define STATWITTSTICS_BUILD   @"XXXX"
 
+#define kDefaultNumberOfTweets 2000
+
 #define DEBUG
 //#define VERBOSE_DEBUG
 

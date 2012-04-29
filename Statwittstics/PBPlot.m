@@ -35,7 +35,7 @@ NSString *  const   PBPlotAxisOrthogonal=@"0.0";
         delegate = nil;
         
         //Data Set intitialization needed remember to retain your data
-        dataSets=[theDataSets retain];
+        dataSets=[theDataSets copy];
         
         linePlots=[[NSMutableArray alloc] init];
         identifiers=[[NSMutableArray alloc] init];

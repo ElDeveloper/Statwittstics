@@ -285,8 +285,12 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     [self requestMostRecentTweets:_remainingTweets withHandler:^{}];
                 }
                 else {
+                    #ifdef DEBUG
+                    NSLog(@"PBTUser:**Last call, total number of tweets %d", [_tempArray count]);
+                    #endif
+                    
                     //Assign the tweets to the user
-                    tweets=[[NSArray alloc] initWithArray:(NSArray *)_tempArray];
+                    tweets=[[NSArray alloc] initWithArray:_tempArray];
                     [_tempArray release];
                     _tempArray=nil;
                     
@@ -298,10 +302,6 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     _vamooseHandler();
                     [_vamooseHandler release];
                     _vamooseHandler=nil;
-                    
-                    #ifdef DEBUG
-                    NSLog(@"PBTUser:**Last call, total number of tweets %d", [tweets count]);
-                    #endif
                 }
             }
             else {
@@ -371,7 +371,9 @@ NSUInteger const kPBTRequestMaximum= 3200;
     //General usage constants, helps you build the linear space and plot
     startDate=[[tweets objectAtIndex:0] postDate];
     endDate=[[tweets objectAtIndex:[tweets count]-1] postDate];
-    totalDays=PBTDaysBetweenDates(endDate, startDate);
+    
+    //Cast to a unsigned integer
+    totalDays=(NSUInteger)PBTDaysBetweenDates(endDate, startDate);
     
     //Actual data holders
     totalTweets=[tweets count];
@@ -389,7 +391,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     }
     
     #ifdef DEBUG
-    NSLog(@"Days between first and last tweet %d", totalDays);
+    NSLog(@"Value of TotalDays %d", totalDays);
     #endif
     
     //Got through each tweet and count the number of tweets that are in a same day
@@ -401,8 +403,10 @@ NSUInteger const kPBTRequestMaximum= 3200;
     
     //Now add these values to the array of the y data
     for (i=0; i<totalDays; i++) {
-        [yData addObject:[NSNumber numberWithInt:bufferArray[i]]];
+        [yData addObject:[NSNumber numberWithUnsignedInteger:(NSUInteger)bufferArray[i]]];
     }
+    
+    NSLog(@"Size of the xdata: %d size of the ydata: %d", [xData count], [yData count]);
     
     //Create the return value
     outDataSet=[[PBDataSet alloc] initWithXData:xData yData:yData andTitle:[NSString stringWithFormat:@"Tweets per Day for %@", [self realName]]];
@@ -539,12 +543,12 @@ void PBTRequestTweets(PBTUser *client, NSUInteger numberOfTweets,  NSString *las
                 if ( _numberOfTweets > 0 ) {
                     PBTRequestTweets(_client, _numberOfTweets, _lastTweetID, &_tweetsBuffer, _handler);
                 }
-                else {
-                    _handler();
-                    
+                else {                    
                     #ifdef DEBUG
                     NSLog(@"PBTUser:**Last call, total number of tweets %d", [_tweetsBuffer count]);
                     #endif
+                    
+                    _handler();
                 }
             }
             else {

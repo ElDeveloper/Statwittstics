@@ -11,16 +11,27 @@
 @implementation HomeViewController
 
 @synthesize mainPlot;
-@synthesize mainUser, mainUserView;
+@synthesize subjectOfAnalysis, subjectOfAnalysisView;
+@synthesize researchFellow;
 @synthesize optionsActionSheet;
 
 -(id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        [self setTitle:@"Statwittstics"];  
+        [self setTitle:@"Statwittstics"];
         
+        //1024 x 768
+        mainPlot=nil;
+        
+        researchFellow=nil;
+        subjectOfAnalysis=nil;
+        subjectOfAnalysisView=[[PBTUserView alloc] initWithUser:nil andPositon:CGPointMake(10, 10)];
+        [[self view] addSubview:subjectOfAnalysisView];
+
         optionsActionSheet=nil;
+        
+        //These buttons take charge of going somewhere else in the application
         UIBarButtonItem *optionsBarButton=[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Options", @"Options String") 
                                                                            style:UIBarButtonItemStyleBordered 
                                                                           target:self 
@@ -36,12 +47,6 @@
         
         [[self navigationItem] setLeftBarButtonItem:aboutBarButton];
         [aboutBarButton release];
-        
-        //1024 x 768
-        mainPlot=nil;
-    
-        mainUserView=[[PBTUserView alloc] initWithUser:nil andPositon:CGPointMake(10, 10)];
-        [[self view] addSubview:mainUserView];
     }
     return self;
 }
@@ -56,44 +61,31 @@
     //Ask for permission to use the twitter credentials of the user
     [astore requestAccessToAccountsWithType:twitterAccountType withCompletionHandler:^(BOOL granted, NSError *error){
         
-        //Request the first twitter account available 
-        NSArray *twitterAccounts=[astore accountsWithAccountType:twitterAccountType];
-        ACAccount *theAccount=[twitterAccounts objectAtIndex:0];
-        
-        //Twitter test
-        NSArray *array=[NSArray arrayWithObjects:@"yosmark", nil];
-        
-        for (NSString *plel in array) {
-            mainUser=[[PBTUser alloc] initWithUsername:plel andAuthorizedAccount:theAccount];
-            [mainUser requestUserData:^{
-                
-                #ifdef DEBUG
-                NSLog(@"The real name is %@, annoyingly tweeted %d", [mainUser realName], [mainUser tweetCount]);
-                NSLog(@"Has %d followers and %d friends", [mainUser followers], [mainUser following]);
-                NSLog(@"The URL is: %@", [mainUser bioURL]);
-                NSLog(@"The location is: %@", [mainUser location]);
-                NSLog(@"The bio is: %@", [mainUser description]);
-                #endif
-                
-                //Load the view
-                [mainUserView performSelectorOnMainThread:@selector(loadUser:) withObject:mainUser waitUntilDone:YES];
-                
-                [mainUser requestMostRecentTweets:40 withHandler:^{
-                    NSLog(@"This has been called what up.");
-                    
-                    //Go to the main thread and perform the GUI changes
-                    [self performSelectorOnMainThread:@selector(drawTweetsPerDayPlot) withObject:nil waitUntilDone:YES];
-                }];
-            }];
-            //[testUser release];
+        //Check for no errors and for granted access
+        if (granted == YES || error == nil) {
+            //Request the first twitter account available 
+            NSArray *twitterAccounts=[astore accountsWithAccountType:twitterAccountType];
+            ACAccount *theAccount=[twitterAccounts objectAtIndex:0];
+            
+            //Twitter test
+            researchFellow=[[PBTUser alloc] initWithUsername:[theAccount username] andAuthorizedAccount:theAccount];
+            [self loadUser:researchFellow];
         }
+        else {
+            //Must implement a GUI alert 
+            NSLog(@"HomeViewController:Error** Statwittstics needs access to a twitter account.");
+            NSLog(@"HomeViewController:Error** %@", [error localizedDescription]);
+        }
+        
     }];
     
 }
 
 -(void)dealloc{
     [mainPlot release];
-    [mainUserView release];
+    [subjectOfAnalysisView release];
+    [subjectOfAnalysis release];
+    [researchFellow release];
 
     if (optionsActionSheet != nil) {
         [optionsActionSheet release];
@@ -107,8 +99,13 @@
     // Release any retained subviews of the main view.
 }
 
--(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
+    NSLog(@"First ... view will appear");
+}
 
+-(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{
     //Do not allow portrait, only landscape
     if (interfaceOrientation == UIInterfaceOrientationPortrait || interfaceOrientation == UIInterfaceOrientationPortraitUpsideDown) {
         return NO;
@@ -119,7 +116,6 @@
 
 #pragma mark - Button Callbacks
 -(void)optionsButtonPressed:(id)sender{
-    
     //Do not cause overhead, the user could probably not use the options therefore you would be creating an action sheet when not needed
     if ( optionsActionSheet == nil) {
         optionsActionSheet=[[UIActionSheet alloc] initWithTitle:NSLocalizedString(@"Options", @"Options String") 
@@ -157,7 +153,7 @@
     
     switch (buttonIndex) {
         case HVCActionSheetButtonNew:
-            viewController=[[FindUserViewController alloc] initWithResearchFellow:mainUser];
+            viewController=[[FindUserViewController alloc] initWithResearchFellow:researchFellow andViewController:self];
             [[self navigationController] presentModalViewController:viewController animated:YES];
             [viewController release];
             break;
@@ -173,17 +169,62 @@
     return;
 }
 
-#pragma mark - Plot Loading
--(void)drawTweetsPerDayPlot{
-    PBDataSet *someDataSet=[mainUser tweetsPerDayDataSet];
+#pragma mark - Class Behavior
+-(void)loadUser:(PBTUser *)someUser{
     
-    NSLog(@"The data set has %d", [someDataSet dataSetLength]);
-    [someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeHexagon size:12 andColor:[CPTColor blackColor]]];
+    if (subjectOfAnalysis != nil) {
+        [subjectOfAnalysis release];
+    }
+    subjectOfAnalysis=[someUser retain];
+    
+    if ([subjectOfAnalysis realName] != nil) {
+        
+        //Although we already have an image, retrieve a bigger size, original has the best chance of being the biggest
+        [subjectOfAnalysis requestProfilePictureWithSize:TAImageSizeOriginal andHandler:^{
+            //Load the view
+            [subjectOfAnalysisView performSelectorOnMainThread:@selector(loadUser:) withObject:subjectOfAnalysis waitUntilDone:YES];
+            
+            [subjectOfAnalysis requestMostRecentTweets:kDefaultNumberOfTweets withHandler:^{
+                NSLog(@"This has been called what up.");
+                
+                //Go to the main thread and perform the GUI changes
+                [self performSelectorOnMainThread:@selector(drawTweetsPerDayPlot) withObject:nil waitUntilDone:YES];
+            }];
+        }];
+    }
+    else {
+        [subjectOfAnalysis requestUserData:^{
+            
+            #ifdef DEBUG
+            NSLog(@"The real name is %@, annoyingly tweeted %d", [subjectOfAnalysis realName], [subjectOfAnalysis tweetCount]);
+            NSLog(@"Has %d followers and %d friends", [subjectOfAnalysis followers], [subjectOfAnalysis following]);
+            NSLog(@"The URL is: %@", [subjectOfAnalysis bioURL]);
+            NSLog(@"The location is: %@", [subjectOfAnalysis location]);
+            NSLog(@"The bio is: %@", [subjectOfAnalysis description]);
+            #endif
+            
+            //Load the view
+            [subjectOfAnalysisView performSelectorOnMainThread:@selector(loadUser:) withObject:subjectOfAnalysis waitUntilDone:YES];
+            
+            [subjectOfAnalysis requestMostRecentTweets:kDefaultNumberOfTweets withHandler:^{
+                NSLog(@"This has been called what up.");
+                
+                //Go to the main thread and perform the GUI changes
+                [self performSelectorOnMainThread:@selector(drawTweetsPerDayPlot) withObject:nil waitUntilDone:YES];
+            }];
+        }];
+    }
+}
+
+-(void)drawTweetsPerDayPlot{
+    PBDataSet *someDataSet=[[subjectOfAnalysis tweetsPerDayDataSet] retain];
+    [someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeHexagon size:8 andColor:[CPTColor blackColor]]];
     
     mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(9, 145, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
+    [someDataSet release];
     
     //Plot attributes
-    [mainPlot setAxisWithRangeFactor:1.3];
+    [mainPlot setAxisWithRangeFactor:1.2];
     [mainPlot showGrids];
     
     // Do any additional setup after loading the view.

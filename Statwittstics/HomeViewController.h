@@ -21,10 +21,12 @@ typedef enum {
 }HVCActionSheetButton;
 
 @interface HomeViewController : UIViewController <UIActionSheetDelegate>{
-    PBPlot *mainPlot;
-    PBTUser *mainUser;
-    PBTUserView *mainUserView;
     
+    PBPlot *mainPlot;
+    PBTUser *subjectOfAnalysis;
+    PBTUserView *subjectOfAnalysisView;
+    
+    @private PBTUser *researchFellow;
     @private UIActionSheet *optionsActionSheet;
 }
 
@@ -32,14 +34,19 @@ typedef enum {
 @property (nonatomic, retain) PBPlot *mainPlot;
 
 //The user to analyze (model and view)
-@property (nonatomic, retain) PBTUser *mainUser;
-@property (nonatomic, retain) PBTUserView *mainUserView;
+@property (nonatomic, retain) PBTUser *subjectOfAnalysis;
+@property (nonatomic, retain) PBTUserView *subjectOfAnalysisView;
+
+//This user is required and will be the default for application launch
+@property (nonatomic, retain) PBTUser *researchFellow;
 
 //General private attributes of the ViewController
 @property (nonatomic, weak) UIActionSheet *optionsActionSheet;
 
 -(void)optionsButtonPressed:(id)sender;
 -(void)aboutButtonPressed:(id)sender;
+
+-(void)loadUser:(PBTUser *)someUser;
 -(void)drawTweetsPerDayPlot;
 
 @end

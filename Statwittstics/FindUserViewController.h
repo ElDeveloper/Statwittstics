@@ -11,10 +11,13 @@
 
 #import "PBTKit.h"
 #import "GIDAAlertView.h"
+#import "HomeViewController.h"
+@class HomeViewController;
 
 @interface FindUserViewController : UITableViewController <UISearchDisplayDelegate, UISearchBarDelegate>{
     PBTUser *researchFellow;
     UISearchBar *theSearchBar;
+    HomeViewController *previousViewController;
     
     @private NSMutableArray *searchResults;
     @private GIDAAlertView *alertView;
@@ -22,13 +25,14 @@
 
 @property (nonatomic, retain) PBTUser *researchFellow;
 @property (nonatomic, retain) UISearchBar *theSearchBar;
+@property (nonatomic, retain) HomeViewController *previousViewController;
 
 //Private appearance properties
 @property (nonatomic, retain) NSMutableArray *searchResults;
 @property (nonatomic, retain) GIDAAlertView *alertView;
 
 //The initializer carries a user that allows search queries to be sent to twitter
--(id)initWithResearchFellow:(PBTUser *)theResearchFellow;
+-(id)initWithResearchFellow:(PBTUser *)theResearchFellow andViewController:(HomeViewController *)someViewController;
 
 -(void)loadResults;
 -(void)updateProfilePictureForCellAtIndex:(NSIndexPath *)indexPath;
