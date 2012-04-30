@@ -160,9 +160,14 @@ CGSize const KPBTCGSize={.width=510.0f, .height=115.0f};
     NSString *realNameString=nil, *screenNameString=nil; 
     NSString *followingString=nil, *followersString=nil, *tweetCountString=nil;
     NSString *descriptionString=nil, *bioURLString=nil, *locationString=nil;
+    NSNumberFormatter *regularFormatter=nil;
     
     CGSize descriptionSize;
     float totalHeight=0.0;
+    
+    //Default behavior for the formatter used in all the numbers
+    regularFormatter=[[NSNumberFormatter alloc] init];
+    [regularFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
     
     //See whether or not you should retain the user
     if (theUser == nil && someUser != nil) {
@@ -188,9 +193,12 @@ CGSize const KPBTCGSize={.width=510.0f, .height=115.0f};
     else {
         realNameString=[theUser realName];
         screenNameString=[NSString stringWithFormat:@"@%@", [theUser username]];
-        followingString=[NSString stringWithFormat:@"%d", [theUser following]];
-        followersString=[NSString stringWithFormat:@"%d", [theUser followers]];
-        tweetCountString=[NSString stringWithFormat:@"%d", [theUser tweetCount]];
+        followingString=[regularFormatter stringForObjectValue:[NSNumber numberWithInteger:[theUser following]]];
+        followersString=[regularFormatter stringForObjectValue:[NSNumber numberWithInteger:[theUser followers]]];
+        tweetCountString=[regularFormatter stringForObjectValue:[NSNumber numberWithInteger:[theUser tweetCount]]];
+        //followingString=[NSString stringWithFormat:@"%d", [theUser following]];
+        //followersString=[NSString stringWithFormat:@"%d", [theUser followers]];
+        //tweetCountString=[NSString stringWithFormat:@"%d", [theUser tweetCount]];
         descriptionString=[theUser description];
         bioURLString=[NSString stringWithFormat:@"%@", [theUser bioURL]];
         locationString=[theUser location];
@@ -250,6 +258,9 @@ CGSize const KPBTCGSize={.width=510.0f, .height=115.0f};
     
     [bufferView setFrame:CGRectMake(0, 0, 390, totalHeight-5)];
     [containerView setContentSize:[bufferView frame].size];
+    
+    //Release the allocated formatter
+    [regularFormatter release];
 }
 
 -(void)dealloc{

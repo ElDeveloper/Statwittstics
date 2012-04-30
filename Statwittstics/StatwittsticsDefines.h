@@ -12,7 +12,7 @@
 #define STATWITTSTICS_VERSION @"1.0"
 #define STATWITTSTICS_BUILD   @"XXXX"
 
-#define kDefaultNumberOfTweets 2000
+#define kDefaultNumberOfTweets 400
 
 #define DEBUG
 //#define VERBOSE_DEBUG
@@ -27,7 +27,6 @@
 //UX: Revisar si hace falta agregar sonidos
 
 //SW: Hacer un objeto gráfica de barras
-//SW: Buscar un usuario y descargarlo (views)
 //SW: Hacer una clase UITableViewTweetCell
 //SW: Hacer un annotation que sea un UIPopOverController con una tabla de UITableViewTweetCells
 //SW: Controladores para cambiar fácilmente de tipo de visualización

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "PBTDefines.h"
 #import "PBTweet.h"
+#import "PBTUtilities.h"
 #import "PBKit.h"
 
 //General handler for the blocks, if an error occurs in the in the method where
@@ -87,17 +88,9 @@ extern NSUInteger const kPBTRequestMaximum;
 //This method parses the array of tweets looking for tweets containing the indicated string
 -(NSArray *)tweetsMentioningUsername:(NSString *)someUsername;
 
-//Returns a PBDataSet, containing as many points in the x axis as different days when a twitt was
-//posted and the counts of twitts in the y axis
--(PBDataSet *)tweetsPerDayDataSet;
-
-//Helper function, returns the number of days between two NSDates, as a side-note:
-//this is not worth as a category for NSCalendar or NSDate
-NSInteger PBTDaysBetweenDates(NSDate *fromDate, NSDate *toDate);
-
-//MATLAB-ish like general use functions
-NSMutableArray* PBTZeros(NSUInteger length);
-NSMutableArray* PBTLinspace(float from, float to, NSUInteger elements);
+//Returns a PBDataSet, containing the tweets per unit of time specified by the
+//calendarUnit parameter, currently only (day/week/month) are supported
+-(PBDataSet *)dataSetOfTweetsPerCalendarUnit:(NSCalendarUnit)calendarUnit;
 
 //Recursive way to request as many tweets as needed, requesting them in chunks of 200 tweets
 void PBTRequestTweets(PBTUser *client, NSUInteger numberOfTweets,  NSString *lastTweetID, NSMutableArray **tweetsBuffer, PBTRequestHandler handler);

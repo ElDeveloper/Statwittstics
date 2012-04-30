@@ -43,10 +43,13 @@ typedef enum {
 //General private attributes of the ViewController
 @property (nonatomic, weak) UIActionSheet *optionsActionSheet;
 
+//Buttons that provide the actions for the whole application
 -(void)optionsButtonPressed:(id)sender;
 -(void)aboutButtonPressed:(id)sender;
 
 -(void)loadUser:(PBTUser *)someUser;
--(void)drawTweetsPerDayPlot;
+-(void)drawPlotOfTweetsPerDay;
+-(void)drawPlotOfTweetsPerWeek;
+-(void)drawPlotOfTweetsPerMonth;
 
 @end

@@ -185,10 +185,9 @@
             [subjectOfAnalysisView performSelectorOnMainThread:@selector(loadUser:) withObject:subjectOfAnalysis waitUntilDone:YES];
             
             [subjectOfAnalysis requestMostRecentTweets:kDefaultNumberOfTweets withHandler:^{
-                NSLog(@"This has been called what up.");
                 
                 //Go to the main thread and perform the GUI changes
-                [self performSelectorOnMainThread:@selector(drawTweetsPerDayPlot) withObject:nil waitUntilDone:YES];
+                [self performSelectorOnMainThread:@selector(drawPlotOfTweetsPerWeek) withObject:nil waitUntilDone:YES];
             }];
         }];
     }
@@ -207,18 +206,62 @@
             [subjectOfAnalysisView performSelectorOnMainThread:@selector(loadUser:) withObject:subjectOfAnalysis waitUntilDone:YES];
             
             [subjectOfAnalysis requestMostRecentTweets:kDefaultNumberOfTweets withHandler:^{
-                NSLog(@"This has been called what up.");
                 
                 //Go to the main thread and perform the GUI changes
-                [self performSelectorOnMainThread:@selector(drawTweetsPerDayPlot) withObject:nil waitUntilDone:YES];
+                [self performSelectorOnMainThread:@selector(drawPlotOfTweetsPerDay) withObject:nil waitUntilDone:YES];
             }];
         }];
     }
 }
 
--(void)drawTweetsPerDayPlot{
-    PBDataSet *someDataSet=[[subjectOfAnalysis tweetsPerDayDataSet] retain];
-    [someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeHexagon size:8 andColor:[CPTColor blackColor]]];
+-(void)drawPlotOfTweetsPerDay{
+    PBDataSet *someDataSet=[[subjectOfAnalysis dataSetOfTweetsPerCalendarUnit:NSDayCalendarUnit] retain];
+    [someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeHexagon size:5 andColor:[CPTColor blackColor]]];
+    
+    if (mainPlot != nil) {
+        [mainPlot removeFromSuperview];
+        [mainPlot release];
+    }
+    
+    mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(9, 145, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
+    [someDataSet release];
+    
+    //Plot attributes
+    [mainPlot setAxisWithRangeFactor:1.2];
+    [mainPlot showGrids];
+    
+    // Do any additional setup after loading the view.
+    [[self view] addSubview:mainPlot];
+}
+
+-(void)drawPlotOfTweetsPerWeek{
+    PBDataSet *someDataSet=[[subjectOfAnalysis dataSetOfTweetsPerCalendarUnit:NSWeekCalendarUnit] retain];
+    [someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeHexagon size:5 andColor:[CPTColor blackColor]]];
+    
+    if (mainPlot != nil) {
+        [mainPlot removeFromSuperview];
+        [mainPlot release];
+    }
+    
+    mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(9, 145, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
+    [someDataSet release];
+    
+    //Plot attributes
+    [mainPlot setAxisWithRangeFactor:1.2];
+    [mainPlot showGrids];
+    
+    // Do any additional setup after loading the view.
+    [[self view] addSubview:mainPlot];
+}
+
+-(void)drawPlotOfTweetsPerMonth{
+    PBDataSet *someDataSet=[[subjectOfAnalysis dataSetOfTweetsPerCalendarUnit:NSMonthCalendarUnit] retain];
+    [someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeStar size:5 andColor:[CPTColor blackColor]]];
+    
+    if (mainPlot != nil) {
+        [mainPlot removeFromSuperview];
+        [mainPlot release];
+    }
     
     mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(9, 145, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
     [someDataSet release];

@@ -360,11 +360,10 @@ NSUInteger const kPBTRequestMaximum= 3200;
     return (NSArray *)outputArray;
 }
 
-#pragma mark - PBDataSet Methods
--(PBDataSet *)tweetsPerDayDataSet{
+-(PBDataSet *)dataSetOfTweetsPerCalendarUnit:(NSCalendarUnit)calendarUnit{
     PBDataSet *outDataSet=nil;
     
-    NSUInteger totalDays=0, i=0, totalTweets=0, newIndex=0, *bufferArray=NULL;
+    NSUInteger calendarPoints=0, i=0, totalTweets=0, newIndex=0, *bufferArray=NULL;
     NSDate *startDate=nil, *endDate=nil;
     NSMutableArray *xData=nil, *yData=nil;
     
@@ -373,43 +372,39 @@ NSUInteger const kPBTRequestMaximum= 3200;
     endDate=[[tweets objectAtIndex:[tweets count]-1] postDate];
     
     //Cast to a unsigned integer
-    totalDays=(NSUInteger)PBTDaysBetweenDates(endDate, startDate);
+    calendarPoints=(NSUInteger)PBTCalendarUnitsBetweenDates(endDate, startDate, calendarUnit);
     
     //Actual data holders
     totalTweets=[tweets count];
-    xData=[PBTLinspace(0, totalDays, totalDays) retain]; 
-    yData=[[NSMutableArray alloc] initWithCapacity:totalDays];
-
-    //printf("The total days is %d, the size of the x array is %d and the size of the y array is %d\n", totalDays, [xData count], [yData count]);
+    xData=[PBTLinspace(0, calendarPoints, calendarPoints) retain]; 
+    yData=[[NSMutableArray alloc] initWithCapacity:calendarPoints];
     
     //Get rid of some of the overhead of using a NSArray object and just use a C array
-    bufferArray=malloc(sizeof(NSUInteger)*totalDays);
+    bufferArray=malloc(sizeof(NSUInteger)*calendarPoints);
     
     //Just plain and old array cleaning
-    for (i=0; i<totalDays; i++) {
+    for (i=0; i<calendarPoints; i++) {
         bufferArray[i]=0;
     }
     
     #ifdef DEBUG
-    NSLog(@"Value of TotalDays %d", totalDays);
+    NSLog(@"Value of TotalPoints %d", calendarPoints);
     #endif
     
-    //Got through each tweet and count the number of tweets that are in a same day
+    //Got through each tweet and count the number of tweets that are in a same week
     for (i=0; i<totalTweets; i++) {
         //Get the current difference
-        newIndex=PBTDaysBetweenDates([[tweets objectAtIndex:i] postDate], startDate);
+        newIndex=PBTCalendarUnitsBetweenDates([[tweets objectAtIndex:i] postDate], startDate, calendarUnit);
         bufferArray[newIndex]=bufferArray[newIndex]+1;
     }
     
     //Now add these values to the array of the y data
-    for (i=0; i<totalDays; i++) {
+    for (i=0; i<calendarPoints; i++) {
         [yData addObject:[NSNumber numberWithUnsignedInteger:(NSUInteger)bufferArray[i]]];
     }
     
-    NSLog(@"Size of the xdata: %d size of the ydata: %d", [xData count], [yData count]);
-    
     //Create the return value
-    outDataSet=[[PBDataSet alloc] initWithXData:xData yData:yData andTitle:[NSString stringWithFormat:@"Tweets per Day for %@", [self realName]]];
+    outDataSet=[[PBDataSet alloc] initWithXData:xData yData:yData andTitle:[NSString stringWithFormat:@"Rate of Tweets For %@", [self realName]]];
     [outDataSet setLineColor:[CPTColor whiteColor]];
     
     //Free your mallocs
@@ -419,39 +414,6 @@ NSUInteger const kPBTRequestMaximum= 3200;
     [yData release];
     
     return [outDataSet autorelease];
-}
-
-#pragma mark - General Use Functions
-NSInteger PBTDaysBetweenDates(NSDate *fromDate, NSDate *toDate){
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    
-    [calendar rangeOfUnit:NSDayCalendarUnit startDate:&fromDate interval:NULL forDate:fromDate];
-    [calendar rangeOfUnit:NSDayCalendarUnit startDate:&toDate interval:NULL forDate:toDate];
-    
-    NSDateComponents *difference = [calendar components:NSDayCalendarUnit fromDate:fromDate toDate:toDate options:0];
-    
-    return [difference day];    
-}
-
-NSMutableArray* PBTZeros(NSUInteger length){
-    NSMutableArray *outArray=[NSMutableArray arrayWithCapacity:length];
-    NSUInteger i=0;
-
-    for (i=0; i<length; i++) {
-        [outArray addObject:[NSNumber numberWithFloat:0]];
-    }
-    return outArray;
-}
-
-NSMutableArray* PBTLinspace(float from, float to, NSUInteger elements){
-    NSMutableArray *outArray=[NSMutableArray arrayWithCapacity:elements];
-    NSUInteger i=0;
-    float interval=(to-from)/elements;
-    
-    for (i=0; i<elements; i++) {
-        [outArray addObject:[NSNumber numberWithFloat:i*interval]];
-    }
-    return outArray;
 }
 
 void PBTRequestTweets(PBTUser *client, NSUInteger numberOfTweets,  NSString *lastTweetID, NSMutableArray **tweetsBuffer, PBTRequestHandler handler){
