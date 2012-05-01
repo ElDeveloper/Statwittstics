@@ -70,7 +70,55 @@
     }];
 }
 
-#pragma mark - General Use Functions
+#pragma mark - PBTweets General Use Function
+void PBTScatterPointForDate(NSDate *date, NSInteger *hourRepresentation, NSInteger *dayOfWeek){
+    NSInteger outBuffer=0;
+    NSString *bufferString=nil;
+    NSArray *bufferArray=nil;
+    NSDateFormatter *dateFormatter=[[NSDateFormatter alloc] init];
+    [dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
+    [dateFormatter setDateFormat: @"HH:mm:ss"];
+    
+    bufferString=[dateFormatter stringFromDate:date];
+    bufferArray=[NSArray arrayWithArray:[bufferString componentsSeparatedByString:@":"]];
+    
+    //First hours
+    outBuffer=outBuffer + ( 3600 * [[bufferArray objectAtIndex:0] intValue] );
+    
+    //Then minutes
+    outBuffer=outBuffer + ( 60 * [[bufferArray objectAtIndex:1] intValue] );
+    
+    //Now seconds
+    outBuffer=outBuffer + [[bufferArray objectAtIndex:2] intValue];
+    
+    *hourRepresentation=outBuffer;
+    
+    //Format the number of the day of the week
+    [dateFormatter setDateFormat:@"e"];
+    
+    //Cast it and send it back
+    *dayOfWeek=(NSInteger)[[dateFormatter stringFromDate:date] intValue];
+}
+
+#pragma mark - NSDate General Use Functions
+NSString* PBTStringFromTwitterDate(NSDate *date){
+    NSDateFormatter *dateFormatter=nil;
+    NSLocale *usLocale=nil;
+    
+    //The date come from twitter in the following format Mon Apr 16 00:57:16 +0000 2012
+    //therefore, our formatter has to know it is a US formatted date
+    dateFormatter=[[NSDateFormatter alloc] init];
+    usLocale=[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    [dateFormatter setLocale:usLocale]; 
+    [dateFormatter setDateStyle:NSDateFormatterLongStyle];
+    [dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
+    
+    //For further information look here: http://unicode.org/reports/tr35/tr35-6.html#Date_Format_Patterns
+    [dateFormatter setDateFormat: @"EEE MMM dd HH:mm:ss +0000 yyyy"];
+    
+    return [NSString stringWithString:[dateFormatter stringFromDate:date]];
+}
+
 NSInteger PBTCalendarUnitsBetweenDates(NSDate *fromDate, NSDate *toDate, NSCalendarUnit calendarUnit){
     NSCalendar *calendar = [NSCalendar currentCalendar];
     NSInteger outBuffer=0;

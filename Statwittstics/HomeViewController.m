@@ -208,7 +208,7 @@
             [subjectOfAnalysis requestMostRecentTweets:kDefaultNumberOfTweets withHandler:^{
                 
                 //Go to the main thread and perform the GUI changes
-                [self performSelectorOnMainThread:@selector(drawPlotOfTweetsPerDay) withObject:nil waitUntilDone:YES];
+                [self performSelectorOnMainThread:@selector(drawScatterPlotOfTweetsPerHourPerDay) withObject:nil waitUntilDone:YES];
             }];
         }];
     }
@@ -269,6 +269,26 @@
     //Plot attributes
     [mainPlot setAxisWithRangeFactor:1.2];
     [mainPlot showGrids];
+    
+    // Do any additional setup after loading the view.
+    [[self view] addSubview:mainPlot];
+}
+
+-(void)drawScatterPlotOfTweetsPerHourPerDay{
+    PBDataSet *someDataSet=[[subjectOfAnalysis dataSetOfTweetsForHourPerDay] retain];
+    
+    if (mainPlot != nil) {
+        [mainPlot removeFromSuperview];
+        [mainPlot release];
+    }
+    
+    mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(9, 145, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
+    [someDataSet release];
+    
+    //Plot attributes
+    [mainPlot setAxisWithRangeFactor:1.3];
+    [mainPlot showGrids];
+    [[[mainPlot graph] defaultPlotSpace] setAllowsUserInteraction:YES];
     
     // Do any additional setup after loading the view.
     [[self view] addSubview:mainPlot];

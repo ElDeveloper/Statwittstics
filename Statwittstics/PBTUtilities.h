@@ -22,6 +22,10 @@ typedef void __block (^PBTSearchResult)(NSArray *arrayOfSubjects);
 //make the request; this method returns an auto-released array via the handler
 +(void)user:(PBTUser *)user requestUsersWithKeyword:(NSString *)keyword andResponseHandler:(PBTSearchResult)handler;
 
+void PBTScatterPointForDate(NSDate *date, NSInteger *hourRepresentation, NSInteger *dayOfWeek);
+
+NSString* PBTStringFromTwitterDate(NSDate *date);
+
 //Helper function, returns the number of days/weeks/months (currently only these are supported) between two NSDates
 NSInteger PBTCalendarUnitsBetweenDates(NSDate *fromDate, NSDate *toDate, NSCalendarUnit calendarUnit);
 

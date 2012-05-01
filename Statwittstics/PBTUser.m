@@ -416,6 +416,41 @@ NSUInteger const kPBTRequestMaximum= 3200;
     return [outDataSet autorelease];
 }
 
+-(PBDataSet *)dataSetOfTweetsForHourPerDay{
+    PBDataSet *outDataset=nil;
+    
+    NSString *firstDate=nil;
+    NSString *lastDate=nil;
+    
+    NSMutableArray *xDataArray=[[NSMutableArray alloc] init];
+    NSMutableArray *yDataArray=[[NSMutableArray alloc] init];
+    
+    NSInteger hourRepresentation=0;
+    NSInteger dayOfWeek=0;
+    
+    firstDate=[NSString stringWithString:PBTStringFromTwitterDate([[tweets objectAtIndex:0] postDate])];
+    lastDate=[NSString stringWithString:PBTStringFromTwitterDate([[tweets objectAtIndex:[tweets count]-1] postDate])];
+    
+    for (PBTweet *currentTweet in tweets) {
+        PBTScatterPointForDate([currentTweet postDate], &hourRepresentation, &dayOfWeek);
+        [xDataArray addObject:[NSNumber numberWithInteger:hourRepresentation]];
+        [yDataArray addObject:[NSNumber numberWithInteger:dayOfWeek]];
+        NSLog(@"%@ || %d || %d ",PBTStringFromTwitterDate([currentTweet postDate]), hourRepresentation, dayOfWeek );
+    }
+    
+    outDataset=[[PBDataSet alloc] initWithXData:xDataArray 
+                                          yData:yDataArray 
+                                       andTitle:[NSString stringWithFormat:@"Tweets From %@ to %@",firstDate, lastDate]];
+    
+    [outDataset setLineColor:[CPTColor clearColor]];
+    [outDataset setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypePentagon size:12 andColor:[CPTColor greenColor]]];
+    
+    [xDataArray release];
+    [yDataArray release];
+    
+    return [outDataset autorelease];
+}
+
 void PBTRequestTweets(PBTUser *client, NSUInteger numberOfTweets,  NSString *lastTweetID, NSMutableArray **tweetsBuffer, PBTRequestHandler handler){
     //If the total request needs you to ask for more than 200 tweets, truncate the number, using the ternary operator
     NSString *stringNumberOfTweets=[NSString stringWithFormat:@"%d",(numberOfTweets > 200 ? 200 : numberOfTweets)];

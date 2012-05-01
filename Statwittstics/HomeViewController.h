@@ -47,9 +47,13 @@ typedef enum {
 -(void)optionsButtonPressed:(id)sender;
 -(void)aboutButtonPressed:(id)sender;
 
+//Update the credential presented at the top of the screen
 -(void)loadUser:(PBTUser *)someUser;
+
+//Visualization related methods, these should be used by the controller
 -(void)drawPlotOfTweetsPerDay;
 -(void)drawPlotOfTweetsPerWeek;
 -(void)drawPlotOfTweetsPerMonth;
+-(void)drawScatterPlotOfTweetsPerHourPerDay;
 
 @end
