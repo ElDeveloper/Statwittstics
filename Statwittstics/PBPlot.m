@@ -232,6 +232,7 @@ NSString * const PBPlotAxisOrthogonal=@"0.0";
     [xAxis setTickDirection:CPTSignNone];
 }
 
+#pragma mark - Ticks
 -(void)setMajorTicksWithXInterval:(float)xInterval andYInterval:(float)yInterval{
     //Begin the creation of the axes
     CPTXYAxisSet *axisSet=(CPTXYAxisSet *)[graph axisSet];
@@ -258,6 +259,101 @@ NSString * const PBPlotAxisOrthogonal=@"0.0";
     
     //Now store the axes in the graph
     [[graph axisSet] setAxes:[NSArray arrayWithObjects:xAxis, yAxis, nil]];
+}
+
+-(void)setXTicksLabels:(NSArray *)labels{
+    int i=0;
+    NSMutableArray *newAxisLabels=[[NSMutableArray alloc] init];
+    
+    //Keep the current appearance by retrieving these properties
+    CPTXYPlotSpace *plotSpace=(CPTXYPlotSpace *)[graph defaultPlotSpace];
+    CPTXYAxisSet *axisSet=(CPTXYAxisSet *)[graph axisSet];
+    CPTXYAxis *xAxis=[axisSet xAxis];
+    CPTTextStyle *currentStyle=[xAxis labelTextStyle];
+    
+    //If you don't set the policy to none, you won't be able to see your custom labels
+    [xAxis setLabelingPolicy:CPTAxisLabelingPolicyNone];
+    
+    //Avoid the over-head of repeating this calculations for each iteration
+    float majorTickInterval=CPTDecimalFloatValue([xAxis majorIntervalLength]);
+    CGFloat tickLabelOffset=[xAxis labelOffset]+[xAxis majorTickLength]/2.0;
+    
+    //The use of the ranges help us calculate how many ticks are visible in the scrreen
+    float rangeLocation=CPTDecimalFloatValue([[plotSpace xRange] location]);
+    float rangeLength=CPTDecimalFloatValue([[plotSpace xRange] length]);
+    int visibleTicks=(int)floor((rangeLength / majorTickInterval));
+    
+    #ifdef DEBUG
+    NSLog(@"There are %d visible ticks for the X axis", visibleTicks);
+    #endif
+
+    //Just be careful and let the programmer know if he screwed something
+    if ([labels count] < visibleTicks) {
+        [NSException raise:@"PBPLot" format:@"You provided %d X ticks labels, the method needs %d", [labels count], visibleTicks];
+    }
+    
+    //Go through every of the visible ticks and add the custom label provided
+    for(i=0; i<=visibleTicks; i++){
+        CPTAxisLabel *newLabel=[[CPTAxisLabel alloc] initWithText:[labels objectAtIndex:i] textStyle:currentStyle];
+        [newLabel setTickLocation:CPTDecimalFromFloat(rangeLocation + (i * majorTickInterval))];
+        [newLabel setOffset:tickLabelOffset];
+        [newAxisLabels addObject:newLabel];
+        [newLabel release];
+    }
+    
+    //Add the labels and manage your memory
+    [xAxis setAxisLabels:[NSSet setWithArray:newAxisLabels]];
+    [newAxisLabels release];
+}
+
+-(void)setYTicksLabels:(NSArray *)labels{
+    int i=0;
+    NSMutableArray *newAxisLabels=[[NSMutableArray alloc] init];
+    
+    //Keep the current appearance by retrieving these properties
+    CPTXYPlotSpace *plotSpace=(CPTXYPlotSpace *)[graph defaultPlotSpace];
+    CPTXYAxisSet *axisSet=(CPTXYAxisSet *)[graph axisSet];
+    CPTXYAxis *yAxis=[axisSet yAxis];
+    CPTTextStyle *currentStyle=[yAxis labelTextStyle];
+    
+    //If you don't set the policy to none, you won't be able to see your custom labels
+    [yAxis setLabelingPolicy:CPTAxisLabelingPolicyNone];
+    
+    //Avoid the over-head of repeating this calculations for each iteration
+    float majorTickInterval=CPTDecimalFloatValue([yAxis majorIntervalLength]);
+    CGFloat tickLabelOffset=[yAxis labelOffset]+[yAxis majorTickLength]/2.0;
+    
+    //This numbers will help us calculate how many ticks are visible currently in the screen
+    float rangeLocation=CPTDecimalFloatValue([[plotSpace yRange] location]);
+    float rangeLength=CPTDecimalFloatValue([[plotSpace yRange] length]);
+    int visibleTicks=(int)floor((rangeLength / majorTickInterval));
+    
+    #ifdef DEBUG
+    NSLog(@"There are %d visible ticks for the Y axis", visibleTicks);
+    #endif
+    
+    //Just be careful and let the programmer know if he screwed something
+    if ([labels count] < visibleTicks) {
+        [NSException raise:@"PBPLot" format:@"You provided %d X ticks labels, the method needs %d", [labels count], visibleTicks];
+    }
+    
+    //Go through every of the visible ticks and add the custom label provided
+    for(i=0; i<=visibleTicks; i++){
+        CPTAxisLabel *newLabel=[[CPTAxisLabel alloc] initWithText:[labels objectAtIndex:i] textStyle:currentStyle];
+        [newLabel setTickLocation:CPTDecimalFromFloat(rangeLocation + (i * majorTickInterval))];
+        [newLabel setOffset:tickLabelOffset];
+        [newAxisLabels addObject:newLabel];
+        [newLabel release];
+    }
+    
+    //Add the labels and manage your memory
+    [yAxis setAxisLabels:[NSSet setWithArray:newAxisLabels]];
+    [newAxisLabels release];
+}
+
+-(void)setXTicksLabels:(NSArray *)xLabels andYTicksLabels:(NSArray *)yLabels{
+    [self setXTicksLabels:xLabels];
+    [self setYTicksLabels:yLabels];
 }
 
 #pragma mark - Axes Range

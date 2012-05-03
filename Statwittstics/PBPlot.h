@@ -78,7 +78,11 @@ typedef enum _PBPlotAxis{
 -(void)showGrids;
 
 //By default this hides the minor ticks, only showing the major ticks, this will affect the grids
--(void)setMajorTicksWithXInterval:(float)xInterval andYInterval:(float)yInterval; //Not working
+-(void)setMajorTicksWithXInterval:(float)xInterval andYInterval:(float)yInterval;
+
+-(void)setXTicksLabels:(NSArray *)labels; //Not working
+-(void)setYTicksLabels:(NSArray *)labels; //Not working
+-(void)setXTicksLabels:(NSArray *)xLabels andYTicksLabels:(NSArray *)yLabels; //Not working
 
 //Bounds for both axes, automatic or by as specified by the user
 -(void)setAxisTight;

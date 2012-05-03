@@ -291,7 +291,9 @@
     [mainPlot showGrids];
     [mainPlot setXAxisTitle:@"Hora"];
     [mainPlot setYAxisTitle:@"Día de la Semana"];
-    [mainPlot setGraphTitle:[someDataSet dataSetTitle]];
+    [mainPlot setXTicksLabels:[NSArray arrayWithObjects:HOURS_ARRAY, nil]];
+    [mainPlot setYTicksLabels:[NSArray arrayWithObjects:@"a", @"b", @"c", @"d", @"e", @"f", @"g", @"h", @"i", nil]];
+    //[mainPlot setGraphTitle:[someDataSet dataSetTitle]];
     [[[mainPlot graph] defaultPlotSpace] setAllowsUserInteraction:YES];
     
     // Do any additional setup after loading the view.
