@@ -435,7 +435,6 @@ NSUInteger const kPBTRequestMaximum= 3200;
         PBTScatterPointForDate([currentTweet postDate], &hourRepresentation, &dayOfWeek);
         [xDataArray addObject:[NSNumber numberWithInteger:hourRepresentation]];
         [yDataArray addObject:[NSNumber numberWithInteger:dayOfWeek]];
-        NSLog(@"%@ || %d || %d ",PBTStringFromTwitterDate([currentTweet postDate]), hourRepresentation, dayOfWeek );
     }
     
     outDataset=[[PBDataSet alloc] initWithXData:xDataArray 

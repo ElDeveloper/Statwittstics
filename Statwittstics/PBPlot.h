@@ -13,17 +13,16 @@
 
 /*
     TO DO:
-    + Create a method that returns a default annotation.
     + Implement legends for the touch protocol.
     + Add functionality to the customizations protocol.
  */
 
 //Constants used to adjust to the size of the title of each axis
-extern CGFloat      const   kPBBottomPadding;
-extern CGFloat      const   kPBLeftPadding;
+extern CGFloat const kPBBottomPadding;
+extern CGFloat const kPBLeftPadding;
 
-extern CGFloat      const   PBPlotPaddingNone;
-extern NSString *   const   PBPlotAxisOrthogonal;
+extern CGFloat const PBPlotPaddingNone;
+extern NSString * const PBPlotAxisOrthogonal;
 
 typedef enum _PBPlotAxis{
     PBPlotXAxis=0,
@@ -40,20 +39,20 @@ typedef enum _PBPlotAxis{
     NSString *xAxisTitle;
     NSString *yAxisTitle;
     
-    @private
-    NSMutableArray *identifiers;
-    NSMutableArray *linePlots;
+    @private NSMutableArray *identifiers;
+    @private NSMutableArray *linePlots;
 }
 
 @property (assign) id<PBPlotDelegate> delegate;
-
 @property (nonatomic, retain) CPTXYGraph *graph;
 @property (nonatomic, retain) NSArray *dataSets;
 
+//Basic descriptors of the graph
 @property (nonatomic, retain) NSString *graphTitle;
 @property (nonatomic, retain) NSString *xAxisTitle;
 @property (nonatomic, retain) NSString *yAxisTitle;
 
+//Private properties helpers of the Data Source
 @property (nonatomic, retain) NSMutableArray *linePlots;
 @property (nonatomic, retain) NSMutableArray *identifiers;
 
@@ -61,26 +60,41 @@ typedef enum _PBPlotAxis{
 
 /*
  MATLAB-like methods to set certain properties with just one line of code
+ this is not as dynamic an capable as the original implementation of Core-Plot
+ but if you really want that much freedom, then just use Core-Plot.
  */
--(void)setAxisTight;
--(void)setAxisWithRangeFactor:(double)ratio;
 
--(void)showLegends;
--(void)showGrids;
-
+//Titles for the graph with a personlized style or just the default Helvetica
 -(void)setGraphTitle:(NSString *)title withStyle:(CPTTextStyle *)textStyle;
 -(void)setGraphTitle:(NSString *)title;
 
+//Titles for the graph with a personlized style or just the default Helvetica
 -(void)setXAxisTitle:(NSString *)title withStyle:(CPTTextStyle *)textStyle;
 -(void)setXAxisTitle:(NSString *)title;
-
 -(void)setYAxisTitle:(NSString *)title withStyle:(CPTTextStyle *)textStyle;
 -(void)setYAxisTitle:(NSString *)title;
+
+//Grids of the graph
+-(void)showGrids;
+
+//By default this hides the minor ticks, only showing the major ticks, this will affect the grids
+-(void)setMajorTicksWithXInterval:(float)xInterval andYInterval:(float)yInterval; //Not working
+
+//Bounds for both axes, automatic or by as specified by the user
+-(void)setAxisTight;
+-(void)setAxisWithRangeFactor:(double)ratio;
+
+-(void)setXAxisUpperBound:(float)upper andLowerBound:(float)lower;
+-(void)setYAxisUpperBound:(float)upper andLowerBound:(float)lower;
+
+//Legends of the graph
+-(void)showLegends;
 
 //Determine the space between intervals to show in the plot, this should work more
 //accurately than the default annotations, as it takes accound of the mantiza of 
 //the ticks and the general appearance of the resulting plot
-+(NSDecimal)ticksIntervalIn:(PBPlotAxis)axisType dataSets:(NSArray *)dataSets;
++(float)ticksIntervalIn:(PBPlotAxis)axisType dataSets:(NSArray *)dataSets;
+
 @end
 
 /*

@@ -8,11 +8,11 @@
 
 #import "PBPlot.h"
 
-CGFloat     const   kPBBottomPadding=2.7;
-CGFloat     const   kPBLeftPadding=2.7;
+CGFloat const kPBBottomPadding=2.7;
+CGFloat const kPBLeftPadding=2.7;
 
-CGFloat     const   PBPlotPaddingNone=0.0;
-NSString *  const   PBPlotAxisOrthogonal=@"0.0";
+CGFloat const PBPlotPaddingNone=0.0;
+NSString * const PBPlotAxisOrthogonal=@"0.0";
 
 @implementation PBPlot
 
@@ -21,6 +21,7 @@ NSString *  const   PBPlotAxisOrthogonal=@"0.0";
 @synthesize identifiers;
 
 #pragma mark - ViewLifecycle
+
 - (id)initWithFrame:(CGRect)frame andDataSets:(NSArray *)theDataSets{
     self = [super initWithFrame:frame];
     if (self) {
@@ -69,34 +70,11 @@ NSString *  const   PBPlotAxisOrthogonal=@"0.0";
 
         [graph setLegendAnchor:CPTRectAnchorLeft];
         
-        //Set the plot space
+        //By default do not allow the user interaction
         [[graph defaultPlotSpace] setAllowsUserInteraction:NO];
         
-        //Begin the creation of the axes
-        CPTXYAxisSet *axisSet=(CPTXYAxisSet *)[graph axisSet];
-        
-        //Y axis
-        CPTXYAxis *yAxis=[axisSet yAxis];
-        [yAxis setMajorIntervalLength:[PBPlot ticksIntervalIn:PBPlotYAxis dataSets:dataSets]];
-        [yAxis setMinorTicksPerInterval:0];
-        [yAxis setOrthogonalCoordinateDecimal:CPTDecimalFromString(PBPlotAxisOrthogonal)];
-        
-        //Y ticks label style
-        [yAxis setLabelTextStyle:[PBUtilities textStyleWithFont:@"Helvetica" andColor:[CPTColor grayColor]]];
-        [yAxis setLabelFormatter:[PBUtilities formatterWithMaximumFractionDigits:1]];
-        
-        //X axis
-        CPTXYAxis *xAxis=[axisSet xAxis];
-        [xAxis setMajorIntervalLength:[PBPlot ticksIntervalIn:PBPlotXAxis dataSets:dataSets]];
-        [xAxis setOrthogonalCoordinateDecimal:CPTDecimalFromString(PBPlotAxisOrthogonal)];
-        [xAxis setMinorTicksPerInterval:0];
-
-        //X ticks label style
-        [xAxis setLabelTextStyle:[PBUtilities textStyleWithFont:@"Helvetica" andColor:[CPTColor grayColor]]];        
-        [xAxis setLabelFormatter:[PBUtilities formatterWithMaximumFractionDigits:1]];
-        
-        //Now store the axes in the graph
-        [[graph axisSet] setAxes:[NSArray arrayWithObjects:xAxis, yAxis, nil]];
+        //Set default spaced ticks
+        [self setMajorTicksWithXInterval:[PBPlot ticksIntervalIn:PBPlotXAxis dataSets:dataSets] andYInterval:[PBPlot ticksIntervalIn:PBPlotYAxis dataSets:dataSets]];
         
         //One score plot per Data Set, must solve this shit
         for (i=0; i<[dataSets count]; i++) {
@@ -164,7 +142,7 @@ NSString *  const   PBPlotAxisOrthogonal=@"0.0";
     [super dealloc];
 }
 
-#pragma mark - PBPlotModificators
+#pragma mark - Titles For The Axes and Graph
 -(void)setGraphTitle:(NSString *)title withStyle:(CPTTextStyle *)textStyle{
     //Because this is a custom setter, it has to be this way
     if (graphTitle != nil) {
@@ -178,7 +156,7 @@ NSString *  const   PBPlotAxisOrthogonal=@"0.0";
     [graph setTitleDisplacement:CGPointMake(0, (-0.7)*[textStyle fontSize])];
     
     //Add a little of padding in the plotAreaFrame so that the title can fit
-    [[graph plotAreaFrame] setPaddingTop:4+[textStyle fontSize]];
+    [[graph plotAreaFrame] setPaddingTop:8+[textStyle fontSize]];
 }
 
 -(void)setGraphTitle:(NSString *)title{
@@ -200,7 +178,6 @@ NSString *  const   PBPlotAxisOrthogonal=@"0.0";
     //Y axis title
     [xAxis setTitle:xAxisTitle];
     [xAxis setTitleTextStyle:textStyle];
-    //[xAxis setTitleOffset:[textStyle fontSize]*(-0.0)];
     
     //Add a little of padding in the plotAreaFrame so that the title can fit
     [[graph plotAreaFrame] setPaddingBottom:[textStyle fontSize]*kPBBottomPadding];
@@ -224,7 +201,6 @@ NSString *  const   PBPlotAxisOrthogonal=@"0.0";
     //Y axis title
     [yAxis setTitle:yAxisTitle];
     [yAxis setTitleTextStyle:textStyle];
-    //[yAxis setTitleOffset:[textStyle fontSize]*(-0.0)];
     
     //Add a little of padding in the plotAreaFrame so that the title can fit
     [[graph plotAreaFrame] setPaddingLeft:[textStyle fontSize]*kPBLeftPadding];
@@ -234,30 +210,57 @@ NSString *  const   PBPlotAxisOrthogonal=@"0.0";
     [self setYAxisTitle:title withStyle:[PBUtilities textStyleWithFont:@"Helvetica" color:[CPTColor grayColor] andSize:20.0]];
 }
 
+#pragma mark - Grids
 -(void)showGrids{
     //Get the axes' axisSet property
     CPTXYAxisSet *axisSet=(CPTXYAxisSet *)[graph axisSet];
     CPTXYAxis *yAxis=[axisSet yAxis];
     CPTXYAxis *xAxis=[axisSet xAxis];
-    
-    //Grid line styles
-    CPTMutableLineStyle *majorGridLineStyle = [CPTMutableLineStyle lineStyle];
-    [majorGridLineStyle setLineWidth:0.75];
-    [majorGridLineStyle setLineColor:[[CPTColor colorWithGenericGray:0.2] colorWithAlphaComponent:0.75]];
-    
-    CPTMutableLineStyle *minorGridLineStyle = [CPTMutableLineStyle lineStyle];
-    [minorGridLineStyle setLineWidth:0.75];
-    [minorGridLineStyle setLineColor:[[CPTColor colorWithGenericGray:0.2] colorWithAlphaComponent:0.75]];
+  
+    //Avoid overhead, create this objects once
+    CPTColor *grayColor=[[CPTColor colorWithGenericGray:0.2] colorWithAlphaComponent:0.75];
+    CPTLineStyle *gridLineStyle=[PBUtilities lineStyleWithWidth:0.75 andColor:grayColor];
     
     //Y axis gird lines
-    [yAxis setMajorGridLineStyle:majorGridLineStyle];
-    [yAxis setMinorGridLineStyle:minorGridLineStyle];
+    [yAxis setMajorGridLineStyle:gridLineStyle];
+    [yAxis setMinorGridLineStyle:gridLineStyle];
+    [yAxis setTickDirection:CPTSignNone];
     
     //X axis gird lines
-    [xAxis setMajorGridLineStyle:majorGridLineStyle];
-    [xAxis setMinorGridLineStyle:minorGridLineStyle];
+    [xAxis setMajorGridLineStyle:gridLineStyle];
+    [xAxis setMinorGridLineStyle:gridLineStyle];
+    [xAxis setTickDirection:CPTSignNone];
 }
 
+-(void)setMajorTicksWithXInterval:(float)xInterval andYInterval:(float)yInterval{
+    //Begin the creation of the axes
+    CPTXYAxisSet *axisSet=(CPTXYAxisSet *)[graph axisSet];
+    
+    //Y axis
+    CPTXYAxis *yAxis=[axisSet yAxis];
+    [yAxis setMajorIntervalLength:CPTDecimalFromFloat(yInterval)];
+    [yAxis setMinorTicksPerInterval:0];
+    [yAxis setOrthogonalCoordinateDecimal:CPTDecimalFromString(PBPlotAxisOrthogonal)];
+    
+    //Y ticks label style
+    [yAxis setLabelTextStyle:[PBUtilities textStyleWithFont:@"Helvetica" andColor:[CPTColor grayColor]]];
+    [yAxis setLabelFormatter:[PBUtilities formatterWithMaximumFractionDigits:1]];
+    
+    //X axis
+    CPTXYAxis *xAxis=[axisSet xAxis];
+    [xAxis setMajorIntervalLength:CPTDecimalFromFloat(xInterval)];
+    [xAxis setOrthogonalCoordinateDecimal:CPTDecimalFromString(PBPlotAxisOrthogonal)];
+    [xAxis setMinorTicksPerInterval:0];
+    
+    //X ticks label style
+    [xAxis setLabelTextStyle:[PBUtilities textStyleWithFont:@"Helvetica" andColor:[CPTColor grayColor]]];        
+    [xAxis setLabelFormatter:[PBUtilities formatterWithMaximumFractionDigits:1]];
+    
+    //Now store the axes in the graph
+    [[graph axisSet] setAxes:[NSArray arrayWithObjects:xAxis, yAxis, nil]];
+}
+
+#pragma mark - Axes Range
 -(void)setAxisTight{
     [self setAxisWithRangeFactor:1.0];
 }
@@ -279,6 +282,31 @@ NSString *  const   PBPlotAxisOrthogonal=@"0.0";
     [plotSpace setYRange:yRange];
 }
 
+-(void)setXAxisUpperBound:(float)upper andLowerBound:(float)lower{
+    //Retrieve the plotspace and cast it 
+    CPTXYPlotSpace *plotSpace = (CPTXYPlotSpace *)[graph defaultPlotSpace];
+    
+    //Create a new one    
+    CPTPlotRange *xRange=[[CPTPlotRange alloc] initWithLocation:CPTDecimalFromFloat(lower) length:CPTDecimalFromFloat(upper-lower)];
+    
+    //Set the new range to the plot space
+    [plotSpace setXRange:xRange];
+    [xRange release];
+}
+
+-(void)setYAxisUpperBound:(float)upper andLowerBound:(float)lower{
+    //Retrieve the plotspace and cast it 
+    CPTXYPlotSpace *plotSpace = (CPTXYPlotSpace *)[graph defaultPlotSpace];
+    
+    //Create a new one    
+    CPTPlotRange *yRange=[[CPTPlotRange alloc] initWithLocation:CPTDecimalFromFloat(lower) length:CPTDecimalFromFloat(upper-lower)];
+    
+    //Set the new range to the plot space
+    [plotSpace setYRange:yRange];
+    [yRange release];
+}
+
+#pragma mark - Legends 
 -(void)showLegends{
     //Add the legend and position it the right way
     [graph setLegend:[CPTLegend legendWithGraph:graph]];
@@ -293,12 +321,65 @@ NSString *  const   PBPlotAxisOrthogonal=@"0.0";
     [graph setLegendDisplacement:CGPointMake(-15, -10)];
 }
 
+#pragma mark - PBPlotHelpers
++(float)ticksIntervalIn:(PBPlotAxis)axisType dataSets:(NSArray *)dataSets{
+    float minValue=0, maxValue=0, tmin=0, tmax=0, intervalSize=0;
+    int values[4]={12, 10, 8, 6}, i=0, numberOfTicks=0, position=0;
+    
+    //Go through each of the data sets, determine the maximum and minimum values
+    for (PBDataSet *currentDataSet in dataSets) {
+        switch (axisType) {
+            case PBPlotXAxis:
+                tmin=[[[currentDataSet dataPointsX] valueForKeyPath:@"@min.floatValue"] floatValue];
+                tmax=[[[currentDataSet dataPointsX] valueForKeyPath:@"@max.floatValue"] floatValue];
+                break;
+            case PBPlotYAxis:
+                tmin=[[[currentDataSet dataPointsY] valueForKeyPath:@"@min.floatValue"] floatValue];
+                tmax=[[[currentDataSet dataPointsY] valueForKeyPath:@"@max.floatValue"] floatValue];
+                break;
+            default:
+                break;
+        }
+        
+        //Then determine the maximum and minimum values among all the data-sets
+        if (minValue > tmin) {
+            minValue=tmin;
+        }
+        if (maxValue < tmax) {
+            maxValue=tmax;
+        }
+    }
+    
+    //Both values of the same sign, modulus maxima difference
+    if ( (minValue <= 0 && maxValue <= 0) || (maxValue >= 0 && minValue >= 0) ) {
+        intervalSize=fabsf(maxValue) - fabsf(minValue);
+    }
+    //Regular difference
+    else {
+        intervalSize=maxValue-minValue;
+    }
+    
+    numberOfTicks=((int)intervalSize)%values[0];
+    position=0;
+    for (i=0 ; i<4 ; i++) {
+        if (  numberOfTicks > ((int)intervalSize)%values[i] ) {
+            numberOfTicks=((int)intervalSize)%values[i];
+            position=i;
+        }
+    }
+    
+    #ifdef DEBUG
+    NSLog(@"PBPlot**: min:%f max:%f",minValue, maxValue);
+    #endif
+    return (intervalSize/values[position]);
+}
+
 #pragma mark - CPTPlotDataSource
 -(NSUInteger)numberOfRecordsForPlot:(CPTPlot*)plot {
 	return [[dataSets objectAtIndex:0] dataSetLength];
 }
 
--(NSNumber*)numberForPlot:(CPTPlot*)plot field:(NSUInteger)fieldEnum recordIndex:(NSUInteger)index {
+-(NSNumber*)numberForPlot:(CPTPlot*)plot field:(NSUInteger)fieldEnum recordIndex:(NSUInteger)index{
     //The initializer added an identifier for each plot, get it and that's the index of the plot in the array
     NSString *plotIdentifier=[NSString stringWithString:(NSString *)[plot identifier]];
     int currentPlot=[identifiers indexOfObject:plotIdentifier];
@@ -365,60 +446,6 @@ NSString *  const   PBPlotAxisOrthogonal=@"0.0";
     NSLog(@"Dude wtf x: %f and y: %f",symbolTextAnnotation.contentAnchorPoint.x, symbolTextAnnotation.contentAnchorPoint.y);
     
 	[annotationGraph.plotAreaFrame.plotArea addAnnotation:symbolTextAnnotation];
-    
-}
-
-#pragma mark - PBPlotHelpers
-+(NSDecimal)ticksIntervalIn:(PBPlotAxis)axisType dataSets:(NSArray *)dataSets{
-    float minValue=0, maxValue=0, tmin=0, tmax=0, intervalSize=0;
-    int values[4]={12, 10, 8, 6}, i=0, numberOfTicks=0, position=0;
-    
-    //Go through each of the data sets, determine the maximum and minimum values
-    for (PBDataSet *currentDataSet in dataSets) {
-        switch (axisType) {
-            case PBPlotXAxis:
-                tmin=[[[currentDataSet dataPointsX] valueForKeyPath:@"@min.floatValue"] floatValue];
-                tmax=[[[currentDataSet dataPointsX] valueForKeyPath:@"@max.floatValue"] floatValue];
-                break;
-            case PBPlotYAxis:
-                tmin=[[[currentDataSet dataPointsY] valueForKeyPath:@"@min.floatValue"] floatValue];
-                tmax=[[[currentDataSet dataPointsY] valueForKeyPath:@"@max.floatValue"] floatValue];
-                break;
-            default:
-                break;
-        }
-        
-        //Then determine the maximum and minimum values among all the data-sets
-        if (minValue > tmin) {
-            minValue=tmin;
-        }
-        if (maxValue < tmax) {
-            maxValue=tmax;
-        }
-    }
-
-    //Both values of the same sign, modulus maxima difference
-    if ( (minValue <= 0 && maxValue <= 0) || (maxValue >= 0 && minValue >= 0) ) {
-        intervalSize=fabsf(maxValue) - fabsf(minValue);
-    }
-    //Regular difference
-    else {
-        intervalSize=maxValue-minValue;
-    }
-    
-    numberOfTicks=((int)intervalSize)%values[0];
-    position=0;
-    for (i=0 ; i<4 ; i++) {
-        if (  numberOfTicks > ((int)intervalSize)%values[i] ) {
-            numberOfTicks=((int)intervalSize)%values[i];
-            position=i;
-        }
-    }
-    
-    #ifdef DEBUG
-    NSLog(@"PBPlot**: min:%f max:%f",minValue, maxValue);
-    #endif
-    return CPTDecimalFromFloat(intervalSize/values[position]);
 }
 
 @end

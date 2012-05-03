@@ -283,15 +283,21 @@
     }
     
     mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(9, 145, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
-    [someDataSet release];
     
     //Plot attributes
-    [mainPlot setAxisWithRangeFactor:1.3];
+    [mainPlot setXAxisUpperBound:90060 andLowerBound:0];
+    [mainPlot setYAxisUpperBound:8 andLowerBound:0];
+    [mainPlot setMajorTicksWithXInterval:3752.5 andYInterval:1];
     [mainPlot showGrids];
+    [mainPlot setXAxisTitle:@"Hora"];
+    [mainPlot setYAxisTitle:@"Día de la Semana"];
+    [mainPlot setGraphTitle:[someDataSet dataSetTitle]];
     [[[mainPlot graph] defaultPlotSpace] setAllowsUserInteraction:YES];
     
     // Do any additional setup after loading the view.
     [[self view] addSubview:mainPlot];
+
+    [someDataSet release];
 }
 
 @end
