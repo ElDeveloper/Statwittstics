@@ -261,9 +261,11 @@ NSString * const PBPlotAxisOrthogonal=@"0.0";
     [[graph axisSet] setAxes:[NSArray arrayWithObjects:xAxis, yAxis, nil]];
 }
 
--(void)setXTicksLabels:(NSArray *)labels{
+-(void)setXTicksLabels:(NSArray *)labels withRotation:(float)rotation{
     int i=0;
     NSMutableArray *newAxisLabels=[[NSMutableArray alloc] init];
+    NSMutableArray *tickLocations=[[NSMutableArray alloc] init];
+    CPTAxisLabel *newLabel=nil;
     
     //Keep the current appearance by retrieving these properties
     CPTXYPlotSpace *plotSpace=(CPTXYPlotSpace *)[graph defaultPlotSpace];
@@ -286,7 +288,7 @@ NSString * const PBPlotAxisOrthogonal=@"0.0";
     #ifdef DEBUG
     NSLog(@"There are %d visible ticks for the X axis", visibleTicks);
     #endif
-
+    
     //Just be careful and let the programmer know if he screwed something
     if ([labels count] < visibleTicks) {
         [NSException raise:@"PBPLot" format:@"You provided %d X ticks labels, the method needs %d", [labels count], visibleTicks];
@@ -294,21 +296,31 @@ NSString * const PBPlotAxisOrthogonal=@"0.0";
     
     //Go through every of the visible ticks and add the custom label provided
     for(i=0; i<=visibleTicks; i++){
-        CPTAxisLabel *newLabel=[[CPTAxisLabel alloc] initWithText:[labels objectAtIndex:i] textStyle:currentStyle];
+        //Add the locations of the ticks, otherwise you will loose all the lines and grids
+        [tickLocations addObject:[NSDecimalNumber numberWithFloat:rangeLocation + (i * majorTickInterval)]];
+        
+        newLabel=[[CPTAxisLabel alloc] initWithText:[labels objectAtIndex:i] textStyle:currentStyle];
         [newLabel setTickLocation:CPTDecimalFromFloat(rangeLocation + (i * majorTickInterval))];
         [newLabel setOffset:tickLabelOffset];
+        [newLabel setRotation:rotation];
         [newAxisLabels addObject:newLabel];
         [newLabel release];
     }
+    
+    //Add the ticks locations, otherwise no girds will be shown
+    [xAxis setMajorTickLocations:[NSSet setWithArray:tickLocations]];
+    [tickLocations release];
     
     //Add the labels and manage your memory
     [xAxis setAxisLabels:[NSSet setWithArray:newAxisLabels]];
     [newAxisLabels release];
 }
 
--(void)setYTicksLabels:(NSArray *)labels{
+-(void)setYTicksLabels:(NSArray *)labels withRotation:(float)rotation{
     int i=0;
     NSMutableArray *newAxisLabels=[[NSMutableArray alloc] init];
+    NSMutableArray *tickLocations=[[NSMutableArray alloc] init];
+    CPTAxisLabel *newLabel=nil;
     
     //Keep the current appearance by retrieving these properties
     CPTXYPlotSpace *plotSpace=(CPTXYPlotSpace *)[graph defaultPlotSpace];
@@ -339,21 +351,41 @@ NSString * const PBPlotAxisOrthogonal=@"0.0";
     
     //Go through every of the visible ticks and add the custom label provided
     for(i=0; i<=visibleTicks; i++){
-        CPTAxisLabel *newLabel=[[CPTAxisLabel alloc] initWithText:[labels objectAtIndex:i] textStyle:currentStyle];
+        //Add the locations of the ticks, otherwise you will loose all the lines and grids
+        [tickLocations addObject:[NSDecimalNumber numberWithFloat:rangeLocation + (i * majorTickInterval)]];
+        
+        newLabel=[[CPTAxisLabel alloc] initWithText:[labels objectAtIndex:i] textStyle:currentStyle];
         [newLabel setTickLocation:CPTDecimalFromFloat(rangeLocation + (i * majorTickInterval))];
         [newLabel setOffset:tickLabelOffset];
+        [newLabel setRotation:rotation];
         [newAxisLabels addObject:newLabel];
         [newLabel release];
     }
+    
+    //Add the ticks locations, otherwise no girds will be shown
+    [yAxis setMajorTickLocations:[NSSet setWithArray:tickLocations]];
+    [tickLocations release];
     
     //Add the labels and manage your memory
     [yAxis setAxisLabels:[NSSet setWithArray:newAxisLabels]];
     [newAxisLabels release];
 }
 
+-(void)setXTicksLabels:(NSArray *)xLabels withXRotation:(float)xRotation yTicksLabels:(NSArray *)yLabels withYRotation:(float)yRotation{
+    [self setXTicksLabels:xLabels withRotation:xRotation];
+    [self setYTicksLabels:yLabels withRotation:yRotation];
+}
+
+-(void)setXTicksLabels:(NSArray *)labels{
+    [self setXTicksLabels:labels withRotation:0];
+}
+
+-(void)setYTicksLabels:(NSArray *)labels{
+    [self setYTicksLabels:labels withRotation:0];
+}   
+
 -(void)setXTicksLabels:(NSArray *)xLabels andYTicksLabels:(NSArray *)yLabels{
-    [self setXTicksLabels:xLabels];
-    [self setYTicksLabels:yLabels];
+    [self setXTicksLabels:xLabels withXRotation:0 yTicksLabels:yLabels withYRotation:0];
 }
 
 #pragma mark - Axes Range

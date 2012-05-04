@@ -288,12 +288,12 @@
     [mainPlot setXAxisUpperBound:90060 andLowerBound:0];
     [mainPlot setYAxisUpperBound:8 andLowerBound:0];
     [mainPlot setMajorTicksWithXInterval:3752.5 andYInterval:1];
-    [mainPlot showGrids];
     [mainPlot setXAxisTitle:@"Hora"];
     [mainPlot setYAxisTitle:@"Día de la Semana"];
+    [mainPlot showGrids];
     [mainPlot setXTicksLabels:[NSArray arrayWithObjects:HOURS_ARRAY, nil]];
-    [mainPlot setYTicksLabels:[NSArray arrayWithObjects:@"a", @"b", @"c", @"d", @"e", @"f", @"g", @"h", @"i", nil]];
-    //[mainPlot setGraphTitle:[someDataSet dataSetTitle]];
+    [mainPlot setYTicksLabels:[NSArray arrayWithObjects:DAYS, nil] withRotation:M_PI_2];
+    [mainPlot setGraphTitle:[someDataSet dataSetTitle]];
     [[[mainPlot graph] defaultPlotSpace] setAllowsUserInteraction:YES];
     
     // Do any additional setup after loading the view.
