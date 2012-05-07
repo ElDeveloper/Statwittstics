@@ -37,7 +37,8 @@
         [dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
         
         //For further information look here: http://unicode.org/reports/tr35/tr35-6.html#Date_Format_Patterns
-        [dateFormatter setDateFormat: @"EEE MMM dd HH:mm:ss +0000 yyyy"];
+        [dateFormatter setDateFormat: @"EEE MMM dd HH:mm:ss Z yyyy"];
+        [dateFormatter setTimeZone:[NSTimeZone localTimeZone]];
         
         //Assign the post date 
         postDate=[[dateFormatter dateFromString:[jsonString objectForKey:TAKeyPostDate]] copy];

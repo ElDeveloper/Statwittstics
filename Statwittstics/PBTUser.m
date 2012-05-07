@@ -418,9 +418,9 @@ NSUInteger const kPBTRequestMaximum= 3200;
 
 -(PBDataSet *)dataSetOfTweetsForHourPerDay{
     PBDataSet *outDataset=nil;
-    
-    NSString *firstDate=nil;
-    NSString *lastDate=nil;
+
+    NSString *endDate=nil;
+    NSString *beginDate=nil;
     
     NSMutableArray *xDataArray=[[NSMutableArray alloc] init];
     NSMutableArray *yDataArray=[[NSMutableArray alloc] init];
@@ -428,21 +428,25 @@ NSUInteger const kPBTRequestMaximum= 3200;
     NSInteger hourRepresentation=0;
     NSInteger dayOfWeek=0;
     
-    firstDate=[NSString stringWithString:PBTStringFromTwitterDate([[tweets objectAtIndex:0] postDate])];
-    lastDate=[NSString stringWithString:PBTStringFromTwitterDate([[tweets objectAtIndex:[tweets count]-1] postDate])];
+    endDate=[NSString stringWithString:PBTStringFromTwitterDateWithFormat([[tweets objectAtIndex:0] postDate], @"MMM/dd/yyyy")];
+    beginDate=[NSString stringWithString:PBTStringFromTwitterDateWithFormat([[tweets objectAtIndex:[tweets count]-1] postDate],  @"MMM/dd/yyyy")];
     
     for (PBTweet *currentTweet in tweets) {
         PBTScatterPointForDate([currentTweet postDate], &hourRepresentation, &dayOfWeek);
         [xDataArray addObject:[NSNumber numberWithInteger:hourRepresentation]];
         [yDataArray addObject:[NSNumber numberWithInteger:dayOfWeek]];
+        
+        #ifdef VERBOSE_DEBUG
+        NSLog(@"Tweet at day: %d and hour representation %d for day %@", dayOfWeek, hourRepresentation, PBTStringFromTwitterDate([currentTweet postDate]));
+        #endif
     }
     
     outDataset=[[PBDataSet alloc] initWithXData:xDataArray 
                                           yData:yDataArray 
-                                       andTitle:[NSString stringWithFormat:@"Tweets From %@ to %@",firstDate, lastDate]];
+                                       andTitle:[NSString stringWithFormat:@"Tweets From %@ to %@",beginDate, endDate]];
     
     [outDataset setLineColor:[CPTColor clearColor]];
-    [outDataset setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypePentagon size:12 andColor:[CPTColor greenColor]]];
+    [outDataset setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypePentagon size:8 andColor:[CPTColor whiteColor]]];
     
     [xDataArray release];
     [yDataArray release];

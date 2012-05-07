@@ -22,8 +22,14 @@ typedef void __block (^PBTSearchResult)(NSArray *arrayOfSubjects);
 //make the request; this method returns an auto-released array via the handler
 +(void)user:(PBTUser *)user requestUsersWithKeyword:(NSString *)keyword andResponseHandler:(PBTSearchResult)handler;
 
+//Return the position for a point/tweet in a scatter plot where the hour and day
+//position a point per tweet that happened at a specific moment.
 void PBTScatterPointForDate(NSDate *date, NSInteger *hourRepresentation, NSInteger *dayOfWeek);
 
+//Get a specifical formatted string with the standard known formatting characters
+NSString* PBTStringFromTwitterDateWithFormat(NSDate *date, NSString *format);
+
+//Get the full default date from a Twitter Date 
 NSString* PBTStringFromTwitterDate(NSDate *date);
 
 //Helper function, returns the number of days/weeks/months (currently only these are supported) between two NSDates

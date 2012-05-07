@@ -102,6 +102,10 @@ void PBTScatterPointForDate(NSDate *date, NSInteger *hourRepresentation, NSInteg
 
 #pragma mark - NSDate General Use Functions
 NSString* PBTStringFromTwitterDate(NSDate *date){
+    return PBTStringFromTwitterDateWithFormat(date, @"EEE MMM dd HH:mm:ss Z yyyy");
+}
+
+NSString* PBTStringFromTwitterDateWithFormat(NSDate *date, NSString *format){
     NSDateFormatter *dateFormatter=nil;
     NSLocale *usLocale=nil;
     
@@ -114,7 +118,8 @@ NSString* PBTStringFromTwitterDate(NSDate *date){
     [dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
     
     //For further information look here: http://unicode.org/reports/tr35/tr35-6.html#Date_Format_Patterns
-    [dateFormatter setDateFormat: @"EEE MMM dd HH:mm:ss +0000 yyyy"];
+    [dateFormatter setDateFormat:format];
+    [usLocale release];
     
     return [NSString stringWithString:[dateFormatter stringFromDate:date]];
 }
