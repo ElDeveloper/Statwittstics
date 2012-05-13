@@ -366,10 +366,15 @@ NSUInteger const kPBTRequestMaximum= 3200;
     NSUInteger calendarPoints=0, i=0, totalTweets=0, newIndex=0, *bufferArray=NULL;
     NSDate *startDate=nil, *endDate=nil;
     NSMutableArray *xData=nil, *yData=nil;
+    NSMutableString *dataSetTitleHolder=nil;
     
     //General usage constants, helps you build the linear space and plot
     startDate=[[tweets objectAtIndex:0] postDate];
     endDate=[[tweets objectAtIndex:[tweets count]-1] postDate];
+    
+    dataSetTitleHolder=[NSString stringWithFormat:@"Tweets from %@ to %@.", 
+                        PBTStringFromTwitterDateWithFormat(startDate, @"MMM/dd/yyyy"),  
+                        PBTStringFromTwitterDateWithFormat(endDate, @"MMM/dd/yyyy")];
     
     //Cast to a unsigned integer
     calendarPoints=(NSUInteger)PBTCalendarUnitsBetweenDates(endDate, startDate, calendarUnit);
@@ -443,7 +448,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     
     outDataset=[[PBDataSet alloc] initWithXData:xDataArray 
                                           yData:yDataArray 
-                                       andTitle:[NSString stringWithFormat:@"Tweets From %@ to %@",beginDate, endDate]];
+                                       andTitle:[NSString stringWithFormat:@"Tweets from %@ to %@",beginDate, endDate]];
     
     [outDataset setLineColor:[CPTColor clearColor]];
     [outDataset setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypePentagon size:8 andColor:[CPTColor whiteColor]]];

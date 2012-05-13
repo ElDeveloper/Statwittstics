@@ -207,7 +207,7 @@
             [subjectOfAnalysis requestMostRecentTweets:kDefaultNumberOfTweets withHandler:^{
                 
                 //Go to the main thread and perform the GUI changes
-                [self performSelectorOnMainThread:@selector(drawPlotOfTweetsPerMonth) withObject:nil waitUntilDone:YES];
+                [self performSelectorOnMainThread:@selector(drawPlotOfTweetsPerDay) withObject:nil waitUntilDone:YES];
             }];
         }];
     }
@@ -222,7 +222,11 @@
     }
     
     PBPlot *tweetsPerDayPlot=[[PBPlot alloc] initWithFrame:CGRectMake(0, 0, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
-    [someDataSet release];
+    
+    //Titles
+    [tweetsPerDayPlot setXAxisTitle:@"Día"];
+    [tweetsPerDayPlot setYAxisTitle:@"Número de Tweets"];
+    [tweetsPerDayPlot setGraphTitle:[someDataSet dataSetTitle]];
     
     //Plot attributes
     [tweetsPerDayPlot setAxisWithRangeFactor:1.2];
@@ -236,20 +240,25 @@
 -(void)drawPlotOfTweetsPerWeek{
     PBDataSet *someDataSet=[[subjectOfAnalysis dataSetOfTweetsPerCalendarUnit:NSWeekCalendarUnit] retain];
     [someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeHexagon size:5 andColor:[CPTColor blackColor]]];
+    [someDataSet setFillingColor:[CPTColor darkGrayColor]];
     
     if ([[visualizationSpace subviews] count] != 0) {
         [[[visualizationSpace subviews] objectAtIndex:[[visualizationSpace subviews] count] - 1] removeFromSuperview];
     }
     
-    PBPlot *tweetsPerWeekPlot=[[PBPlot alloc] initWithFrame:CGRectMake(0, 0, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
-    [someDataSet release];
+    PBBar *tweetsPerWeek=[[PBBar alloc] initWithFrame:CGRectMake(0, 0, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
+    
+    //Titles
+    [tweetsPerWeek setXAxisTitle:@"Semana"];
+    [tweetsPerWeek setYAxisTitle:@"Número de Tweets"];
+    [tweetsPerWeek setGraphTitle:[someDataSet dataSetTitle]];
     
     //Plot attributes
-    [tweetsPerWeekPlot setAxisWithRangeFactor:1.2];
-    [tweetsPerWeekPlot showGrids];
+    [tweetsPerWeek setAxisWithRangeFactor:1.2];
+    [tweetsPerWeek showGrids];
     
     // Do any additional setup after loading the view.
-    [[self visualizationSpace] addSubview:tweetsPerWeekPlot];
+    [[self visualizationSpace] addSubview:tweetsPerWeek];
     [someDataSet release];
 }
 
@@ -262,7 +271,11 @@
     }
     
     PBBar *tweetsPerMonth=[[PBBar alloc] initWithFrame:CGRectMake(0, 0, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
-    [someDataSet release];
+    
+    //Titles
+    [tweetsPerMonth setXAxisTitle:@"Mes"];
+    [tweetsPerMonth setYAxisTitle:@"Número de Tweets"];
+    [tweetsPerMonth setGraphTitle:[someDataSet dataSetTitle]];
     
     //Plot attributes
     [tweetsPerMonth setAxisWithRangeFactor:1.2];
