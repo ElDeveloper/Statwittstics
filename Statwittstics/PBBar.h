@@ -1,39 +1,31 @@
 //
-//  PBPlot.h
-//  CoreGraph
+//  PBBar.h
+//  Statwittstics
 //
-//  Created by Yoshiki - Vázquez Baeza on 26/03/12.
+//  Created by Yoshiki - Vázquez Baeza on 12/05/12.
 //  Copyright (c) 2012 Polar Bears Nanotechnology Research ©. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 
-#import "PBDefines.h"
-
 #import "PBVisualization.h"
 #import "PBDataSet.h"
 #import "PBUtilities.h"
 
-/*
-    TO DO:
-    + Implement legends for the touch protocol.
-    + Add functionality to the customizations protocol.
- */
+@protocol PBBarDelegate;
 
-@protocol PBPlotDelegate;
-
-@interface PBPlot : PBVisualization<CPTPlotDataSource, CPTScatterPlotDelegate, CPTPlotSpaceDelegate>{
-    id <PBPlotDelegate> delegate;
+@interface PBBar : PBVisualization<CPTPlotDataSource, CPTBarPlotDelegate, CPTPlotSpaceDelegate>{
+    id <PBBarDelegate> delegate;
     CPTXYGraph *graph;
 
     NSString *xAxisTitle;
     NSString *yAxisTitle;
     
-    @private NSMutableArray *linePlots;
+//    @private NSMutableArray *linePlots;
 }
 
-@property (assign) id<PBPlotDelegate> delegate;
-@property (nonatomic, retain) CPTXYGraph *graph;
+@property(assign) id<PBBarDelegate> delegate;
+@property(nonatomic, retain) CPTXYGraph *graph;
 
 //Basic descriptors of the graph
 @property (nonatomic, retain) NSString *xAxisTitle;
@@ -94,10 +86,10 @@
  + You would like to add any extra customizations to the plot.
  + You would like to respond to the interaction callbacks.
  */
-@protocol PBPlotDelegate <NSObject>
+@protocol PBBarDelegate <NSObject>
 
 @optional
--(void)additionalCustomizationsForPBPlot;
+-(void)additionalCustomizationsForPBBar;
 -(void)didSelectIndex:(NSUInteger)index ofDataSet:(PBDataSet *)dataSet;
 
 @end

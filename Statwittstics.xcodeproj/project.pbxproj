@@ -11,6 +11,9 @@
 		50296390153E6C3500DFD6AF /* AboutViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5029638E153E6C3500DFD6AF /* AboutViewController.xib */; };
 		503B4E24154C977400A6C141 /* ProfilePicturePlaceholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 503B4E23154C977400A6C141 /* ProfilePicturePlaceholder.png */; };
 		503B6D59154D0832003904F9 /* GIDAAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 503B6D58154D0831003904F9 /* GIDAAlertView.m */; };
+		5046DEBF155F40F300AACBA9 /* PBBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 5046DEBE155F40F300AACBA9 /* PBBar.m */; };
+		5046DEC4155F697C00AACBA9 /* PBVisualization.m in Sources */ = {isa = PBXBuildFile; fileRef = 5046DEC3155F697C00AACBA9 /* PBVisualization.m */; };
+		5046DEC7155F724F00AACBA9 /* PBConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 5046DEC6155F724E00AACBA9 /* PBConstants.m */; };
 		5089487815315CB000A66EFA /* PBTweet.m in Sources */ = {isa = PBXBuildFile; fileRef = 5089487715315CB000A66EFA /* PBTweet.m */; };
 		5089487B153160F800A66EFA /* PBTUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5089487A153160F700A66EFA /* PBTUser.m */; };
 		5089487D1531742500A66EFA /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5089487C1531742500A66EFA /* Twitter.framework */; };
@@ -33,6 +36,7 @@
 		50CAAC52154525A600641D90 /* PBTUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CAAC51154525A600641D90 /* PBTUtilities.m */; };
 		50CD10C2153BC640004F7229 /* PBTConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CD10C1153BC640004F7229 /* PBTConstants.m */; };
 		50E0DF2C1557A1450018F9B5 /* libCorePlot-CocoaTouch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 50E0DF2B1557A1450018F9B5 /* libCorePlot-CocoaTouch.a */; };
+		50E4E2B0155F9F8C00AF606C /* PBXYVisualization.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E4E2AF155F9F8C00AF606C /* PBXYVisualization.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +47,13 @@
 		503B4E23154C977400A6C141 /* ProfilePicturePlaceholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ProfilePicturePlaceholder.png; sourceTree = "<group>"; };
 		503B6D57154D0831003904F9 /* GIDAAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GIDAAlertView.h; sourceTree = "<group>"; };
 		503B6D58154D0831003904F9 /* GIDAAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GIDAAlertView.m; sourceTree = "<group>"; };
+		5046DEBD155F40F300AACBA9 /* PBBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBBar.h; sourceTree = "<group>"; };
+		5046DEBE155F40F300AACBA9 /* PBBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBBar.m; sourceTree = "<group>"; };
+		5046DEC1155F433700AACBA9 /* PBDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBDefines.h; sourceTree = "<group>"; };
+		5046DEC2155F697C00AACBA9 /* PBVisualization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBVisualization.h; sourceTree = "<group>"; };
+		5046DEC3155F697C00AACBA9 /* PBVisualization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBVisualization.m; sourceTree = "<group>"; };
+		5046DEC5155F724E00AACBA9 /* PBConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBConstants.h; sourceTree = "<group>"; };
+		5046DEC6155F724E00AACBA9 /* PBConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBConstants.m; sourceTree = "<group>"; };
 		5089487615315CB000A66EFA /* PBTweet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBTweet.h; sourceTree = "<group>"; };
 		5089487715315CB000A66EFA /* PBTweet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBTweet.m; sourceTree = "<group>"; };
 		50894879153160F700A66EFA /* PBTUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBTUser.h; sourceTree = "<group>"; };
@@ -161,6 +172,8 @@
 		50E0DF7A1557A1770018F9B5 /* NSCoderExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSCoderExtensions.h; sourceTree = "<group>"; };
 		50E0DF7B1557A1770018F9B5 /* NSDecimalNumberExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSDecimalNumberExtensions.h; sourceTree = "<group>"; };
 		50E0DF7C1557A1770018F9B5 /* NSNumberExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSNumberExtensions.h; sourceTree = "<group>"; };
+		50E4E2AE155F9F8C00AF606C /* PBXYVisualization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBXYVisualization.h; sourceTree = "<group>"; };
+		50E4E2AF155F9F8C00AF606C /* PBXYVisualization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBXYVisualization.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -279,10 +292,19 @@
 			isa = PBXGroup;
 			children = (
 				50B5DEA3152EB9CF00661492 /* PBKit.h */,
+				5046DEC1155F433700AACBA9 /* PBDefines.h */,
+				5046DEC5155F724E00AACBA9 /* PBConstants.h */,
+				5046DEC6155F724E00AACBA9 /* PBConstants.m */,
 				50B5DEA1152EB9CF00661492 /* PBDataSet.h */,
 				50B5DEA2152EB9CF00661492 /* PBDataSet.m */,
+				5046DEC2155F697C00AACBA9 /* PBVisualization.h */,
+				5046DEC3155F697C00AACBA9 /* PBVisualization.m */,
+				50E4E2AE155F9F8C00AF606C /* PBXYVisualization.h */,
+				50E4E2AF155F9F8C00AF606C /* PBXYVisualization.m */,
 				50B5DEA4152EB9CF00661492 /* PBPlot.h */,
 				50B5DEA5152EB9CF00661492 /* PBPlot.m */,
+				5046DEBD155F40F300AACBA9 /* PBBar.h */,
+				5046DEBE155F40F300AACBA9 /* PBBar.m */,
 				50B5DEA6152EB9CF00661492 /* PBUtilities.h */,
 				50B5DEA7152EB9CF00661492 /* PBUtilities.m */,
 			);
@@ -474,6 +496,10 @@
 				50CAAC451544F0A300641D90 /* FindUserViewController.m in Sources */,
 				50CAAC52154525A600641D90 /* PBTUtilities.m in Sources */,
 				503B6D59154D0832003904F9 /* GIDAAlertView.m in Sources */,
+				5046DEBF155F40F300AACBA9 /* PBBar.m in Sources */,
+				5046DEC4155F697C00AACBA9 /* PBVisualization.m in Sources */,
+				5046DEC7155F724F00AACBA9 /* PBConstants.m in Sources */,
+				50E4E2B0155F9F8C00AF606C /* PBXYVisualization.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

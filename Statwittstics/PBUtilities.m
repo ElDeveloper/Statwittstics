@@ -135,4 +135,57 @@
 	return [CPTFill fillWithGradient:areaGradient];
 }
 
+#pragma mark - PBXYVisualizations Helpers
++(float)ticksIntervalIn:(PBAxis)axisType dataSets:(NSArray *)dataSets{
+    float minValue=0, maxValue=0, tmin=0, tmax=0, intervalSize=0;
+    int values[4]={12, 10, 8, 6}, i=0, numberOfTicks=0, position=0;
+    
+    //Go through each of the data sets, determine the maximum and minimum values
+    for (PBDataSet *currentDataSet in dataSets) {
+        switch (axisType) {
+            case PBXAxis:
+                tmin=[[[currentDataSet dataPointsX] valueForKeyPath:@"@min.floatValue"] floatValue];
+                tmax=[[[currentDataSet dataPointsX] valueForKeyPath:@"@max.floatValue"] floatValue];
+                break;
+            case PBYAxis:
+                tmin=[[[currentDataSet dataPointsY] valueForKeyPath:@"@min.floatValue"] floatValue];
+                tmax=[[[currentDataSet dataPointsY] valueForKeyPath:@"@max.floatValue"] floatValue];
+                break;
+            default:
+                break;
+        }
+        
+        //Then determine the maximum and minimum values among all the data-sets
+        if (minValue > tmin) {
+            minValue=tmin;
+        }
+        if (maxValue < tmax) {
+            maxValue=tmax;
+        }
+    }
+    
+    //Both values of the same sign, modulus maxima difference
+    if ( (minValue <= 0 && maxValue <= 0) || (maxValue >= 0 && minValue >= 0) ) {
+        intervalSize=fabsf(maxValue) - fabsf(minValue);
+    }
+    //Regular difference
+    else {
+        intervalSize=maxValue-minValue;
+    }
+    
+    numberOfTicks=((int)intervalSize)%values[0];
+    position=0;
+    for (i=0 ; i<4 ; i++) {
+        if (  numberOfTicks > ((int)intervalSize)%values[i] ) {
+            numberOfTicks=((int)intervalSize)%values[i];
+            position=i;
+        }
+    }
+    
+    #ifdef DEBUG
+    NSLog(@"PBPlot**: min:%f max:%f",minValue, maxValue);
+    #endif
+    return (intervalSize/values[position]);
+}
+
 @end

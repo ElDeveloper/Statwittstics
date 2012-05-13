@@ -1,19 +1,15 @@
 //
-//  PBPlot.m
-//  CoreGraph
+//  PBBar.m
+//  Statwittstics
 //
-//  Created by Yoshiki - Vázquez Baeza on 26/03/12.
+//  Created by Yoshiki - Vázquez Baeza on 12/05/12.
 //  Copyright (c) 2012 Polar Bears Nanotechnology Research ©. All rights reserved.
 //
 
-#import "PBPlot.h"
+#import "PBBar.h"
 
-@implementation PBPlot
-
-@synthesize delegate, graph;
-@synthesize xAxisTitle, yAxisTitle;
-
-#pragma mark - ViewLifecycle
+@implementation PBBar
+@synthesize delegate, graph, xAxisTitle, yAxisTitle;
 
 -(id)initWithFrame:(CGRect)frame andDataSets:(NSArray *)theDataSets{
     self = [super initWithFrame:frame];
@@ -70,41 +66,38 @@
             
             //Check for possible problems with the run-time, ALL THE PBDataSets should have the sime dataSetLength
             if ([currentDataSet dataSetLength] != sizeHelper) {
-                [NSException raise:@"PBPlot Exception" format:@"The size of the PBDataSets should be the same."];
+                [NSException raise:@"PBBar Exception" format:@"The size of the PBDataSets should be the same."];
             }
             else {
                 sizeHelper=[currentDataSet dataSetLength];
             }
             
-            CPTScatterPlot *scorePlot=[[CPTScatterPlot alloc] init];
-            [scorePlot setDelegate:self];
-            [scorePlot setDataSource:self];
+            CPTBarPlot *plotSprite=[[CPTBarPlot alloc] init];
+            [plotSprite setDelegate:self];
+            [plotSprite setDataSource:self];
+            [plotSprite setBarBasesVary:NO];
+            [plotSprite setBarsAreHorizontal:NO];
+            [plotSprite setCornerRadius:0.9f];
+            [plotSprite setBarWidth:CPTDecimalFromFloat(1.0f)];
             
             //The identifier of each of the scatter plots is the same as the data set
             //title, and is added to an array so it can be retrieved on the data-source
             //delegate method
-            [scorePlot setIdentifier:[currentDataSet dataSetTitle]];
+            [plotSprite setIdentifier:[currentDataSet dataSetTitle]];
             [identifiers addObject:[currentDataSet dataSetTitle]];
             
             //The properties for the line, the color should be either the one that's been set or a default color
-            [scorePlot setDataLineStyle:[PBUtilities lineStyleWithWidth:3.0 andColor:[PBUtilities defaultLineColorForDataSet:currentDataSet atIndex:i]]];
-            [scorePlot setAreaFill:[PBUtilities fillWithGradient:[currentDataSet fillingColor]]];
+            [plotSprite setLineStyle:[PBUtilities lineStyleWithWidth:3.0 andColor:[PBUtilities defaultLineColorForDataSet:currentDataSet atIndex:i]]];
+            [plotSprite setFill:[PBUtilities fillWithGradient:[currentDataSet fillingColor]]];
             
-            //If there is a symbol for the plot add it, else ignore the property
-            if ([currentDataSet symbol] != nil) {
-                [scorePlot setPlotSymbol:[currentDataSet symbol]];
-            }
-            
-            [scorePlot setAreaBaseValue:[[NSDecimalNumber zero] decimalValue]];
-            
-            [graph addPlot:scorePlot];
-            [plotSprites addObject:scorePlot];
-            [scorePlot release];
+            [graph addPlot:plotSprite];
+            [plotSprites addObject:plotSprite];
+            [plotSprite release];
         }
         
         //Customizations protocol
         if ([[self delegate] respondsToSelector:@selector(additionalCustomizationsForPBPlot)]) {
-            [delegate additionalCustomizationsForPBPlot];
+            [delegate additionalCustomizationsForPBBar];
         }
     }
     return self;
@@ -126,10 +119,10 @@
 
 #pragma mark - Titles For The Axes and Graph
 -(void)setGraphTitle:(NSString *)title withStyle:(CPTTextStyle *)textStyle{
-//    //Because this is a custom setter, it has to be this way
-//    if (graphTitle != nil) {
-//        [graphTitle release];
-//    }
+    //    //Because this is a custom setter, it has to be this way
+    //    if (graphTitle != nil) {
+    //        [graphTitle release];
+    //    }
     //[self setGraphTitle:title];
     
     //If you don't add the offset it will look weird
@@ -198,7 +191,7 @@
     CPTXYAxisSet *axisSet=(CPTXYAxisSet *)[graph axisSet];
     CPTXYAxis *yAxis=[axisSet yAxis];
     CPTXYAxis *xAxis=[axisSet xAxis];
-  
+    
     //Avoid overhead, create this objects once
     CPTColor *grayColor=[[CPTColor colorWithGenericGray:0.2] colorWithAlphaComponent:0.75];
     CPTLineStyle *gridLineStyle=[PBUtilities lineStyleWithWidth:0.75 andColor:grayColor];
@@ -262,9 +255,9 @@
     float rangeLength=CPTDecimalFloatValue([[plotSpace xRange] length]);
     int visibleTicks=(int)floor((rangeLength / majorTickInterval));
     
-    #ifdef DEBUG
+#ifdef DEBUG
     NSLog(@"There are %d visible ticks for the X axis", visibleTicks);
-    #endif
+#endif
     
     //Just be careful and let the programmer know if he screwed something
     if ([labels count] < visibleTicks) {
@@ -316,9 +309,9 @@
     float rangeLength=CPTDecimalFloatValue([[plotSpace yRange] length]);
     int visibleTicks=(int)floor((rangeLength / majorTickInterval));
     
-    #ifdef DEBUG
+#ifdef DEBUG
     NSLog(@"There are %d visible ticks for the Y axis", visibleTicks);
-    #endif
+#endif
     
     //Just be careful and let the programmer know if he screwed something
     if ([labels count] < visibleTicks) {
@@ -442,7 +435,7 @@
         case CPTScatterPlotFieldX:
             return [[[dataSets objectAtIndex:currentPlot] dataPointsX] objectAtIndex:index];
             break;
-        
+            
         case CPTScatterPlotFieldY:
             return [[[dataSets objectAtIndex:currentPlot] dataPointsY] objectAtIndex:index];
             break;
@@ -456,50 +449,9 @@
 }
 
 #pragma mark - CPTScatterPlotDelegate
--(void)scatterPlot:(CPTScatterPlot *)plot plotSymbolWasSelectedAtRecordIndex:(NSUInteger)index{
-    //If there is a custom behaviour, then do not present your behaviour, that is just rude :P
-    if ([delegate respondsToSelector:@selector(didSelectIndex:ofDataSet:)]) {
-        [[self delegate] didSelectIndex:index ofDataSet:nil];
-        return;
-    }
-    
-    static CPTPlotSpaceAnnotation *symbolTextAnnotation;
-    
-    CPTXYGraph *annotationGraph = graph;
-    
-	if ( symbolTextAnnotation ) {
-		[annotationGraph.plotAreaFrame.plotArea removeAnnotation:symbolTextAnnotation];
-		[symbolTextAnnotation release];
-		symbolTextAnnotation=nil;
-	}
-    
-	// Setup a style for the annotation
-	CPTMutableTextStyle *hitAnnotationTextStyle = [CPTMutableTextStyle textStyle];
-	hitAnnotationTextStyle.color=[CPTColor whiteColor];
-	hitAnnotationTextStyle.fontSize=16.0f;
-	hitAnnotationTextStyle.fontName=@"Helvetica-Bold";
-    
-	// Determine point of symbol in plot coordinates
-	NSNumber *x=[[[dataSets objectAtIndex:0] dataPointsX] objectAtIndex:index];
-	NSNumber *y=[[[dataSets objectAtIndex:0] dataPointsY] objectAtIndex:index];
-	NSArray *anchorPoint=[NSArray arrayWithObjects:x, y, nil];
-    
-	// Add annotation
-	// First make a string for the y value
-	NSNumberFormatter *formatter = [[[NSNumberFormatter alloc] init] autorelease];
-	[formatter setMaximumFractionDigits:2];
-	NSString *yString = [formatter stringFromNumber:y];
-    
-	// Now add the annotation to the plot area
-	CPTTextLayer *textLayer = [[CPTTextLayer alloc] initWithText:yString style:hitAnnotationTextStyle];
-	symbolTextAnnotation=[[CPTPlotSpaceAnnotation alloc] initWithPlotSpace:annotationGraph.defaultPlotSpace anchorPlotPoint:anchorPoint];
-	symbolTextAnnotation.contentLayer=textLayer;
-    [textLayer release];
-	symbolTextAnnotation.displacement=CGPointMake(0.0f, 20.0f);
-    
-    NSLog(@"Dude wtf x: %f and y: %f",symbolTextAnnotation.contentAnchorPoint.x, symbolTextAnnotation.contentAnchorPoint.y);
-    
-	[annotationGraph.plotAreaFrame.plotArea addAnnotation:symbolTextAnnotation];
+-(void)barPlot:(CPTBarPlot *)plot barWasSelectedAtRecordIndex:(NSUInteger)index{
+
 }
+
 
 @end

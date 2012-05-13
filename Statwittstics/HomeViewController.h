@@ -25,7 +25,7 @@ typedef enum {
 
 @interface HomeViewController : UIViewController <UIActionSheetDelegate>{
     
-    PBPlot *mainPlot;
+    PBVisualization *visualizationSpace;
     PBTUser *subjectOfAnalysis;
     PBTUserView *subjectOfAnalysisView;
     
@@ -34,7 +34,7 @@ typedef enum {
 }
 
 //Main plot of the user to analyze
-@property (nonatomic, retain) PBPlot *mainPlot;
+@property (nonatomic, retain) PBVisualization *visualizationSpace;
 
 //The user to analyze (model and view)
 @property (nonatomic, retain) PBTUser *subjectOfAnalysis;

@@ -5,23 +5,11 @@
 //  Created by Yoshiki - Vázquez Baeza on 03/04/12.
 //  Copyright (c) 2012 Polar Bears Nanotechnology Research ©. All rights reserved.
 //
-
 #import <Foundation/Foundation.h>
-#import "CorePlot-CocoaTouch.h"
+
+#import "PBDefines.h"
+
 #import "PBDataSet.h"
-
-#define PBPlotError(string) \
-NSLog(@"PBPLotError:**%@",string)\
-
-#define defaultCPTColors \
-[CPTColor whiteColor], [CPTColor redColor], [CPTColor greenColor],\
-[CPTColor cyanColor], [CPTColor purpleColor], [CPTColor orangeColor],\
-[CPTColor yellowColor], [CPTColor blackColor]
-
-typedef enum {
-    PBSymbolEllipse=0,
-    PBSymbolSnowFlake
-}PBSymbolType;
 
 @interface PBUtilities : NSObject
 
@@ -52,5 +40,10 @@ typedef enum {
 
 //By default fades away (ends in clear color)
 +(CPTFill *)fillWithGradient:(CPTColor *)color;
+
+//Determine the space between intervals to show in the plot, this should work more
+//accurately than the default annotations, as it takes accound of the mantiza of 
+//the ticks and the general appearance of the resulting plot
++(float)ticksIntervalIn:(PBAxis)axisType dataSets:(NSArray *)dataSets;
 
 @end

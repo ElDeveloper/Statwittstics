@@ -9,8 +9,7 @@
 #ifndef PBPlot_Demo_PBKit_h
 #define PBPlot_Demo_PBKit_h
 
-//The kit rely on the CorePlot framework
-#import "CorePlot-CocoaTouch.h"
+#import "PBDefines.h"
 
 //General (missing)utilities for the CorePlot framework
 #import "PBUtilities.h"
@@ -20,5 +19,6 @@
 
 //Plot types
 #import "PBPlot.h"
+#import "PBBar.h"
 
 #endif

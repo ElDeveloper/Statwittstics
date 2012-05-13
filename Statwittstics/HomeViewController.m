@@ -10,7 +10,7 @@
 
 @implementation HomeViewController
 
-@synthesize mainPlot;
+@synthesize visualizationSpace;
 @synthesize subjectOfAnalysis, subjectOfAnalysisView;
 @synthesize researchFellow;
 @synthesize optionsActionSheet;
@@ -22,7 +22,8 @@
         [self setTitle:@"Statwittstics"];
         
         //1024 x 768
-        mainPlot=nil;
+        visualizationSpace=[[PBVisualization alloc] initWithFrame:CGRectMake(9, 145, 1005, 550)];
+        [[self view] addSubview:visualizationSpace];
         
         researchFellow=nil;
         subjectOfAnalysis=nil;
@@ -82,7 +83,7 @@
 }
 
 -(void)dealloc{
-    [mainPlot release];
+    [visualizationSpace release];
     [subjectOfAnalysisView release];
     [subjectOfAnalysis release];
     [researchFellow release];
@@ -101,8 +102,6 @@
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    
-    NSLog(@"First ... view will appear");
 }
 
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{
@@ -187,7 +186,7 @@
             [subjectOfAnalysis requestMostRecentTweets:kDefaultNumberOfTweets withHandler:^{
                 
                 //Go to the main thread and perform the GUI changes
-                [self performSelectorOnMainThread:@selector(drawPlotOfTweetsPerWeek) withObject:nil waitUntilDone:YES];
+                [self performSelectorOnMainThread:@selector(drawScatterPlotOfTweetsPerHourPerDay) withObject:nil waitUntilDone:YES];
             }];
         }];
     }
@@ -208,7 +207,7 @@
             [subjectOfAnalysis requestMostRecentTweets:kDefaultNumberOfTweets withHandler:^{
                 
                 //Go to the main thread and perform the GUI changes
-                [self performSelectorOnMainThread:@selector(drawScatterPlotOfTweetsPerHourPerDay) withObject:nil waitUntilDone:YES];
+                [self performSelectorOnMainThread:@selector(drawPlotOfTweetsPerMonth) withObject:nil waitUntilDone:YES];
             }];
         }];
     }
@@ -218,86 +217,92 @@
     PBDataSet *someDataSet=[[subjectOfAnalysis dataSetOfTweetsPerCalendarUnit:NSDayCalendarUnit] retain];
     [someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeHexagon size:5 andColor:[CPTColor blackColor]]];
     
-    if (mainPlot != nil) {
-        [mainPlot removeFromSuperview];
-        [mainPlot release];
+    if ([[visualizationSpace subviews] count] != 0) {
+        [[[visualizationSpace subviews] objectAtIndex:[[visualizationSpace subviews] count] - 1] removeFromSuperview];
     }
     
-    mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(9, 145, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
+    PBPlot *tweetsPerDayPlot=[[PBPlot alloc] initWithFrame:CGRectMake(0, 0, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
     [someDataSet release];
     
     //Plot attributes
-    [mainPlot setAxisWithRangeFactor:1.2];
-    [mainPlot showGrids];
+    [tweetsPerDayPlot setAxisWithRangeFactor:1.2];
+    [tweetsPerDayPlot showGrids];
     
     // Do any additional setup after loading the view.
-    [[self view] addSubview:mainPlot];
+    [[self visualizationSpace] addSubview:tweetsPerDayPlot];
+    [someDataSet release];
 }
 
 -(void)drawPlotOfTweetsPerWeek{
     PBDataSet *someDataSet=[[subjectOfAnalysis dataSetOfTweetsPerCalendarUnit:NSWeekCalendarUnit] retain];
     [someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeHexagon size:5 andColor:[CPTColor blackColor]]];
     
-    if (mainPlot != nil) {
-        [mainPlot removeFromSuperview];
-        [mainPlot release];
+    if ([[visualizationSpace subviews] count] != 0) {
+        [[[visualizationSpace subviews] objectAtIndex:[[visualizationSpace subviews] count] - 1] removeFromSuperview];
     }
     
-    mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(9, 145, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
+    PBPlot *tweetsPerWeekPlot=[[PBPlot alloc] initWithFrame:CGRectMake(0, 0, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
     [someDataSet release];
     
     //Plot attributes
-    [mainPlot setAxisWithRangeFactor:1.2];
-    [mainPlot showGrids];
+    [tweetsPerWeekPlot setAxisWithRangeFactor:1.2];
+    [tweetsPerWeekPlot showGrids];
     
     // Do any additional setup after loading the view.
-    [[self view] addSubview:mainPlot];
+    [[self visualizationSpace] addSubview:tweetsPerWeekPlot];
+    [someDataSet release];
 }
 
 -(void)drawPlotOfTweetsPerMonth{
     PBDataSet *someDataSet=[[subjectOfAnalysis dataSetOfTweetsPerCalendarUnit:NSMonthCalendarUnit] retain];
     [someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeStar size:5 andColor:[CPTColor blackColor]]];
     
-    if (mainPlot != nil) {
-        [mainPlot removeFromSuperview];
-        [mainPlot release];
+    if ([[visualizationSpace subviews] count] != 0) {
+        [[[visualizationSpace subviews] objectAtIndex:[[visualizationSpace subviews] count] - 1] removeFromSuperview];
     }
     
-    mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(9, 145, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
+    PBBar *tweetsPerMonth=[[PBBar alloc] initWithFrame:CGRectMake(0, 0, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
     [someDataSet release];
     
     //Plot attributes
-    [mainPlot setAxisWithRangeFactor:1.2];
-    [mainPlot showGrids];
+    [tweetsPerMonth setAxisWithRangeFactor:1.2];
+    [tweetsPerMonth showGrids];
     
     // Do any additional setup after loading the view.
-    [[self view] addSubview:mainPlot];
+    [[self visualizationSpace] addSubview:tweetsPerMonth];
+    [someDataSet release];
 }
 
 -(void)drawScatterPlotOfTweetsPerHourPerDay{
     PBDataSet *someDataSet=[[subjectOfAnalysis dataSetOfTweetsForHourPerDay] retain];
     
-    if (mainPlot != nil) {
-        [mainPlot removeFromSuperview];
-        [mainPlot release];
+    if ([[visualizationSpace subviews] count] != 0) {
+        [[[visualizationSpace subviews] objectAtIndex:[[visualizationSpace subviews] count] - 1] removeFromSuperview];
     }
     
-    mainPlot=[[PBPlot alloc] initWithFrame:CGRectMake(9, 145, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
+    PBPlot *tweetsPerHourPerDayScatterPlot=[[PBPlot alloc] initWithFrame:CGRectMake(0, 0, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
     
-    //Plot attributes
-    [mainPlot setXAxisUpperBound:90060 andLowerBound:0];
-    [mainPlot setYAxisUpperBound:8 andLowerBound:0];
-    [mainPlot setMajorTicksWithXInterval:3752.5 andYInterval:1];
-    [mainPlot setXAxisTitle:@"Hora"];
-    [mainPlot setYAxisTitle:@"Día de la Semana"];
-    [mainPlot showGrids];
-    [mainPlot setXTicksLabels:[NSArray arrayWithObjects:HOURS_ARRAY, nil]];
-    [mainPlot setYTicksLabels:[NSArray arrayWithObjects:DAYS, nil] withRotation:M_PI_2];
-    [mainPlot setGraphTitle:[someDataSet dataSetTitle]];
-    [[[mainPlot graph] defaultPlotSpace] setAllowsUserInteraction:YES];
+    //Set the limits and ticks intervals
+    [tweetsPerHourPerDayScatterPlot setXAxisUpperBound:90060 andLowerBound:0];
+    [tweetsPerHourPerDayScatterPlot setYAxisUpperBound:8 andLowerBound:0];
+    [tweetsPerHourPerDayScatterPlot setMajorTicksWithXInterval:3752.5 andYInterval:1];
+    
+    //Set the titles
+    [tweetsPerHourPerDayScatterPlot setXAxisTitle:@"Hora"];
+    [tweetsPerHourPerDayScatterPlot setYAxisTitle:@"Día de la Semana"];
+    [tweetsPerHourPerDayScatterPlot setGraphTitle:[someDataSet dataSetTitle]];
+
+    //Show the grids and custom ticks
+    [tweetsPerHourPerDayScatterPlot showGrids];
+    [tweetsPerHourPerDayScatterPlot setXTicksLabels:[NSArray arrayWithObjects:HOURS_ARRAY, nil]];
+    [tweetsPerHourPerDayScatterPlot setYTicksLabels:[NSArray arrayWithObjects:DAYS, nil] withRotation:M_PI_2];
+    [tweetsPerHourPerDayScatterPlot setViewIsRestricted:YES];
+    
+    //Allow user interactions
+    [[[tweetsPerHourPerDayScatterPlot graph] defaultPlotSpace] setAllowsUserInteraction:YES];
     
     // Do any additional setup after loading the view.
-    [[self view] addSubview:mainPlot];
+    [[self visualizationSpace] addSubview:tweetsPerHourPerDayScatterPlot];
 
     [someDataSet release];
 }

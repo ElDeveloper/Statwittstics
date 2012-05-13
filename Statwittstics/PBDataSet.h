@@ -7,14 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "CorePlot-CocoaTouch.h"
+#import "PBDefines.h"
 
 @interface PBDataSet : NSObject{
     NSString *dataSetTitle;
 
     NSArray *dataPointsX;
     NSArray *dataPointsY;
-    int dataSetLength;
+    NSUInteger dataSetLength;
     
     CPTColor *lineColor;
     CPTColor *fillingColor;
@@ -30,7 +30,7 @@
 //Data sources
 @property (nonatomic, retain) NSArray *dataPointsX;
 @property (nonatomic, retain) NSArray *dataPointsY;
-@property (nonatomic, assign) int dataSetLength;
+@property (nonatomic, assign) NSUInteger dataSetLength;
 
 //Different attributes to set for each plot
 @property (nonatomic, retain) CPTColor *lineColor;
