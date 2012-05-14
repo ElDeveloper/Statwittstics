@@ -15,5 +15,4 @@ CGFloat const PBPlotPaddingNone=0.0;
 NSString * const PBPlotAxisOrthogonal=@"0.0";
 
 @implementation PBConstants
-
 @end

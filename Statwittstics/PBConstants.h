@@ -16,5 +16,4 @@ extern CGFloat const PBPlotPaddingNone;
 extern NSString * const PBPlotAxisOrthogonal;
 
 @interface PBConstants : NSObject
-
 @end

@@ -64,4 +64,18 @@
     [super dealloc];
 }
 
+-(NSNumber *)maximumXValue{
+    return [dataPointsX valueForKeyPath:@"@max.float"];
+}
+-(NSNumber *)minimumXValue{
+    return [dataPointsX valueForKeyPath:@"@min.float"];
+}
+
+-(NSNumber *)maximumYValue{
+    return [dataPointsY valueForKeyPath:@"@max.float"];
+}
+-(NSNumber *)minimumYValue{
+    return [dataPointsY valueForKeyPath:@"@max.float"];
+}
+
 @end

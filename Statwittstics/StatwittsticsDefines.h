@@ -23,22 +23,22 @@
 //DG: Fondo de el PBTUserView
 //DG: Logotipo de la aplicación
 //DG: Selección de colores para toda la aplicación
-
+//
 //UX: Revisar si hace falta agregar sonidos
-
+//
 //PBPlot Framework:
 //SW: Hacer un objeto gráfica de barras basado en PBPlot
 //	+ Graficar número de twitts por hora (distribución)
 //	+ Graficar número de twitts por día
 //SW: Hacer un annotation que sea un UIPopOverController con una tabla de UITableViewTweetCells
-
+//
 //Statwittstics Framework:
 //SW: Controladores para cambiar fácilmente de tipo de visualización (URGENTE)
 //SW: Agregar GIDAAlertViews a todos los procesos asíncronos
 //SW: Generar PBDataSet de número de twitts por hora 
 //SW: Generar PBDataSet de número de twitts por día
 //SW: Añadir prueba de Kolmogorov-Smirnov para dos distribuciones
-//SW: Comparara dos usuarios en función de sus series de tiempo
+//SW: Comparar a dos usuarios en función de sus series de tiempo
 //	+ Coeficiente de correlación entre de el número de twitts por día
 //	+ Coeficiente de correlación entre la hora a la que dos usuarios twittean
 //	+ Comparar distribuciones de twitts por hora

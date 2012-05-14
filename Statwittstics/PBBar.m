@@ -78,11 +78,12 @@
             [plotSprite setBarBasesVary:NO];
             [plotSprite setBarsAreHorizontal:NO];
             [plotSprite setCornerRadius:0.9f];
-            [plotSprite setBarWidth:CPTDecimalFromFloat(1.0f)];
             
-            //The identifier of each of the scatter plots is the same as the data set
-            //title, and is added to an array so it can be retrieved on the data-source
-            //delegate method
+            [plotSprite setBarWidth:CPTDecimalFromFloat(1.0f)];
+            [plotSprite setBarOffset:CPTDecimalFromFloat(0.5)];
+            
+            //The identifier of each of the scatter plots is the same as the data set title, and
+            //is added to an array so it can be retrieved on the data-source delegate method
             [plotSprite setIdentifier:[currentDataSet dataSetTitle]];
             [identifiers addObject:[currentDataSet dataSetTitle]];
             

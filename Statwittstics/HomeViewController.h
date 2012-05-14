@@ -29,6 +29,9 @@ typedef enum {
     PBTUser *subjectOfAnalysis;
     PBTUserView *subjectOfAnalysisView;
     
+    UISegmentedControl *timeFrameSegmentedControl;
+    UISegmentedControl *visualizationTypeSegmentedControl;
+    
     @private PBTUser *researchFellow;
     @private UIActionSheet *optionsActionSheet;
 }
@@ -39,6 +42,10 @@ typedef enum {
 //The user to analyze (model and view)
 @property (nonatomic, retain) PBTUser *subjectOfAnalysis;
 @property (nonatomic, retain) PBTUserView *subjectOfAnalysisView;
+
+//Main controllers of the view
+@property (nonatomic, retain) UISegmentedControl *timeFrameSegmentedControl;
+@property (nonatomic, retain) UISegmentedControl *visualizationTypeSegmentedControl;
 
 //This user is required and will be the default for application launch
 @property (nonatomic, retain) PBTUser *researchFellow;

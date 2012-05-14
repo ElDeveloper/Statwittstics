@@ -22,8 +22,6 @@
     CPTPlotSymbol *symbol;
 }
 
--(id)initWithXData:(NSArray *)xData yData:(NSArray *)yData andTitle:(NSString *)title;
-
 //Similar to the PlotIdentifier
 @property (nonatomic, retain) NSString *dataSetTitle;
 
@@ -32,9 +30,19 @@
 @property (nonatomic, retain) NSArray *dataPointsY;
 @property (nonatomic, assign) NSUInteger dataSetLength;
 
-//Different attributes to set for each plot
+//Different style attributes to set for each plot
 @property (nonatomic, retain) CPTColor *lineColor;
 @property (nonatomic, retain) CPTColor *fillingColor;
+
+//Will only use this property if used with a scatter or line plot
 @property (nonatomic, retain) CPTPlotSymbol *symbol;
+
+-(id)initWithXData:(NSArray *)xData yData:(NSArray *)yData andTitle:(NSString *)title;
+
+//Quick getters of probably common used values
+-(NSNumber *)maximumXValue;
+-(NSNumber *)minimumXValue;
+-(NSNumber *)maximumYValue;
+-(NSNumber *)minimumYValue;
 
 @end

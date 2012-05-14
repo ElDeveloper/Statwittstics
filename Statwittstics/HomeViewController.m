@@ -12,6 +12,7 @@
 
 @synthesize visualizationSpace;
 @synthesize subjectOfAnalysis, subjectOfAnalysisView;
+@synthesize timeFrameSegmentedControl, visualizationTypeSegmentedControl;
 @synthesize researchFellow;
 @synthesize optionsActionSheet;
 
@@ -31,6 +32,26 @@
         [[self view] addSubview:subjectOfAnalysisView];
 
         optionsActionSheet=nil;
+        
+        //Segmented controllers
+        timeFrameSegmentedControl=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:NSLocalizedString(@"Daily", @"Daily String"),
+                                                                             NSLocalizedString(@"Weekley", @"Weekley String"),
+                                                                             NSLocalizedString(@"Monthly", @"Monthly String"), nil]];
+        [timeFrameSegmentedControl setFrame:CGRectMake(530, 10, 480, 28)];
+        [timeFrameSegmentedControl setMomentary:NO];
+        [timeFrameSegmentedControl setTintColor:[UIColor blackColor]];
+        [timeFrameSegmentedControl setSegmentedControlStyle:UISegmentedControlStyleBar];
+        [[self view] addSubview:timeFrameSegmentedControl];
+        
+        visualizationTypeSegmentedControl=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:NSLocalizedString(@"Bar Plot", @"Bar Plot String"),
+                                                                                     NSLocalizedString(@"Scatter Plot", @"Scatter Plot String"),
+                                                                                     NSLocalizedString(@"Line Plot", @"Line Plot String"), nil]];
+        [visualizationTypeSegmentedControl setFrame:CGRectMake(530, 48, 480, 28)];
+        [visualizationTypeSegmentedControl setMomentary:NO];
+        [visualizationTypeSegmentedControl setTintColor:[UIColor blackColor]];
+        [visualizationTypeSegmentedControl setSegmentedControlStyle:UISegmentedControlStyleBar];
+        [[self view] addSubview:visualizationTypeSegmentedControl];
+        
         
         //These buttons take charge of going somewhere else in the application
         UIBarButtonItem *optionsBarButton=[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Options", @"Options String") 
@@ -84,6 +105,10 @@
 
 -(void)dealloc{
     [visualizationSpace release];
+    
+    [timeFrameSegmentedControl release];
+    [visualizationTypeSegmentedControl release];
+    
     [subjectOfAnalysisView release];
     [subjectOfAnalysis release];
     [researchFellow release];
@@ -229,7 +254,7 @@
     [tweetsPerDayPlot setGraphTitle:[someDataSet dataSetTitle]];
     
     //Plot attributes
-    [tweetsPerDayPlot setAxisWithRangeFactor:1.2];
+    [tweetsPerDayPlot setAxisTight];
     [tweetsPerDayPlot showGrids];
     
     // Do any additional setup after loading the view.
@@ -254,7 +279,7 @@
     [tweetsPerWeek setGraphTitle:[someDataSet dataSetTitle]];
     
     //Plot attributes
-    [tweetsPerWeek setAxisWithRangeFactor:1.2];
+    [tweetsPerWeek setAxisTight];
     [tweetsPerWeek showGrids];
     
     // Do any additional setup after loading the view.
@@ -278,7 +303,7 @@
     [tweetsPerMonth setGraphTitle:[someDataSet dataSetTitle]];
     
     //Plot attributes
-    [tweetsPerMonth setAxisWithRangeFactor:1.2];
+    [tweetsPerMonth setAxisTight];
     [tweetsPerMonth showGrids];
     
     // Do any additional setup after loading the view.
