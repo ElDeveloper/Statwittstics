@@ -23,6 +23,27 @@ typedef enum {
     HVCActionSheetButtonShare=2
 }HVCActionSheetButton;
 
+//Tags used in the UISegmentedControl tags that work
+//as the main controllers of the application.
+typedef enum {
+    HVCSegmentedControlTimeFrame=8900,
+    HVCSegmentedControlVisualizationType
+}HVCSegmentedControl;
+
+//The index of the buttons in the segmented controls
+//each correspond to one of the HVCSegmentedControl
+typedef enum {
+    HVCTimeFrameDaily=0,
+    HVCTimeFrameWeekley,
+    HVCTimeFrameMonthly
+}HVCTimeFrame;
+
+typedef enum {
+    HVCVisualizationTypeLinePlot=0,
+    HVCVisualizationTypeScatterPlot,
+    HVCVisualizationTypeBarPlot
+}HVCVisualizationType;
+
 @interface HomeViewController : UIViewController <UIActionSheetDelegate>{
     
     PBVisualization *visualizationSpace;
@@ -32,6 +53,9 @@ typedef enum {
     UISegmentedControl *timeFrameSegmentedControl;
     UISegmentedControl *visualizationTypeSegmentedControl;
     
+    UISlider *numberOfTweetsSlider;
+    
+    @private UILabel *numberOfTweetsLabel;
     @private PBTUser *researchFellow;
     @private UIActionSheet *optionsActionSheet;
 }
@@ -47,6 +71,10 @@ typedef enum {
 @property (nonatomic, retain) UISegmentedControl *timeFrameSegmentedControl;
 @property (nonatomic, retain) UISegmentedControl *visualizationTypeSegmentedControl;
 
+@property (nonatomic, retain) UISlider *numberOfTweetsSlider;
+
+@property (nonatomic, retain) UILabel *numberOfTweetsLabel;
+
 //This user is required and will be the default for application launch
 @property (nonatomic, retain) PBTUser *researchFellow;
 
@@ -57,13 +85,18 @@ typedef enum {
 -(void)optionsButtonPressed:(id)sender;
 -(void)aboutButtonPressed:(id)sender;
 
+-(void)segmentedControllSelected:(UISegmentedControl *)segmentedControl;
+-(void)numberOfTweetsSliderValueChanged:(UISlider *)slider;
+-(void)downloadTweets;
+
 //Update the credential presented at the top of the screen
 -(void)loadUser:(PBTUser *)someUser;
-
 //Visualization related methods, these should be used by the controller
 -(void)drawPlotOfTweetsPerDay;
 -(void)drawPlotOfTweetsPerWeek;
 -(void)drawPlotOfTweetsPerMonth;
 -(void)drawScatterPlotOfTweetsPerHourPerDay;
+
+float fixedSliderValue(float sliderValue);
 
 @end

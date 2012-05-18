@@ -9,10 +9,10 @@
 #import "PBTUserView.h"
 
 #ifdef EXPANDED_LAYOUT
-CGSize const KPBTCGSize={.width=510.0f, .height=115.0f};
+CGSize const KPBTCGSize={.width=510.0f, .height=125.0f};
 #endif
 #ifdef COMPACTED_LAYOUT
-CGSize const KPBTCGSize={.width=510.0f, .height=115.0f};
+CGSize const KPBTCGSize={.width=510.0f, .height=125.0f};
 #endif
 
 @implementation PBTUserView

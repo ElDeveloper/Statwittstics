@@ -13,9 +13,12 @@
 @synthesize visualizationSpace;
 @synthesize subjectOfAnalysis, subjectOfAnalysisView;
 @synthesize timeFrameSegmentedControl, visualizationTypeSegmentedControl;
+@synthesize numberOfTweetsSlider;
+@synthesize numberOfTweetsLabel;
 @synthesize researchFellow;
 @synthesize optionsActionSheet;
 
+#pragma mark - Object Life-cycle
 -(id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
@@ -39,19 +42,51 @@
                                                                              NSLocalizedString(@"Monthly", @"Monthly String"), nil]];
         [timeFrameSegmentedControl setFrame:CGRectMake(530, 10, 480, 28)];
         [timeFrameSegmentedControl setMomentary:NO];
-        [timeFrameSegmentedControl setTintColor:[UIColor blackColor]];
+        [timeFrameSegmentedControl setTintColor:[UIColor darkGrayColor]];
         [timeFrameSegmentedControl setSegmentedControlStyle:UISegmentedControlStyleBar];
+        [timeFrameSegmentedControl setTag:HVCSegmentedControlTimeFrame];
+        [timeFrameSegmentedControl setSelectedSegmentIndex:HVCTimeFrameDaily];        
         [[self view] addSubview:timeFrameSegmentedControl];
         
-        visualizationTypeSegmentedControl=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:NSLocalizedString(@"Bar Plot", @"Bar Plot String"),
+        visualizationTypeSegmentedControl=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:NSLocalizedString(@"Line Plot", @"Line Plot String"),
                                                                                      NSLocalizedString(@"Scatter Plot", @"Scatter Plot String"),
-                                                                                     NSLocalizedString(@"Line Plot", @"Line Plot String"), nil]];
+                                                                                     NSLocalizedString(@"Bar Plot", @"Bar Plot String"), nil]];
         [visualizationTypeSegmentedControl setFrame:CGRectMake(530, 48, 480, 28)];
         [visualizationTypeSegmentedControl setMomentary:NO];
-        [visualizationTypeSegmentedControl setTintColor:[UIColor blackColor]];
+        [visualizationTypeSegmentedControl setTintColor:[UIColor darkGrayColor]];
         [visualizationTypeSegmentedControl setSegmentedControlStyle:UISegmentedControlStyleBar];
+        [visualizationTypeSegmentedControl setTag:HVCSegmentedControlVisualizationType];
+        [visualizationTypeSegmentedControl setSelectedSegmentIndex:HVCVisualizationTypeLinePlot];
         [[self view] addSubview:visualizationTypeSegmentedControl];
         
+        //Register both segmented controls in the defaultNotificationCenter
+        [timeFrameSegmentedControl addTarget:self action:@selector(segmentedControllSelected:) forControlEvents:UIControlEventValueChanged];
+        [visualizationTypeSegmentedControl addTarget:self action:@selector(segmentedControllSelected:) forControlEvents:UIControlEventValueChanged];
+        
+        
+        //Slider for the selection of tweets
+        numberOfTweetsSlider=[[UISlider alloc] initWithFrame:CGRectMake(530, 115, 480, 20)];
+        [numberOfTweetsSlider setMinimumValue:200];
+        [numberOfTweetsSlider setMaximumValue:3200];
+        [numberOfTweetsSlider addTarget:self action:@selector(numberOfTweetsSliderValueChanged:) forControlEvents:UIControlEventValueChanged];
+        [[self view] addSubview:numberOfTweetsSlider];
+        
+        //Label indicating the UISlider fixed value
+        numberOfTweetsLabel=[[UILabel alloc] initWithFrame:CGRectMake(0, 0, 125, 25)];
+        [numberOfTweetsLabel setText:[NSString stringWithString:@""]];
+        [numberOfTweetsLabel setCenter:CGPointMake(770, 95)];
+        [numberOfTweetsLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:25]];
+        [numberOfTweetsLabel setAdjustsFontSizeToFitWidth:NO];
+        [numberOfTweetsLabel setTextAlignment:UITextAlignmentCenter];
+        [numberOfTweetsLabel setTextColor:[UIColor whiteColor]];
+        [numberOfTweetsLabel setShadowColor:[UIColor darkGrayColor]];
+        [numberOfTweetsLabel setShadowOffset:CGSizeMake(0.5, 2.5)];
+        [numberOfTweetsLabel setBackgroundColor:[UIColor clearColor]];
+        [[self view] addSubview:numberOfTweetsLabel];
+        
+        //Create a smooth animation
+        [numberOfTweetsSlider setValue:200 animated:YES];
+        [self numberOfTweetsSliderValueChanged:numberOfTweetsSlider];
         
         //These buttons take charge of going somewhere else in the application
         UIBarButtonItem *optionsBarButton=[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Options", @"Options String") 
@@ -91,7 +126,23 @@
             
             //Twitter test
             researchFellow=[[PBTUser alloc] initWithUsername:[theAccount username] andAuthorizedAccount:theAccount];
-            [self loadUser:researchFellow];
+            subjectOfAnalysis=[researchFellow retain];
+            
+            [subjectOfAnalysis requestUserData:^{
+                
+                #ifdef DEBUG
+                NSLog(@"The real name is %@, annoyingly tweeted %d", [subjectOfAnalysis realName], [subjectOfAnalysis tweetCount]);
+                NSLog(@"Has %d followers and %d friends", [subjectOfAnalysis followers], [subjectOfAnalysis following]);
+                NSLog(@"The URL is: %@", [subjectOfAnalysis bioURL]);
+                NSLog(@"The location is: %@", [subjectOfAnalysis location]);
+                NSLog(@"The bio is: %@", [subjectOfAnalysis description]);
+                #endif
+                
+                //Load the view
+                [subjectOfAnalysisView performSelectorOnMainThread:@selector(loadUser:) withObject:subjectOfAnalysis waitUntilDone:YES];
+                
+                [self downloadTweets];
+            }];
         }
         else {
             //Must implement a GUI alert 
@@ -108,6 +159,8 @@
     
     [timeFrameSegmentedControl release];
     [visualizationTypeSegmentedControl release];
+    
+    [numberOfTweetsSlider release];
     
     [subjectOfAnalysisView release];
     [subjectOfAnalysis release];
@@ -170,6 +223,105 @@
     
 }
 
+-(void)segmentedControllSelected:(UISegmentedControl *)segmentedControl{
+    PBDataSet *someDataSet=nil;
+    NSUInteger calendarUnit=0;
+    
+    //Depending on the index
+    switch ([timeFrameSegmentedControl selectedSegmentIndex]) {
+        case HVCTimeFrameDaily:
+            calendarUnit=NSDayCalendarUnit;
+            break;
+        case HVCTimeFrameWeekley:
+            calendarUnit=NSWeekCalendarUnit;
+            break;
+        case HVCTimeFrameMonthly:
+            calendarUnit=NSMonthCalendarUnit;
+            break;
+        default:
+            break;
+    }
+
+    
+    someDataSet=[[subjectOfAnalysis dataSetOfTweetsPerCalendarUnit:calendarUnit] retain];
+    [someDataSet setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypeHexagon size:5 andColor:[CPTColor blackColor]]];
+    
+    if ([[visualizationSpace subviews] count] != 0) {
+        [[[visualizationSpace subviews] objectAtIndex:[[visualizationSpace subviews] count] - 1] removeFromSuperview];
+    }
+
+    if ( [visualizationTypeSegmentedControl selectedSegmentIndex] == HVCVisualizationTypeLinePlot ) {
+        PBPlot *tweetsPerDayPlot=[[PBPlot alloc] initWithFrame:CGRectMake(0, 0, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
+        
+        //Titles
+        [tweetsPerDayPlot setXAxisTitle:@"Día"];
+        [tweetsPerDayPlot setYAxisTitle:@"Número de Tweets"];
+        [tweetsPerDayPlot setGraphTitle:[someDataSet dataSetTitle]];
+        
+        //Plot attributes
+        [tweetsPerDayPlot setAxisTight];
+        [tweetsPerDayPlot showGrids];
+        
+        // Do any additional setup after loading the view.
+        [[self visualizationSpace] addSubview:tweetsPerDayPlot];
+        [tweetsPerDayPlot release];
+        [someDataSet release];
+    }
+    else if ([visualizationTypeSegmentedControl selectedSegmentIndex] == HVCVisualizationTypeScatterPlot) {
+        PBPlot *tweetsPerHourPerDayScatterPlot=[[PBPlot alloc] initWithFrame:CGRectMake(0, 0, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
+        
+        //Set the limits and ticks intervals
+        [tweetsPerHourPerDayScatterPlot setXAxisUpperBound:90060 andLowerBound:0];
+        [tweetsPerHourPerDayScatterPlot setYAxisUpperBound:8 andLowerBound:0];
+        [tweetsPerHourPerDayScatterPlot setMajorTicksWithXInterval:3752.5 andYInterval:1];
+        
+        //Set the titles
+        [tweetsPerHourPerDayScatterPlot setXAxisTitle:@"Hora"];
+        [tweetsPerHourPerDayScatterPlot setYAxisTitle:@"Día de la Semana"];
+        [tweetsPerHourPerDayScatterPlot setGraphTitle:[someDataSet dataSetTitle]];
+        
+        //Show the grids and custom ticks
+        [tweetsPerHourPerDayScatterPlot showGrids];
+        [tweetsPerHourPerDayScatterPlot setXTicksLabels:[NSArray arrayWithObjects:HOURS_ARRAY, nil]];
+        [tweetsPerHourPerDayScatterPlot setYTicksLabels:[NSArray arrayWithObjects:DAYS, nil] withRotation:M_PI_2];
+        [tweetsPerHourPerDayScatterPlot setViewIsRestricted:YES];
+        
+        //Allow user interactions
+        [[[tweetsPerHourPerDayScatterPlot graph] defaultPlotSpace] setAllowsUserInteraction:YES];
+        
+        // Do any additional setup after loading the view.
+        [[self visualizationSpace] addSubview:tweetsPerHourPerDayScatterPlot];
+        [tweetsPerHourPerDayScatterPlot release];
+        [someDataSet release];
+    }
+    else if ([visualizationTypeSegmentedControl selectedSegmentIndex] == HVCVisualizationTypeBarPlot){
+        PBBar *tweetsPerMonth=[[PBBar alloc] initWithFrame:CGRectMake(0, 0, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
+        
+        //Titles
+        [tweetsPerMonth setXAxisTitle:@"Mes"];
+        [tweetsPerMonth setYAxisTitle:@"Número de Tweets"];
+        [tweetsPerMonth setGraphTitle:[someDataSet dataSetTitle]];
+        
+        //Plot attributes
+        [tweetsPerMonth setAxisTight];
+        [tweetsPerMonth showGrids];
+        
+        // Do any additional setup after loading the view.
+        [[self visualizationSpace] addSubview:tweetsPerMonth];
+        [tweetsPerMonth release];
+        [someDataSet release];
+    }
+    
+}
+
+-(void)numberOfTweetsSliderValueChanged:(UISlider *)slider{
+    NSInteger newValue=0;
+    [numberOfTweetsSlider setValue:fixedSliderValue([slider value])];
+    newValue=(NSInteger)fixedSliderValue([slider value]);
+    
+    [numberOfTweetsLabel setText:[NSString stringWithFormat:@"%d", newValue]];
+}
+
 #pragma mark - UIActionSheetDelegate Methods
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
     //Load a view controller ... if needed
@@ -193,7 +345,15 @@
     return;
 }
 
-#pragma mark - Class Behavior
+-(void)downloadTweets{
+    [subjectOfAnalysis requestMostRecentTweets:[[numberOfTweetsLabel text] intValue] withHandler:^{
+        
+        //Go to the main thread and perform the GUI changes, here comes the magic ... 
+        [self performSelectorOnMainThread:@selector(segmentedControllSelected:) withObject:nil waitUntilDone:YES];
+    }];
+}
+
+#pragma mark - General Actions
 -(void)loadUser:(PBTUser *)someUser{
     
     if (subjectOfAnalysis != nil) {
@@ -208,7 +368,7 @@
             //Load the view
             [subjectOfAnalysisView performSelectorOnMainThread:@selector(loadUser:) withObject:subjectOfAnalysis waitUntilDone:YES];
             
-            [subjectOfAnalysis requestMostRecentTweets:kDefaultNumberOfTweets withHandler:^{
+            [subjectOfAnalysis requestMostRecentTweets:[[numberOfTweetsLabel text] intValue] withHandler:^{
                 
                 //Go to the main thread and perform the GUI changes
                 [self performSelectorOnMainThread:@selector(drawScatterPlotOfTweetsPerHourPerDay) withObject:nil waitUntilDone:YES];
@@ -229,7 +389,7 @@
             //Load the view
             [subjectOfAnalysisView performSelectorOnMainThread:@selector(loadUser:) withObject:subjectOfAnalysis waitUntilDone:YES];
             
-            [subjectOfAnalysis requestMostRecentTweets:kDefaultNumberOfTweets withHandler:^{
+            [subjectOfAnalysis requestMostRecentTweets:[[numberOfTweetsLabel text] intValue] withHandler:^{
                 
                 //Go to the main thread and perform the GUI changes
                 [self performSelectorOnMainThread:@selector(drawPlotOfTweetsPerDay) withObject:nil waitUntilDone:YES];
@@ -343,6 +503,22 @@
     [[self visualizationSpace] addSubview:tweetsPerHourPerDayScatterPlot];
 
     [someDataSet release];
+}
+
+float fixedSliderValue(float sliderValue){
+    NSUInteger i=0;
+    
+    //There are only 16 different available positions
+    for (i=1; i<17; i++) {
+        //Times 200, because the slider has a min of 200 and a max of 3200
+        if (i*200 >= sliderValue) {
+            //Got it? Return it
+            return i*200;
+        }
+    }
+    
+    //Should never happen, but return a zero value
+    return 0;
 }
 
 @end

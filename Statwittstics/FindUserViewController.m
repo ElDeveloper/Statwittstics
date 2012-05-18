@@ -165,7 +165,9 @@
     //Dismiss the view controller
     [self dismissModalViewControllerAnimated:YES];
     
-    [previousViewController loadUser:[searchResults objectAtIndex:[indexPath row]]];
+    [previousViewController setSubjectOfAnalysis:[searchResults objectAtIndex:[indexPath row]]];
+    [previousViewController performSelectorOnMainThread:@selector(downloadTweets) withObject:nil waitUntilDone:NO];
+    //[previousViewController loadUser:[searchResults objectAtIndex:[indexPath row]]];
 }
 
 #pragma mark - UISearchDisplayControllerDelegate Methods
