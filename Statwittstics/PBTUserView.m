@@ -27,7 +27,7 @@ CGSize const KPBTCGSize={.width=510.0f, .height=125.0f};
     if (self) {
         // Initialization code
         [self setBackgroundColor:[UIColor darkGrayColor]];
-        [[self layer] setCornerRadius:12.0f];
+        [[self layer] setCornerRadius:8.0f];
         [[self layer] setMasksToBounds:YES];
         
         UILabel *temp1=nil;

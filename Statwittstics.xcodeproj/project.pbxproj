@@ -32,6 +32,8 @@
 		50B5DF06152EBB8500661492 /* Home.xib in Resources */ = {isa = PBXBuildFile; fileRef = 50B5DF05152EBB8500661492 /* Home.xib */; };
 		50B5DF09152EBBA500661492 /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50B5DF08152EBBA500661492 /* HomeViewController.m */; };
 		50B5DF0E152EC1EC00661492 /* DefaultUser.png in Resources */ = {isa = PBXBuildFile; fileRef = 50B5DF0D152EC1EC00661492 /* DefaultUser.png */; };
+		50C6F0D9156A0AA3002357B3 /* noresource.png in Resources */ = {isa = PBXBuildFile; fileRef = 50C6F0D7156A0AA3002357B3 /* noresource.png */; };
+		50C6F0DA156A0AA3002357B3 /* noresource@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 50C6F0D8156A0AA3002357B3 /* noresource@2x.png */; };
 		50CAAC451544F0A300641D90 /* FindUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CAAC441544F0A300641D90 /* FindUserViewController.m */; };
 		50CAAC52154525A600641D90 /* PBTUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CAAC51154525A600641D90 /* PBTUtilities.m */; };
 		50CD10C2153BC640004F7229 /* PBTConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CD10C1153BC640004F7229 /* PBTConstants.m */; };
@@ -86,6 +88,8 @@
 		50B5DF07152EBBA500661492 /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
 		50B5DF08152EBBA500661492 /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
 		50B5DF0D152EC1EC00661492 /* DefaultUser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = DefaultUser.png; path = Statwittstics/DefaultUser.png; sourceTree = "<group>"; };
+		50C6F0D7156A0AA3002357B3 /* noresource.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = noresource.png; sourceTree = "<group>"; };
+		50C6F0D8156A0AA3002357B3 /* noresource@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "noresource@2x.png"; sourceTree = "<group>"; };
 		50CAAC431544F0A300641D90 /* FindUserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FindUserViewController.h; sourceTree = "<group>"; };
 		50CAAC441544F0A300641D90 /* FindUserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindUserViewController.m; sourceTree = "<group>"; };
 		50CAAC50154525A600641D90 /* PBTUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBTUtilities.h; sourceTree = "<group>"; };
@@ -326,6 +330,8 @@
 			children = (
 				503B4E23154C977400A6C141 /* ProfilePicturePlaceholder.png */,
 				50B5DF0D152EC1EC00661492 /* DefaultUser.png */,
+				50C6F0D7156A0AA3002357B3 /* noresource.png */,
+				50C6F0D8156A0AA3002357B3 /* noresource@2x.png */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -472,6 +478,8 @@
 				50B5DF0E152EC1EC00661492 /* DefaultUser.png in Resources */,
 				50296390153E6C3500DFD6AF /* AboutViewController.xib in Resources */,
 				503B4E24154C977400A6C141 /* ProfilePicturePlaceholder.png in Resources */,
+				50C6F0D9156A0AA3002357B3 /* noresource.png in Resources */,
+				50C6F0DA156A0AA3002357B3 /* noresource@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

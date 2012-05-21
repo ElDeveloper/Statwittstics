@@ -372,9 +372,9 @@ NSUInteger const kPBTRequestMaximum= 3200;
     startDate=[[tweets objectAtIndex:0] postDate];
     endDate=[[tweets objectAtIndex:[tweets count]-1] postDate];
     
-    dataSetTitleHolder=[NSString stringWithFormat:@"Tweets from %@ to %@.", 
-                        PBTStringFromTwitterDateWithFormat(startDate, @"MMM/dd/yyyy"),  
-                        PBTStringFromTwitterDateWithFormat(endDate, @"MMM/dd/yyyy")];
+    dataSetTitleHolder=[NSString stringWithFormat:@"Tweets from %@ to %@", 
+                        PBTStringFromTwitterDateWithFormat(endDate, @"MMM/dd/yyyy"),  
+                        PBTStringFromTwitterDateWithFormat(startDate, @"MMM/dd/yyyy")];
     
     //Cast to a unsigned integer
     calendarPoints=(NSUInteger)PBTCalendarUnitsBetweenDates(endDate, startDate, calendarUnit);
@@ -409,7 +409,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     }
     
     //Create the return value
-    outDataSet=[[PBDataSet alloc] initWithXData:xData yData:yData andTitle:[NSString stringWithFormat:@"Rate of Tweets For %@", [self realName]]];
+    outDataSet=[[PBDataSet alloc] initWithXData:xData yData:yData andTitle:[NSString stringWithFormat:@"%@ For %@",dataSetTitleHolder, [self realName]]];
     [outDataSet setLineColor:[CPTColor whiteColor]];
     
     //Free your mallocs

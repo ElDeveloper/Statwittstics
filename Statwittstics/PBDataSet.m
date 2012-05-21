@@ -65,17 +65,17 @@
 }
 
 -(NSNumber *)maximumXValue{
-    return [dataPointsX valueForKeyPath:@"@max.float"];
+    return [dataPointsX valueForKeyPath:@"@max.floatValue"];
 }
 -(NSNumber *)minimumXValue{
-    return [dataPointsX valueForKeyPath:@"@min.float"];
+    return [dataPointsX valueForKeyPath:@"@min.floatValue"];
 }
 
 -(NSNumber *)maximumYValue{
-    return [dataPointsY valueForKeyPath:@"@max.float"];
+    return [dataPointsY valueForKeyPath:@"@max.floatValue"];
 }
 -(NSNumber *)minimumYValue{
-    return [dataPointsY valueForKeyPath:@"@max.float"];
+    return [dataPointsY valueForKeyPath:@"@max.floatValue"];
 }
 
 @end

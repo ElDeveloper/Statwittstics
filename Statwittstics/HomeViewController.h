@@ -18,26 +18,23 @@
 #define HOURS_ARRAY @"00:00", @"01:00", @"02:00", @"03:00", @"04:00", @"05:00", @"06:00", @"07:00", @"08:00", @"09:00", @"10:00", @"11:00", @"12:00", @"13:00", @"14:00", @"15:00", @"16:00", @"17:00", @"18:00", @"19:00", @"20:00", @"21:00", @"22:00", @"23:00", @""
 #define DAYS @"", @"Domingo", @"Lunes", @"Martes", @"Miércoles", @"Jueves", @"Viernes", @"Sábado", @""
 
+//The main action sheet of the class displays three buttons only.
 typedef enum {
+    HVCActionSheetButtonCancel=0,
     HVCActionSheetButtonNew=1,
     HVCActionSheetButtonShare=2
 }HVCActionSheetButton;
 
-//Tags used in the UISegmentedControl tags that work
-//as the main controllers of the application.
-typedef enum {
-    HVCSegmentedControlTimeFrame=8900,
-    HVCSegmentedControlVisualizationType
-}HVCSegmentedControl;
-
-//The index of the buttons in the segmented controls
-//each correspond to one of the HVCSegmentedControl
+//There are three type of possible time-frames that can be used in the class
+//the value will be also the index of the button for a UISegmentedController.
 typedef enum {
     HVCTimeFrameDaily=0,
     HVCTimeFrameWeekley,
     HVCTimeFrameMonthly
 }HVCTimeFrame;
 
+//There are three type of possible visualization types that can be used in the class
+//the value will be also the index of the button for a UISegmentedController.
 typedef enum {
     HVCVisualizationTypeLinePlot=0,
     HVCVisualizationTypeScatterPlot,
@@ -67,12 +64,12 @@ typedef enum {
 @property (nonatomic, retain) PBTUser *subjectOfAnalysis;
 @property (nonatomic, retain) PBTUserView *subjectOfAnalysisView;
 
-//Main controllers of the view
+//Segmented controllers in charge of the visualization type and the time-frame
 @property (nonatomic, retain) UISegmentedControl *timeFrameSegmentedControl;
 @property (nonatomic, retain) UISegmentedControl *visualizationTypeSegmentedControl;
 
+//Display and controller for the number of tweets
 @property (nonatomic, retain) UISlider *numberOfTweetsSlider;
-
 @property (nonatomic, retain) UILabel *numberOfTweetsLabel;
 
 //This user is required and will be the default for application launch
@@ -85,18 +82,16 @@ typedef enum {
 -(void)optionsButtonPressed:(id)sender;
 -(void)aboutButtonPressed:(id)sender;
 
--(void)segmentedControllSelected:(UISegmentedControl *)segmentedControl;
--(void)numberOfTweetsSliderValueChanged:(UISlider *)slider;
+//Top-level updater for the GUI, will create and change the visualizations, depending
+//on the current state of the controllers and on the data from the subject of analysis.
+-(void)segmentedControllSelected:(id)sender;
+
+//Request the data for the subject of analysis
 -(void)downloadTweets;
 
-//Update the credential presented at the top of the screen
--(void)loadUser:(PBTUser *)someUser;
-//Visualization related methods, these should be used by the controller
--(void)drawPlotOfTweetsPerDay;
--(void)drawPlotOfTweetsPerWeek;
--(void)drawPlotOfTweetsPerMonth;
--(void)drawScatterPlotOfTweetsPerHourPerDay;
-
-float fixedSliderValue(float sliderValue);
+//Low-level helpers for the GUI updaters
+-(void)fixControllersInteraction;
+-(void)numberOfTweetsSliderValueChanged:(UISlider *)slider;
+float HVCFixSliderValue(float sliderValue);
 
 @end
