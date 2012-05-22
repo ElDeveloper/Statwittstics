@@ -30,6 +30,7 @@ TAKey TAKeyFollowers=@"followers_count";
 TAKey TAKeyTweets=@"statuses_count";
 TAKey TAKeyProtected=@"protected";
 TAKey TAKeyQuery=@"q";
+TAKey TAKeyVerified=@"verified";
 
 TAKey TAKeyEntities=@"entities";
 TAKey TAKeyInToReplyScreenName=@"in_reply_to_screen_name";

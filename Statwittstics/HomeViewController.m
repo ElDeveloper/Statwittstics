@@ -13,10 +13,10 @@
 @synthesize visualizationSpace;
 @synthesize subjectOfAnalysis, subjectOfAnalysisView;
 @synthesize timeFrameSegmentedControl, visualizationTypeSegmentedControl;
-@synthesize numberOfTweetsSlider;
-@synthesize numberOfTweetsLabel;
+@synthesize numberOfTweetsSlider, numberOfTweetsLabel;
 @synthesize researchFellow;
 @synthesize optionsActionSheet;
+@synthesize loadingAlertView;
 
 #pragma mark - Object Life-cycle
 -(id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
@@ -86,6 +86,9 @@
         [numberOfTweetsSlider setValue:200 animated:YES];
         [self numberOfTweetsSliderValueChanged:numberOfTweetsSlider];
         
+        //Instantiate the alert view as a waiting alert
+        loadingAlertView=[[GIDAAlertView alloc] initAlertWithSpinnerAndMessage:NSLocalizedString(@"Accessing Account ...", @"Accessing Account String")];
+        
         //These buttons take charge of going somewhere else in the application
         UIBarButtonItem *optionsBarButton=[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Options", @"Options String") 
                                                                            style:UIBarButtonItemStyleBordered 
@@ -108,7 +111,7 @@
 
 -(void)viewDidLoad{
     [super viewDidLoad];
-
+    
     //Ask the account store for the twitter account
     ACAccountStore *astore=[[ACAccountStore alloc] init];
     ACAccountType *twitterAccountType=[astore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
@@ -136,7 +139,10 @@
                 NSLog(@"The bio is: %@", [subjectOfAnalysis description]);
                 #endif
                 
-                //Load the view
+                //Hide the alert for the account request
+                [loadingAlertView performSelectorOnMainThread:@selector(hideAlertWithSpinner) withObject:nil waitUntilDone:YES];
+                
+                //Load the data into the view
                 [self performSelectorOnMainThread:@selector(downloadTweets) withObject:nil waitUntilDone:YES];
             }];
         }
@@ -147,7 +153,14 @@
         }
         
     }];
+}
+
+-(void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
     
+    //Add the alert view; this considers the fact that the viewDidAppear method is called before the account
+    //manager is resolved. Once the account manager resolved the request, a the alert will be gone.
+    [loadingAlertView presentAlertWithSpinner];
 }
 
 -(void)dealloc{
@@ -272,6 +285,8 @@
         [linePlot setGraphTitle:[someDataSet dataSetTitle]];
         
         //Plot attributes
+        [[[linePlot graph] defaultPlotSpace] setAllowsUserInteraction:YES];
+        [linePlot setViewIsRestricted:YES];
         [linePlot setXAxisUpperBound:[[someDataSet maximumXValue] intValue] andLowerBound:0];
         [linePlot setYAxisUpperBound:[[someDataSet maximumYValue] intValue] andLowerBound:0];
         [linePlot showGrids];
@@ -288,6 +303,8 @@
         PBPlot *scatterPlot=[[PBPlot alloc] initWithFrame:CGRectMake(0, 0, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
         
         //Set the limits and ticks intervals
+        [[[scatterPlot graph] defaultPlotSpace] setAllowsUserInteraction:YES];
+        [scatterPlot setViewIsRestricted:YES];
         [scatterPlot setXAxisUpperBound:90060 andLowerBound:0];
         [scatterPlot setYAxisUpperBound:8 andLowerBound:0];
         [scatterPlot setMajorTicksWithXInterval:3752.5 andYInterval:1];
@@ -318,11 +335,13 @@
         PBBar *barPlot=[[PBBar alloc] initWithFrame:CGRectMake(0, 0, 1005, 550) andDataSets:[NSArray arrayWithObjects:someDataSet, nil]];
         
         //Titles
+        [[[barPlot graph] defaultPlotSpace] setAllowsUserInteraction:YES];
         [barPlot setXAxisTitle:xAxisTitle];
         [barPlot setYAxisTitle:NSLocalizedString(@"Number Of Tweets", @"Number Of Tweets String")];
         [barPlot setGraphTitle:[someDataSet dataSetTitle]];
         
         //Plot attributes
+        [barPlot setViewIsRestricted:YES];
         [barPlot setXAxisUpperBound:[[someDataSet maximumXValue] intValue] andLowerBound:0];
         [barPlot setYAxisUpperBound:[[someDataSet maximumYValue] intValue] andLowerBound:0];
         [barPlot showGrids];
@@ -335,8 +354,16 @@
 }
 
 -(void)downloadTweets{
+    //Show the spinner with a different message
+    [[loadingAlertView messageLabel] setText:NSLocalizedString(@"Downloading ...", @"Downloading String")];
+    [loadingAlertView presentAlertWithSpinner];
+    
+    //Load the data of the user into the PBTUserView
     [subjectOfAnalysisView loadUser:subjectOfAnalysis];
+    
+    //Request for the data
     [subjectOfAnalysis requestMostRecentTweets:[[numberOfTweetsLabel text] intValue] withHandler:^{
+        [loadingAlertView performSelectorOnMainThread:@selector(hideAlertWithSpinner) withObject:nil waitUntilDone:NO];
         
         //Go to the main thread and perform the GUI changes, here comes the magic ... 
         [self performSelectorOnMainThread:@selector(segmentedControllSelected:) withObject:nil waitUntilDone:YES];
@@ -409,6 +436,7 @@ float HVCFixSliderValue(float sliderValue){
 -(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
     //Load a view controller ... if needed
     id viewController=nil;
+    UIImage *plotImage=nil;
     
     switch (buttonIndex) {
         case HVCActionSheetButtonNew:
@@ -418,7 +446,9 @@ float HVCFixSliderValue(float sliderValue){
             break;
         
         case HVCActionSheetButtonShare:
+            plotImage=[[[visualizationSpace subviews] objectAtIndex:[[visualizationSpace subviews] count] - 1] imageRepresentation];
             
+            [self showTweetViewControllerWithImage:plotImage];
             break;
             
         default:
@@ -426,6 +456,49 @@ float HVCFixSliderValue(float sliderValue){
     }
     
     return;
+}
+
+-(void)showTweetViewControllerWithImage:(UIImage *)imageToTweet{
+    NSString *firstText=[NSString stringWithString:NSLocalizedString(@"Analyizing", @"Body String First Part")];
+    NSString *secondText=[NSString stringWithString:NSLocalizedString(@"with @Statwittstics, look at this cool plot: ", @"Body String Second Part")];
+    NSString *fullMessage=[NSString stringWithFormat:@"%@ @%@ %@", firstText, [subjectOfAnalysis username], secondText];
+    
+    // Set up the built-in twitter composition view controller.
+    TWTweetComposeViewController *tweetViewController = [[TWTweetComposeViewController alloc] init];
+    
+    // Set the initial tweet text. See the framework for additional properties that can be set.
+    [tweetViewController setInitialText:fullMessage];
+    
+    //Image
+    [tweetViewController addImage:imageToTweet];
+    
+    // Create the completion handler block.
+    [tweetViewController setCompletionHandler:^(TWTweetComposeViewControllerResult result) {
+        
+        switch (result) {
+            case TWTweetComposeViewControllerResultCancelled:
+                //Si se cancela el twitt
+
+                break;
+            case TWTweetComposeViewControllerResultDone:
+                //Se envía el twitt
+
+                break;
+            default:
+                break;
+        }
+        
+        //[self performSelectorOnMainThread:@selector(displayText:) withObject:nil waitUntilDone:NO];
+        
+        // Dismiss the tweet composition view controller.
+        //[self performSelectorOnMainThread:@selector(dismissModalViewControllerAnimated:) withObject:YES waitUntilDone:NO];
+        [self dismissModalViewControllerAnimated:YES];
+    }];
+    
+    // Present the tweet composition view controller modally.
+    [self presentModalViewController:tweetViewController animated:YES];
+    [tweetViewController release];
+
 }
 
 @end

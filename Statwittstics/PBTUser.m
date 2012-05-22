@@ -15,7 +15,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
 @synthesize username, realName, description, location, bioURL;
 @synthesize imageData;
 @synthesize following, followers, tweetCount;
-@synthesize requiresAuthentication;
+@synthesize requiresAuthentication, isVerified;
 @synthesize tweets;
 @synthesize account;
 
@@ -35,6 +35,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
         followers=0;
         tweetCount=0;
         requiresAuthentication=NO;
+        isVerified=NO;
         
         _lastTweetID=nil;
         _tempArray=nil;
@@ -108,6 +109,9 @@ NSUInteger const kPBTRequestMaximum= 3200;
         followers=[[jsonString objectForKey:TAKeyFollowers] intValue];
     }
     
+    
+    //If the user is verified, choose from the value 
+    isVerified=[[jsonString objectForKey:TAKeyVerified] boolValue];
 }
 
 -(void)dealloc{
@@ -372,7 +376,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     startDate=[[tweets objectAtIndex:0] postDate];
     endDate=[[tweets objectAtIndex:[tweets count]-1] postDate];
     
-    dataSetTitleHolder=[NSString stringWithFormat:@"Tweets from %@ to %@", 
+    dataSetTitleHolder=[NSString stringWithFormat:@"Tweets From %@ To %@", 
                         PBTStringFromTwitterDateWithFormat(endDate, @"MMM/dd/yyyy"),  
                         PBTStringFromTwitterDateWithFormat(startDate, @"MMM/dd/yyyy")];
     
@@ -448,7 +452,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     
     outDataset=[[PBDataSet alloc] initWithXData:xDataArray 
                                           yData:yDataArray 
-                                       andTitle:[NSString stringWithFormat:@"Tweets from %@ to %@",beginDate, endDate]];
+                                       andTitle:[NSString stringWithFormat:@"Tweets From %@ To %@ For %@",beginDate, endDate, [self realName]]];
     
     [outDataset setLineColor:[CPTColor clearColor]];
     [outDataset setSymbol:[PBUtilities symbolWithType:CPTPlotSymbolTypePentagon size:8 andColor:[CPTColor whiteColor]]];

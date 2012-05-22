@@ -53,7 +53,7 @@
         [graph setPaddingRight:PBPlotPaddingNone];
         
         //Add a little padding to the right to make the last tick visible
-        [[graph plotAreaFrame] setPaddingRight:2];
+        [[graph plotAreaFrame] setPaddingRight:50];
         [graph setLegendAnchor:CPTRectAnchorLeft];
         
         //Set default spaced ticks
@@ -88,7 +88,7 @@
             [identifiers addObject:[currentDataSet dataSetTitle]];
             
             //The properties for the line, the color should be either the one that's been set or a default color
-            [plotSprite setLineStyle:[PBUtilities lineStyleWithWidth:3.0 andColor:[PBUtilities defaultLineColorForDataSet:currentDataSet atIndex:i]]];
+            [plotSprite setLineStyle:[PBUtilities lineStyleWithWidth:1.5 andColor:[PBUtilities defaultLineColorForDataSet:currentDataSet atIndex:i]]];
             [plotSprite setFill:[PBUtilities fillWithGradient:[currentDataSet fillingColor]]];
             
             [graph addPlot:plotSprite];

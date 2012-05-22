@@ -28,6 +28,7 @@ extern CGSize const KPBTCGSize;
     UILabel *following;
     UILabel *followers;
     UILabel *tweetCount;
+    UIImageView *verifiedImageView;
     
     @private UIScrollView *containerView;
     @private UIView *bufferView;
@@ -46,6 +47,7 @@ extern CGSize const KPBTCGSize;
 @property (nonatomic, retain) UILabel *following;
 @property (nonatomic, retain) UILabel *followers;
 @property (nonatomic, retain) UILabel *tweetCount;
+@property (nonatomic, retain) UIImageView *verifiedImageView;
 
 //The size of the view is fixed, and non-modifiable
 -(id)initWithUser:(PBTUser *)someUser andPositon:(CGPoint)thePosition;

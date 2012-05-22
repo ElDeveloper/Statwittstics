@@ -12,6 +12,7 @@
 
 @synthesize graph;
 @synthesize xAxisTitle, yAxisTitle;
+@synthesize viewIsRestricted;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -20,6 +21,7 @@
         // Initialization code
         //Create and allocate the graph, it will be re-sized as needed
         graph=[[CPTXYGraph alloc] initWithFrame:CGRectZero];
+        viewIsRestricted=NO;
     }
     return self;
 }
@@ -313,6 +315,12 @@
     
     //Set the new range to the plot space
     [plotSpace setXRange:xRange];
+    
+    //Restrict the range of the graph to the one provided
+    if (viewIsRestricted) {
+        [plotSpace setGlobalXRange:xRange];
+    }
+    
     [xRange release];
 }
 
@@ -325,6 +333,12 @@
     
     //Set the new range to the plot space
     [plotSpace setYRange:yRange];
+    
+    //Restrict the range of the graph to the one provided
+    if (viewIsRestricted) {
+        [plotSpace setGlobalYRange:yRange];
+    }
+    
     [yRange release];
 }
 

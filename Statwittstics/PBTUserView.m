@@ -20,14 +20,14 @@ CGSize const KPBTCGSize={.width=510.0f, .height=125.0f};
 @synthesize theUser;
 @synthesize profilePicture, realName, screenName;
 @synthesize description, location, bioURL; 
-@synthesize following, followers, tweetCount;
+@synthesize following, followers, tweetCount, verifiedImageView;
 
 -(id)initWithUser:(PBTUser *)userOrNil andPositon:(CGPoint)thePosition{
     self = [super initWithFrame:CGRectMake(thePosition.x, thePosition.y, KPBTCGSize.width, KPBTCGSize.height)];
     if (self) {
         // Initialization code
         [self setBackgroundColor:[UIColor darkGrayColor]];
-        [[self layer] setCornerRadius:8.0f];
+        [[self layer] setCornerRadius:6.0f];
         [[self layer] setMasksToBounds:YES];
         
         UILabel *temp1=nil;
@@ -35,7 +35,7 @@ CGSize const KPBTCGSize={.width=510.0f, .height=125.0f};
         
         //Will always first load the default picture
         profilePicture=[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"DefaultUser.png"]];
-        [[profilePicture layer] setCornerRadius:10];
+        [[profilePicture layer] setCornerRadius:12.0f];
         [[profilePicture layer] setMasksToBounds:YES];
         
         #ifdef EXPANDED_LAYOUT
@@ -151,16 +151,23 @@ CGSize const KPBTCGSize={.width=510.0f, .height=125.0f};
         [containerView addSubview:bufferView];
         [self addSubview:containerView];
         
+        verifiedImageView=[[UIImageView alloc] initWithImage:[UIImage imageNamed:@""]];
+        [verifiedImageView setFrame:CGRectMake(468, 2, 40, 40)];
+        [verifiedImageView setContentMode:UIViewContentModeScaleAspectFit];
+        [self addSubview:verifiedImageView];
+        
         [self loadUser:userOrNil];
     }
     return self;
 }
 
 -(void)loadUser:(PBTUser *)someUser{
+    //All these are place-holders to choose wheter you will need to load dummmy data or real data
     NSString *realNameString=nil, *screenNameString=nil; 
     NSString *followingString=nil, *followersString=nil, *tweetCountString=nil;
     NSString *descriptionString=nil, *bioURLString=nil, *locationString=nil;
     NSNumberFormatter *regularFormatter=nil;
+    BOOL isVerified=NO;
     
     CGSize descriptionSize;
     float totalHeight=0.0;
@@ -188,6 +195,7 @@ CGSize const KPBTCGSize={.width=510.0f, .height=125.0f};
         descriptionString=@"Location ...";
         bioURLString=@"http://www.twitter.com";
         locationString=@"Palo Alto, Ca.";
+        isVerified=YES;
     }
     //We have a user, fill properly
     else {
@@ -196,12 +204,10 @@ CGSize const KPBTCGSize={.width=510.0f, .height=125.0f};
         followingString=[regularFormatter stringForObjectValue:[NSNumber numberWithInteger:[theUser following]]];
         followersString=[regularFormatter stringForObjectValue:[NSNumber numberWithInteger:[theUser followers]]];
         tweetCountString=[regularFormatter stringForObjectValue:[NSNumber numberWithInteger:[theUser tweetCount]]];
-        //followingString=[NSString stringWithFormat:@"%d", [theUser following]];
-        //followersString=[NSString stringWithFormat:@"%d", [theUser followers]];
-        //tweetCountString=[NSString stringWithFormat:@"%d", [theUser tweetCount]];
         descriptionString=[theUser description];
         bioURLString=[NSString stringWithFormat:@"%@", [theUser bioURL]];
         locationString=[theUser location];
+        isVerified=[theUser isVerified];
         
         //Only change the image if the new image has already been 
         //retrieved, else leave the placeholder in the view 
@@ -258,6 +264,14 @@ CGSize const KPBTCGSize={.width=510.0f, .height=125.0f};
     
     [bufferView setFrame:CGRectMake(0, 0, 390, totalHeight-5)];
     [containerView setContentSize:[bufferView frame].size];
+    
+    //If the account is verified add a check-mark else, just add a non-existent image
+    if (isVerified) {
+        [verifiedImageView setImage:[UIImage imageNamed:@"VerifiedTwitter.png"]];
+    }
+    else {
+        [verifiedImageView setImage:[UIImage imageNamed:@""]];
+    }
     
     //Release the allocated formatter
     [regularFormatter release];

@@ -12,7 +12,6 @@
 @interface PBVisualization : UIView{
     NSMutableString *graphTitle;
     NSMutableArray *dataSets;
-    BOOL viewIsRestricted;
     
     NSMutableArray *identifiers;
     NSMutableArray *plotSprites;
@@ -25,9 +24,10 @@
 //Private properties helpers of the Data Source
 @property (nonatomic, retain) NSMutableArray *plotSprites;
 @property (nonatomic, retain) NSMutableArray *identifiers;
-@property (nonatomic, assign) BOOL viewIsRestricted;
 
 //General initializer
 -(id)initWithFrame:(CGRect)frame;
+
+-(UIImage *)imageRepresentation;
 
 @end

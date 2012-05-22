@@ -17,6 +17,8 @@
     
     NSString *xAxisTitle;
     NSString *yAxisTitle;
+    
+    BOOL viewIsRestricted;
 }
 
 @property(nonatomic, retain)CPTXYGraph *graph;
@@ -24,6 +26,9 @@
 //Basic descriptors of the graph
 @property (nonatomic, retain) NSString *xAxisTitle;
 @property (nonatomic, retain) NSString *yAxisTitle;
+
+//Allows to set the global-range to the provided by the bounds
+@property (nonatomic, assign) BOOL viewIsRestricted;
 
 /*
  MATLAB-like methods to set certain properties with just one line of code
