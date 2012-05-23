@@ -14,7 +14,7 @@
 
 @protocol PBBarDelegate;
 
-@interface PBBar : PBXYVisualization<CPTPlotDataSource, CPTBarPlotDelegate, CPTPlotSpaceDelegate>{
+@interface PBBar : PBXYVisualization<CPTPlotDataSource, CPTBarPlotDelegate>{
     id <PBBarDelegate> delegate;
 }
 

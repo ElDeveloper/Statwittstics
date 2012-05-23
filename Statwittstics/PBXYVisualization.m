@@ -13,6 +13,7 @@
 @synthesize graph;
 @synthesize xAxisTitle, yAxisTitle;
 @synthesize viewIsRestricted;
+@synthesize defaultXRange, defaultYRange;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -22,6 +23,16 @@
         //Create and allocate the graph, it will be re-sized as needed
         graph=[[CPTXYGraph alloc] initWithFrame:CGRectZero];
         viewIsRestricted=NO;
+        
+        xAxisTitle=nil;
+        yAxisTitle=nil;
+        
+        defaultXRange=nil;
+        defaultYRange=nil;
+        
+        
+        //Make this class the delegate for touch events
+        [[[self graph] defaultPlotSpace] setDelegate:self];
     }
     return self;
 }
@@ -36,7 +47,12 @@
     if (yAxisTitle != nil) {
         [yAxisTitle release];
     }
-    
+    if (defaultXRange != nil){
+        [defaultXRange release];
+    }
+    if (defaultYRange != nil) {
+        [defaultYRange release];
+    }
     
     [super dealloc];
 }
@@ -304,6 +320,10 @@
     //Set it 
     [plotSpace setXRange:xRange];
     [plotSpace setYRange:yRange];
+    
+    //Keep a backup
+    [self setDefaultXRange:xRange];
+    [self setDefaultYRange:yRange];
 }
 
 -(void)setXAxisUpperBound:(float)upper andLowerBound:(float)lower{
@@ -320,6 +340,9 @@
     if (viewIsRestricted) {
         [plotSpace setGlobalXRange:xRange];
     }
+    
+    //Keep a backup
+    [self setDefaultXRange:xRange];
     
     [xRange release];
 }
@@ -339,6 +362,9 @@
         [plotSpace setGlobalYRange:yRange];
     }
     
+    //Keep a backup
+    [self setDefaultYRange:yRange];
+    
     [yRange release];
 }
 
@@ -355,6 +381,29 @@
     
     [graph setLegendAnchor:CPTRectAnchorTopRight];
     [graph setLegendDisplacement:CGPointMake(-15, -10)];
+}
+
+#pragma mark - CPTPlotSpaceDelegate
+-(BOOL)plotSpace:(CPTPlotSpace *)space shouldHandlePointingDeviceUpEvent:(id)event atPoint:(CGPoint)interactionPoint{    
+    NSSet *events=[event allTouches];
+    CPTXYPlotSpace *somePlotSpace=nil;
+    
+    //Look for a double tap
+    if ([[events anyObject] tapCount] == 2) {
+        
+        //Check that we have some-where to go
+        if (defaultXRange != nil && defaultYRange != nil) {
+            somePlotSpace=(CPTXYPlotSpace *)[[self graph] defaultPlotSpace];
+            
+            //Go back to the default
+            [somePlotSpace setXRange:defaultXRange];
+            [somePlotSpace setYRange:defaultYRange];
+        }
+        
+        return YES;
+    }    
+    
+    return YES;
 }
 
 @end

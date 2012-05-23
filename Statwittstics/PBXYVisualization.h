@@ -12,13 +12,16 @@
 #import "PBDataSet.h"
 #import "PBUtilities.h"
 
-@interface PBXYVisualization : PBVisualization{
+@interface PBXYVisualization : PBVisualization <CPTPlotSpaceDelegate>{
     CPTXYGraph *graph;
     
     NSString *xAxisTitle;
     NSString *yAxisTitle;
     
     BOOL viewIsRestricted;
+
+    @private CPTPlotRange *defaultXRange;
+    @private CPTPlotRange *defaultYRange;
 }
 
 @property(nonatomic, retain)CPTXYGraph *graph;
@@ -29,6 +32,10 @@
 
 //Allows to set the global-range to the provided by the bounds
 @property (nonatomic, assign) BOOL viewIsRestricted;
+
+//Allows to keep track of the ranges, when restricted 
+@property (nonatomic, retain) CPTPlotRange *defaultXRange;
+@property (nonatomic, retain) CPTPlotRange *defaultYRange;
 
 /*
  MATLAB-like methods to set certain properties with just one line of code

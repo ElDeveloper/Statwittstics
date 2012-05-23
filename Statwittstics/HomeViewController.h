@@ -98,9 +98,11 @@ typedef enum {
 //Request the data for the subject of analysis
 -(void)downloadTweets;
 
-//Low-level helpers for the GUI updaters
+//Low-level controller helpers for the GUI
 -(void)fixControllersInteraction;
 -(void)numberOfTweetsSliderValueChanged:(UISlider *)slider;
+
+//Utilities for the GUI
 float HVCFixSliderValue(float sliderValue);
 
 @end

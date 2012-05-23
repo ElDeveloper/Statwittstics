@@ -87,7 +87,7 @@
         [self numberOfTweetsSliderValueChanged:numberOfTweetsSlider];
         
         //Instantiate the alert view as a waiting alert
-        loadingAlertView=[[GIDAAlertView alloc] initAlertWithSpinnerAndMessage:NSLocalizedString(@"Accessing Account ...", @"Accessing Account String")];
+        loadingAlertView=[[GIDAAlertView alloc] initAlertWithSpinnerAndMessage:NSLocalizedString(@"Accessing Account", @"Accessing Account String")];
         
         //These buttons take charge of going somewhere else in the application
         UIBarButtonItem *optionsBarButton=[[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Options", @"Options String") 
@@ -150,6 +150,15 @@
             //Must implement a GUI alert 
             NSLog(@"HomeViewController:Error** Statwittstics needs access to a twitter account.");
             NSLog(@"HomeViewController:Error** %@", [error localizedDescription]);
+            
+            UIAlertView *errorAlertView=[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"Error String") 
+                                                                   message:[error localizedDescription] 
+                                                                  delegate:nil 
+                                                         cancelButtonTitle:NSLocalizedString(@"Cancel", @"Cancel String") 
+                                                         otherButtonTitles:NSLocalizedString(@"Accept", @"Accept String"), nil];
+            
+            [errorAlertView show];
+            [errorAlertView release];
         }
         
     }];
@@ -267,11 +276,17 @@
         someDataSet=[[subjectOfAnalysis dataSetOfTweetsForHourPerDay] retain];
     }
     
+    if ([someDataSet dataSetLength] <= 1) {
+        [GIDAAlertView presentAlertFor:3
+                           withMessage:NSLocalizedString(@"Not Enough Tweets", @"Not Enough Tweets String") 
+                              andImage:[UIImage imageNamed:@"noresource.png"]];
+    }
+    
     //Remove the top or last view, which is in this case the plot
     if ([[visualizationSpace subviews] count] != 0) {
         [[[visualizationSpace subviews] objectAtIndex:[[visualizationSpace subviews] count] - 1] removeFromSuperview];
     }
-
+    
     if ( [visualizationTypeSegmentedControl selectedSegmentIndex] == HVCVisualizationTypeLinePlot ) {
         
         //Style for the plot
@@ -355,7 +370,7 @@
 
 -(void)downloadTweets{
     //Show the spinner with a different message
-    [[loadingAlertView messageLabel] setText:NSLocalizedString(@"Downloading ...", @"Downloading String")];
+    [[loadingAlertView messageLabel] setText:NSLocalizedString(@"Downloading", @"Downloading String")];
     [loadingAlertView presentAlertWithSpinner];
     
     //Load the data of the user into the PBTUserView
@@ -416,6 +431,7 @@
     [numberOfTweetsLabel setText:[NSString stringWithFormat:@"%d", newValue]];
 }
 
+#pragma mark - Utilities
 float HVCFixSliderValue(float sliderValue){
     NSUInteger i=0;
     

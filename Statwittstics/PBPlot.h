@@ -21,7 +21,7 @@
 
 @protocol PBPlotDelegate;
 
-@interface PBPlot : PBXYVisualization<CPTPlotDataSource, CPTScatterPlotDelegate, CPTPlotSpaceDelegate>{
+@interface PBPlot : PBXYVisualization<CPTPlotDataSource, CPTScatterPlotDelegate>{
     id <PBPlotDelegate> delegate;
 }
 
