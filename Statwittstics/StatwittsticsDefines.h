@@ -29,7 +29,6 @@
 //PBPlot Framework:
 //	+ Graficar número de twitts por hora (distribución)
 //SW: Hacer un annotation que sea un UIPopOverController con una tabla de UITableViewTweetCells
-//SW: Double-tap que regrese a la posición original (globalRanges), tal vez se necesite una nueva propiedad para los rangos, el movimiento debe ser animado y suave
 //
 //Statwittstics Framework:
 //SW: Generar PBDataSet de número de twitts por hora 
