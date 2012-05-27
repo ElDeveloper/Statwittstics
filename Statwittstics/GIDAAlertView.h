@@ -34,6 +34,7 @@ typedef enum {
     
     @protected
     GIDAAlertViewType type;
+    UIView *_tempView;
 }
 
 @property (nonatomic, assign) float secondsVisible;
@@ -56,7 +57,7 @@ typedef enum {
 -(void)reloadWith:(NSString *)message andImage:(UIImage *)someImage;
 
 //Show the view for "seconds", the view will be added to the last view in the hierarchy
--(void)presentAlertFor:(float)seconds;
+-(void)presentAlertFor:(float)seconds inView:(UIView *)targetView;
 
 //**GIDAAlertViewTypeLoading**
 //The common alert known as the "Downloading ..." alert is created with this method, you have
@@ -64,13 +65,13 @@ typedef enum {
 -(id)initAlertWithSpinnerAndMessage:(NSString *)someMessage;
 
 //Show or hide the view, the view will be added to the last view in the hierarchy
--(void)presentAlertWithSpinner;
+-(void)presentAlertWithSpinnerInView:(UIView *)targetView;
 -(void)hideAlertWithSpinner;
 
 //Call this method when supporting various interface orientations 
 -(void)updateToInterfaceOrientation;
 
 //Class methods, for easy use
-+(void)presentAlertFor:(float)seconds withMessage:(NSString *)message andImage:(UIImage *)image;
++(void)presentAlertFor:(float)seconds withMessage:(NSString *)message andImage:(UIImage *)image inView:(UIView *)someView;
 
 @end

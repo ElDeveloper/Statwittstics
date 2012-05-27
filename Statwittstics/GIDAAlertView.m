@@ -76,11 +76,19 @@ CGRect const kiPadLandscapeRect={{.x=422, .y=144}, {.width=180, .height=180}};
 }
 
 -(void)addToBottomView:(id)sender{
-    //Get the view that is down at the bottom
-    NSArray *arrayOfViews=[NSArray arrayWithArray:[[[UIApplication sharedApplication] keyWindow] subviews]];    
-    UIView *lastView=[arrayOfViews objectAtIndex:[arrayOfViews count]-1];
+    UIView *bottomView=(UIView *)sender;
+    CGRect baseRect=bottomView.frame;
+    CGRect newRect=baseRect;
+    
+    newRect.origin.x=(baseRect.size.width/2.0)-90;
+    newRect.origin.y=100;
+    newRect.size.width=180;
+    newRect.size.height=180;
+
+    [self setFrame:newRect];
+    
     //Add the alert
-    [lastView addSubview:self];
+    [bottomView addSubview:self];
 }
 
 @end
@@ -166,10 +174,10 @@ CGRect const kiPadLandscapeRect={{.x=422, .y=144}, {.width=180, .height=180}};
     }
 }
 
--(void)presentAlertFor:(float)seconds{
+-(void)presentAlertFor:(float)seconds inView:(UIView *)targetView{
     //Prevent from calling this method on a different GIDAAlertViewType
     if (type == GIDAAlertViewTypeCustom && alertIsVisible == NO) {
-        [self addToBottomView:nil];
+        [self addToBottomView:targetView];
         
         //Update the ivars
         [self setSecondsVisible:seconds];
@@ -185,10 +193,11 @@ CGRect const kiPadLandscapeRect={{.x=422, .y=144}, {.width=180, .height=180}};
     }
 }
 
--(void)presentAlertWithSpinner {
+-(void)presentAlertWithSpinnerInView:(UIView *)targetView{
     //Prevent from calling this method on a different GIDAAlertViewType
     if (type == GIDAAlertViewTypeLoading && alertIsVisible == NO) {
-        [self addToBottomView:nil];    
+        [self addToBottomView:targetView];
+        
         [self setAlpha:1];
         alertIsVisible=YES;
     }
@@ -245,9 +254,9 @@ CGRect const kiPadLandscapeRect={{.x=422, .y=144}, {.width=180, .height=180}};
     [super dealloc];
 }
 
-+(void)presentAlertFor:(float)seconds withMessage:(NSString *)message andImage:(UIImage *)image{
++(void)presentAlertFor:(float)seconds withMessage:(NSString *)message andImage:(UIImage *)image inView:(UIView *)someView{
     GIDAAlertView *quickAlert=[[GIDAAlertView alloc] initWithMessage:message andAlertImage:image];
-    [quickAlert presentAlertFor:seconds];
+    [quickAlert presentAlertFor:seconds inView:someView];
     [quickAlert release];
 }
 

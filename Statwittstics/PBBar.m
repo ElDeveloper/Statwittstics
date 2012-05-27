@@ -53,7 +53,7 @@
         [graph setPaddingRight:PBPlotPaddingNone];
         
         //Add a little padding to the right to make the last tick visible
-        [[graph plotAreaFrame] setPaddingRight:50];
+        //[[graph plotAreaFrame] setPaddingRight:50];
         [graph setLegendAnchor:CPTRectAnchorLeft];
         
         //Set default spaced ticks

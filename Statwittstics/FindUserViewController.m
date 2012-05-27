@@ -86,6 +86,18 @@
     
     //Download have stopped, let the user know about this
     [alertView hideAlertWithSpinner];
+    
+    //No results, present a simple alert to warn the user about the lack of results
+    if ( ![searchResults count] ) {
+        GIDAAlertView *someAlert=[[GIDAAlertView alloc] initWithMessage:NSLocalizedString(@"No Results Found", @"No Results Found String") 
+                                                          andAlertImage:[UIImage imageNamed:@"noresource.png"]];
+        
+        [someAlert setCenter:CGPointMake(270, 160)];
+        [someAlert presentAlertFor:1.4 inView:[self view]];
+        [someAlert release];
+    }
+    
+    
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
 
@@ -130,7 +142,7 @@
     currentUser=[searchResults objectAtIndex:[indexPath row]];
     
     //Update the interface
-    [[cell textLabel] setText:[currentUser username]];
+    [[cell textLabel] setText:[NSString stringWithFormat:@"@%@", [currentUser username]]];
     [[cell detailTextLabel] setText:[currentUser realName]];
     
     //Check if the request has already been completed
@@ -165,6 +177,7 @@
     //Dismiss the view controller
     [self dismissModalViewControllerAnimated:YES];
     
+    [[searchResults objectAtIndex:[indexPath row]] setAccount:[[previousViewController researchFellow] account]];
     [previousViewController setSubjectOfAnalysis:[searchResults objectAtIndex:[indexPath row]]];
     [previousViewController performSelectorOnMainThread:@selector(downloadTweets) withObject:nil waitUntilDone:NO];
 }
@@ -193,7 +206,7 @@
     
     //User interface changes to show that data is being downloaded
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
-    [alertView presentAlertWithSpinner];
+    [alertView presentAlertWithSpinnerInView:[self view]];
     
     //Begin search ...
     [PBTUtilities user:researchFellow requestUsersWithKeyword:[searchBar text] andResponseHandler:^(NSArray *arrayOfSubjects) {

@@ -125,7 +125,7 @@ NSString* PBTStringFromTwitterDateWithFormat(NSDate *date, NSString *format){
 }
 
 NSInteger PBTCalendarUnitsBetweenDates(NSDate *fromDate, NSDate *toDate, NSCalendarUnit calendarUnit){
-    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSCalendar *calendar=[NSCalendar autoupdatingCurrentCalendar];
     NSInteger outBuffer=0;
     
     [calendar rangeOfUnit:NSDayCalendarUnit startDate:&fromDate interval:NULL forDate:fromDate];

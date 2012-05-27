@@ -169,7 +169,7 @@
     
     //Add the alert view; this considers the fact that the viewDidAppear method is called before the account
     //manager is resolved. Once the account manager resolved the request, a the alert will be gone.
-    [loadingAlertView presentAlertWithSpinner];
+    [loadingAlertView presentAlertWithSpinnerInView:[self view]];
 }
 
 -(void)dealloc{
@@ -277,9 +277,10 @@
     }
     
     if ([someDataSet dataSetLength] <= 1) {
-        [GIDAAlertView presentAlertFor:3
+        [GIDAAlertView presentAlertFor:1.8
                            withMessage:NSLocalizedString(@"Not Enough Tweets", @"Not Enough Tweets String") 
-                              andImage:[UIImage imageNamed:@"noresource.png"]];
+                              andImage:[UIImage imageNamed:@"noresource.png"] 
+                                inView:[self view]];
     }
     
     //Remove the top or last view, which is in this case the plot
@@ -371,7 +372,7 @@
 -(void)downloadTweets{
     //Show the spinner with a different message
     [[loadingAlertView messageLabel] setText:NSLocalizedString(@"Downloading", @"Downloading String")];
-    [loadingAlertView presentAlertWithSpinner];
+    [loadingAlertView presentAlertWithSpinnerInView:[self view]];
     
     //Load the data of the user into the PBTUserView
     [subjectOfAnalysisView loadUser:subjectOfAnalysis];
@@ -381,7 +382,7 @@
         [loadingAlertView performSelectorOnMainThread:@selector(hideAlertWithSpinner) withObject:nil waitUntilDone:NO];
         
         //Go to the main thread and perform the GUI changes, here comes the magic ... 
-        [self performSelectorOnMainThread:@selector(segmentedControllSelected:) withObject:nil waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(segmentedControllSelected:) withObject:nil waitUntilDone:NO];
     }];
 }
 

@@ -32,12 +32,17 @@
 //
 //Statwittstics Framework:
 //SW: Generar PBDataSet de número de twitts por hora 
-//SW: Añadir prueba de Kolmogorov-Smirnov para dos distribuciones
+//
+//SW: Añadir controlador para tiempo con (hourly)
+//
 //SW: Comparar a dos usuarios en función de sus series de tiempo
+//	+ Crear una pantalla con dos columnas en donde haya datos.
 //	+ Coeficiente de correlación entre de el número de twitts por día
 //	+ Coeficiente de correlación entre la hora a la que dos usuarios twittean
 //	+ Comparar distribuciones de twitts por hora
-//SW: Añadir ticks-labels:
+//	+ Prueba de Kolmogorov-Smirnov para dos distribuciones
+//
+//SW: Añadir ticks-labels (URGENTE):
 //	+ Tweets por día
 //	+ Tweets por semana
 //	+ Tweets por mes

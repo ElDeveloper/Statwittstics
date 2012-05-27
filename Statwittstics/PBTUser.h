@@ -37,7 +37,7 @@ extern NSUInteger const kPBTRequestMaximum;
     BOOL requiresAuthentication;
     BOOL isVerified;
     
-    @private ACAccount *account;
+    ACAccount *account;
     
     //Used for the recursive request
     @private NSMutableArray *_tempArray;

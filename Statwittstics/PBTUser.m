@@ -371,6 +371,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     NSDate *startDate=nil, *endDate=nil;
     NSMutableArray *xData=nil, *yData=nil;
     NSMutableString *dataSetTitleHolder=nil;
+    NSArray *tempArray=nil;
     
     //General usage constants, helps you build the linear space and plot
     startDate=[[tweets objectAtIndex:0] postDate];
@@ -411,6 +412,12 @@ NSUInteger const kPBTRequestMaximum= 3200;
     for (i=0; i<calendarPoints; i++) {
         [yData addObject:[NSNumber numberWithUnsignedInteger:(NSUInteger)bufferArray[i]]];
     }
+    
+    //Set the order of the results being from newest to oldest
+    tempArray=[[[yData reverseObjectEnumerator] allObjects] copy];
+    [yData removeAllObjects];
+    [yData addObjectsFromArray:tempArray];
+    [tempArray release];
     
     //Create the return value
     outDataSet=[[PBDataSet alloc] initWithXData:xData yData:yData andTitle:[NSString stringWithFormat:@"%@ For %@",dataSetTitleHolder, [self realName]]];
