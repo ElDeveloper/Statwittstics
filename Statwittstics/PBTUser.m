@@ -470,6 +470,59 @@ NSUInteger const kPBTRequestMaximum= 3200;
     return [outDataset autorelease];
 }
 
+-(PBDataSet *)dataSetOfTweetsPerHour{
+    PBDataSet *outDataset=nil;
+    
+    NSUInteger hourOfTweet=0, *bufferArray=NULL, i=0;
+    
+    NSMutableArray *yData=[[NSMutableArray alloc] initWithCapacity:24];
+    
+    NSString *endDate=nil;
+    NSString *beginDate=nil;
+    
+    endDate=[NSString stringWithString:PBTStringFromTwitterDateWithFormat([[tweets objectAtIndex:0] postDate], @"MMM/dd/yyyy")];
+    beginDate=[NSString stringWithString:PBTStringFromTwitterDateWithFormat([[tweets objectAtIndex:[tweets count]-1] postDate],  @"MMM/dd/yyyy")];
+
+    
+    //The number of hours in one day, duh
+    bufferArray=malloc(sizeof(NSUInteger)*24);
+    
+    //Initialize the counts at zero
+    for (i=0; i<24; i++) {
+        bufferArray[i]=0;
+    }
+    
+    for (PBTweet *currentTweet in tweets) {
+        //Get the int representation from the 24 hour day 
+        hourOfTweet=[PBTStringFromTwitterDateWithFormat([currentTweet postDate], @"HH") intValue];
+        
+        //Increment one for the current hour
+        bufferArray[hourOfTweet]=bufferArray[hourOfTweet]+1;
+    }
+    
+    //Add an NSNumber to the yData array, each element is the count of tweets at that hour
+    for (i=0; i<24; i++) {
+        [yData addObject:[NSNumber numberWithUnsignedInt:bufferArray[i]]];
+    }
+    
+    outDataset=[[PBDataSet alloc] initWithXData:PBTLinspace(0, 24, 24) 
+                                          yData:yData 
+                                       andTitle:[NSString stringWithFormat:@"%@ From %@ To %@ For %@", 
+                                                 NSLocalizedString(@"Distribution Of Tweets Per Hour", @"Distribution Of Tweets Per Hour String"), 
+                                                 beginDate,
+                                                 endDate,
+                                                 [self realName]]];
+    
+    [outDataset setLineColor:[CPTColor whiteColor]];
+    
+    //Free the mallocs
+    free(bufferArray);
+    
+    [yData release];
+    
+    return [outDataset autorelease];
+}
+
 void PBTRequestTweets(PBTUser *client, NSUInteger numberOfTweets,  NSString *lastTweetID, NSMutableArray **tweetsBuffer, PBTRequestHandler handler){
     //If the total request needs you to ask for more than 200 tweets, truncate the number, using the ternary operator
     NSString *stringNumberOfTweets=[NSString stringWithFormat:@"%d",(numberOfTweets > 200 ? 200 : numberOfTweets)];

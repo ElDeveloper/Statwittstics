@@ -57,6 +57,8 @@
 -(void)showGrids;
 
 //By default this hides the minor ticks, only showing the major ticks, this will affect the grids
+-(void)setMajorTicksWithXInterval:(float)xInterval;
+-(void)setMajorTicksWithYInterval:(float)yInterval;
 -(void)setMajorTicksWithXInterval:(float)xInterval andYInterval:(float)yInterval;
 
 //Set the labels of the visible ticks in the current plot space, the call to these methods is 

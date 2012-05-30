@@ -30,7 +30,8 @@ typedef enum {
 //There are three type of possible time-frames that can be used in the class
 //the value will be also the index of the button for a UISegmentedController.
 typedef enum {
-    HVCTimeFrameDaily=0,
+    HVCTimeFrameHourly=0,
+    HVCTimeFrameDaily,
     HVCTimeFrameWeekley,
     HVCTimeFrameMonthly
 }HVCTimeFrame;

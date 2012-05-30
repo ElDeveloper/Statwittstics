@@ -22,6 +22,10 @@
         // Initialization code
         //Create and allocate the graph, it will be re-sized as needed
         graph=[[CPTXYGraph alloc] initWithFrame:CGRectZero];
+        
+        //Make this class the delegate for touch events
+        [[[self graph] defaultPlotSpace] setDelegate:self];
+        
         viewIsRestricted=NO;
         
         xAxisTitle=nil;
@@ -29,10 +33,6 @@
         
         defaultXRange=nil;
         defaultYRange=nil;
-        
-        
-        //Make this class the delegate for touch events
-        [[[self graph] defaultPlotSpace] setDelegate:self];
     }
     return self;
 }
@@ -148,7 +148,22 @@
 }
 
 #pragma mark - Ticks
--(void)setMajorTicksWithXInterval:(float)xInterval andYInterval:(float)yInterval{
+-(void)setMajorTicksWithXInterval:(float)xInterval{
+    //Begin the creation of the axes
+    CPTXYAxisSet *axisSet=(CPTXYAxisSet *)[graph axisSet];
+    
+    //X axis
+    CPTXYAxis *xAxis=[axisSet xAxis];
+    [xAxis setMajorIntervalLength:CPTDecimalFromFloat(xInterval)];
+    [xAxis setOrthogonalCoordinateDecimal:CPTDecimalFromString(PBPlotAxisOrthogonal)];
+    [xAxis setMinorTicksPerInterval:0];
+    
+    //X ticks label style
+    [xAxis setLabelTextStyle:[PBUtilities textStyleWithFont:@"Helvetica" andColor:[CPTColor grayColor]]];        
+    [xAxis setLabelFormatter:[PBUtilities formatterWithMaximumFractionDigits:1]];
+}
+
+-(void)setMajorTicksWithYInterval:(float)yInterval{
     //Begin the creation of the axes
     CPTXYAxisSet *axisSet=(CPTXYAxisSet *)[graph axisSet];
     
@@ -161,17 +176,11 @@
     //Y ticks label style
     [yAxis setLabelTextStyle:[PBUtilities textStyleWithFont:@"Helvetica" andColor:[CPTColor grayColor]]];
     [yAxis setLabelFormatter:[PBUtilities formatterWithMaximumFractionDigits:1]];
-    
-    //X axis
-    CPTXYAxis *xAxis=[axisSet xAxis];
-    [xAxis setMajorIntervalLength:CPTDecimalFromFloat(xInterval)];
-    [xAxis setOrthogonalCoordinateDecimal:CPTDecimalFromString(PBPlotAxisOrthogonal)];
-    [xAxis setMinorTicksPerInterval:0];
-    
-    //X ticks label style
-    [xAxis setLabelTextStyle:[PBUtilities textStyleWithFont:@"Helvetica" andColor:[CPTColor grayColor]]];        
-    [xAxis setLabelFormatter:[PBUtilities formatterWithMaximumFractionDigits:1]];
-    
+}
+
+-(void)setMajorTicksWithXInterval:(float)xInterval andYInterval:(float)yInterval{
+    [self setMajorTicksWithXInterval:xInterval];
+    [self setMajorTicksWithYInterval:yInterval];
 }
 
 -(void)setXTicksLabels:(NSArray *)labels withRotation:(float)rotation{
@@ -403,7 +412,7 @@
         return YES;
     }    
     
-    return YES;
+    return NO;
 }
 
 @end

@@ -23,7 +23,7 @@
         researchFellow=[theResearchFellow retain];
         [self setPreviousViewController:someViewController];
         alertView=[[GIDAAlertView alloc] initAlertWithSpinnerAndMessage:NSLocalizedString(@"Searching For Users", @"Searching For Users String")];
-        [alertView setCenter:CGPointMake(270, 160)];
+        //[alertView setCenter:CGPointMake(270, 160)];
         
         //This class is only defined with a modal behavior
         [self setModalPresentationStyle:UIModalPresentationFormSheet];

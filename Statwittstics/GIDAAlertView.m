@@ -76,16 +76,32 @@ CGRect const kiPadLandscapeRect={{.x=422, .y=144}, {.width=180, .height=180}};
 }
 
 -(void)addToBottomView:(id)sender{
-    UIView *bottomView=(UIView *)sender;
-    CGRect baseRect=bottomView.frame;
-    CGRect newRect=baseRect;
+    UIView *bottomView=nil;
     
-    newRect.origin.x=(baseRect.size.width/2.0)-90;
-    newRect.origin.y=100;
-    newRect.size.width=180;
-    newRect.size.height=180;
-
-    [self setFrame:newRect];
+    //If a target view is passed, add the alert to the center of the bottom
+    //view and with an offset of 100 in the Y axis
+    if (sender != nil) {
+        bottomView=(UIView *)sender;
+        CGRect baseRect=bottomView.frame;
+        CGRect newRect=baseRect;
+        
+        newRect.origin.x=(baseRect.size.width/2.0)-90;
+        newRect.origin.y=100;
+        newRect.size.width=180;
+        newRect.size.height=180;
+        
+        [self setFrame:newRect];
+    }
+    //When nothing is passed as target view, just look for the bottom view of the current
+    //window, and add a sub-view there, with the default positions
+    else {
+        //Get the view that is down at the bottom
+        NSArray *arrayOfViews=[NSArray arrayWithArray:[[[UIApplication sharedApplication] keyWindow] subviews]];    
+        bottomView=[arrayOfViews objectAtIndex:[arrayOfViews count]-1];
+        
+        //Set the default position
+        [self setFrame:[GIDAAlertView rectForInterfaceOrientation:[[UIDevice currentDevice] orientation]]];
+    }
     
     //Add the alert
     [bottomView addSubview:self];

@@ -32,9 +32,6 @@
         CPTGraphHostingView *hostingView = [[CPTGraphHostingView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
         [hostingView setBackgroundColor:[UIColor clearColor]];
         
-        //Create and allocate the graph, it will be re-sized as needed
-        graph=[[CPTXYGraph alloc] initWithFrame:CGRectZero];
-        
         //The hosting view is the main holder for all the plot
         [hostingView setHostedGraph:graph];
         [hostingView setAutoresizingMask:UIViewAutoresizingNone];
@@ -53,7 +50,7 @@
         [graph setPaddingRight:PBPlotPaddingNone];
         
         //Add a little padding to the right to make the last tick visible
-        //[[graph plotAreaFrame] setPaddingRight:50];
+        [[graph plotAreaFrame] setPaddingRight:20];
         [graph setLegendAnchor:CPTRectAnchorLeft];
         
         //Set default spaced ticks
@@ -79,7 +76,7 @@
             [plotSprite setBarsAreHorizontal:NO];
             [plotSprite setCornerRadius:0.9f];
             
-            [plotSprite setBarWidth:CPTDecimalFromFloat(1.0f)];
+            [plotSprite setBarWidth:CPTDecimalFromFloat(1.0)];
             [plotSprite setBarOffset:CPTDecimalFromFloat(0.5)];
             
             //The identifier of each of the scatter plots is the same as the data set title, and
@@ -133,8 +130,7 @@
 
 #pragma mark - CPTScatterPlotDelegate
 -(void)barPlot:(CPTBarPlot *)plot barWasSelectedAtRecordIndex:(NSUInteger)index{
-
+    NSLog(@"%s @ %s", __PRETTY_FUNCTION__, __FILE__);
 }
-
 
 @end

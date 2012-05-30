@@ -96,6 +96,8 @@ extern NSUInteger const kPBTRequestMaximum;
 
 -(PBDataSet *)dataSetOfTweetsForHourPerDay;
 
+-(PBDataSet *)dataSetOfTweetsPerHour;
+
 //Recursive way to request as many tweets as needed, requesting them in chunks of 200 tweets
 void PBTRequestTweets(PBTUser *client, NSUInteger numberOfTweets,  NSString *lastTweetID, NSMutableArray **tweetsBuffer, PBTRequestHandler handler);
 

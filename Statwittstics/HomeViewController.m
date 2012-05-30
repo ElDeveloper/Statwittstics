@@ -37,7 +37,9 @@
         optionsActionSheet=nil;
         
         //Segmented controllers
-        timeFrameSegmentedControl=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:NSLocalizedString(@"Daily", @"Daily String"),
+        timeFrameSegmentedControl=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:
+                                                                             NSLocalizedString(@"Hourly", @"Hourly String"),
+                                                                             NSLocalizedString(@"Daily", @"Daily String"),
                                                                              NSLocalizedString(@"Weekley", @"Weekley String"),
                                                                              NSLocalizedString(@"Monthly", @"Monthly String"), nil]];
         [timeFrameSegmentedControl setFrame:CGRectMake(530, 10, 480, 28)];
@@ -251,6 +253,8 @@
     
     //Depending on the index
     switch ([timeFrameSegmentedControl selectedSegmentIndex]) {
+        case HVCTimeFrameHourly:
+            xAxisTitle=[NSString stringWithString:NSLocalizedString(@"Hours", @"Hours String")];
         case HVCTimeFrameDaily:
             calendarUnit=NSDayCalendarUnit;
             xAxisTitle=[NSString stringWithString:NSLocalizedString(@"Days", @"Days String")];
@@ -269,7 +273,14 @@
 
     //Set the time metric needed for the data set, only if it is not for the scatter plot
     if ([visualizationTypeSegmentedControl selectedSegmentIndex] != HVCVisualizationTypeScatterPlot) {
-        someDataSet=[[subjectOfAnalysis dataSetOfTweetsPerCalendarUnit:calendarUnit] retain];
+        
+        //Unless it can be calculated with the calendar units
+        if ([timeFrameSegmentedControl selectedSegmentIndex] == HVCTimeFrameHourly) {
+            someDataSet=[[subjectOfAnalysis dataSetOfTweetsPerHour] retain];
+        }
+        else {
+            someDataSet=[[subjectOfAnalysis dataSetOfTweetsPerCalendarUnit:calendarUnit] retain];   
+        }
     }
     //Otherwise, just create the other type of data-set
     else {
@@ -358,8 +369,22 @@
         
         //Plot attributes
         [barPlot setViewIsRestricted:YES];
-        [barPlot setXAxisUpperBound:[[someDataSet maximumXValue] intValue] andLowerBound:0];
+        
+        //See which type of X ticks and limits are needed
+        if ([timeFrameSegmentedControl selectedSegmentIndex] == HVCTimeFrameHourly) {
+            
+            //Set the qualities for the x axis, the y axis will remain the same
+            [barPlot setXAxisUpperBound:24 andLowerBound:0];
+            [barPlot setMajorTicksWithXInterval:1];
+            [barPlot setXTicksLabels:[NSArray arrayWithObjects:HOURS_ARRAY, nil]];
+        }
+        else {
+            [barPlot setXAxisUpperBound:[[someDataSet maximumXValue] intValue] andLowerBound:0];
+        }
+        
+        //Y axis behaves the same for the bar plots
         [barPlot setYAxisUpperBound:[[someDataSet maximumYValue] intValue] andLowerBound:0];
+        
         [barPlot showGrids];
         
         // Do any additional setup after loading the view.
@@ -389,6 +414,7 @@
 #pragma mark - HomeVieControllerInterfaceManagerMethods
 -(void)fixControllersInteraction{
     //Initial state, this six lines will save us from having to reset this state on every call
+    [timeFrameSegmentedControl setEnabled:YES forSegmentAtIndex:HVCTimeFrameHourly];
     [timeFrameSegmentedControl setEnabled:YES forSegmentAtIndex:HVCTimeFrameDaily];
     [timeFrameSegmentedControl setEnabled:YES forSegmentAtIndex:HVCTimeFrameWeekley];
     [timeFrameSegmentedControl setEnabled:YES forSegmentAtIndex:HVCTimeFrameMonthly];
@@ -400,15 +426,23 @@
     //time-frame selection, otherwise it pretty much makes no sense and the plot will be empty.
     switch ([visualizationTypeSegmentedControl selectedSegmentIndex]) {
         case HVCVisualizationTypeScatterPlot:
+            [timeFrameSegmentedControl setEnabled:NO forSegmentAtIndex:HVCTimeFrameHourly];
             [timeFrameSegmentedControl setEnabled:NO forSegmentAtIndex:HVCTimeFrameMonthly];
             [timeFrameSegmentedControl setEnabled:NO forSegmentAtIndex:HVCTimeFrameWeekley];
+            break;
+        case HVCVisualizationTypeLinePlot:
+            [timeFrameSegmentedControl setEnabled:NO forSegmentAtIndex:HVCTimeFrameHourly];
             break;
         default:
             break;
     }
     
+    //Here set, what visualizations are allowed for a given time-frame
     //The scatter plot is only available when the daily time-frame is selected
     switch ([timeFrameSegmentedControl selectedSegmentIndex]) {
+        case HVCTimeFrameHourly:
+            [visualizationTypeSegmentedControl setEnabled:NO forSegmentAtIndex:HVCVisualizationTypeScatterPlot];
+            [visualizationTypeSegmentedControl setEnabled:NO forSegmentAtIndex:HVCVisualizationTypeLinePlot];
         case HVCTimeFrameDaily:
             [visualizationTypeSegmentedControl setEnabled:YES forSegmentAtIndex:HVCVisualizationTypeScatterPlot];
             break;
