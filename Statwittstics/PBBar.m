@@ -49,13 +49,12 @@
         [graph setPaddingBottom:PBPlotPaddingNone];
         [graph setPaddingRight:PBPlotPaddingNone];
         
-        //Add a little padding to the right to make the last tick visible
-        [[graph plotAreaFrame] setPaddingRight:20];
+        //Set where the title should be found
         [graph setLegendAnchor:CPTRectAnchorLeft];
         
         //Set default spaced ticks
-        [self setMajorTicksWithXInterval:[PBUtilities ticksIntervalIn:PBXAxis dataSets:dataSets] 
-                            andYInterval:[PBUtilities ticksIntervalIn:PBYAxis dataSets:dataSets]];
+        [self setMajorTicksWithXInterval:floorf([PBUtilities ticksIntervalIn:PBXAxis dataSets:dataSets]) 
+                            andYInterval:floorf([PBUtilities ticksIntervalIn:PBYAxis dataSets:dataSets])];
         
         //One score plot per Data Set, must solve this shit
         for (i=0; i<[dataSets count]; i++) {

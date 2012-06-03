@@ -32,8 +32,11 @@ NSString* PBTStringFromTwitterDateWithFormat(NSDate *date, NSString *format);
 //Get the full default date from a Twitter Date 
 NSString* PBTStringFromTwitterDate(NSDate *date);
 
-//Helper function, returns the number of days/weeks/months (currently only these are supported) between two NSDates
+//Returns the number of days/weeks/months (currently only these are supported) between two NSDates
 NSInteger PBTCalendarUnitsBetweenDates(NSDate *fromDate, NSDate *toDate, NSCalendarUnit calendarUnit);
+
+//Returns an autoreleased date plus the specified days/weeks/months
+NSDate* PBTAddCalendarUnitToDate(NSDate *date, NSInteger addition, NSCalendarUnit calendarUnit);
 
 //MATLAB-ish like general use functions
 NSMutableArray* PBTZeros(NSUInteger length);

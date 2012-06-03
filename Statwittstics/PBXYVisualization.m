@@ -23,6 +23,9 @@
         //Create and allocate the graph, it will be re-sized as needed
         graph=[[CPTXYGraph alloc] initWithFrame:CGRectZero];
         
+        //Add a little padding to the right to make the last tick visible
+        [[graph plotAreaFrame] setPaddingRight:10];
+        
         //Make this class the delegate for touch events
         [[[self graph] defaultPlotSpace] setDelegate:self];
         
@@ -214,7 +217,7 @@
     }
     
     //Go through every of the visible ticks and add the custom label provided
-    for(i=0; i< visibleTicks; i++){
+    for(i=0; i<= visibleTicks; i++){
         //Add the locations of the ticks, otherwise you will loose all the lines and grids
         [tickLocations addObject:[NSDecimalNumber numberWithFloat:rangeLocation + (i * majorTickInterval)]];
         
@@ -263,7 +266,7 @@
     #endif
     
     //Just be careful and let the programmer know if he screwed something
-    if ([labels count] < visibleTicks) {
+    if ([labels count] <= visibleTicks) {
         [NSException raise:@"PBXYVisualization" format:@"You provided %d X ticks labels, the method needs %d", [labels count], visibleTicks];
     }
     

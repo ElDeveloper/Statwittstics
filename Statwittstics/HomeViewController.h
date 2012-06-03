@@ -103,6 +103,8 @@ typedef enum {
 -(void)fixControllersInteraction;
 -(void)numberOfTweetsSliderValueChanged:(UISlider *)slider;
 
+-(void)mendXTicksIntervalsFor:(PBXYVisualization *)visualization;
+
 //Utilities for the GUI
 float HVCFixSliderValue(float sliderValue);
 

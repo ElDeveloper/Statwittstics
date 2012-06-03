@@ -19,21 +19,26 @@
 
 #endif
 
-//DG: Imágen de placeholder para la gráfica
-//DG: Fondo de el PBTUserView
+//DG: Imágen de placeholder para la gráfica, podría ser el ícono en relieves
+//DG: Arte para el PBTUserView
 //DG: Logotipo de la aplicación
 //DG: Selección de colores para toda la aplicación
 //
 //UX: Revisar si hace falta agregar sonidos
 //
 //PBPlot Framework:
-//	+ Graficar número de twitts por hora (distribución)
+//
 //SW: Hacer un annotation que sea un UIPopOverController con una tabla de UITableViewTweetCells
 //
 //Statwittstics Framework:
-//SW: Generar PBDataSet de número de twitts por hora 
 //
-//SW: Añadir controlador para tiempo con (hourly)
+//SW: Añadir ticks-labels (URGENTE):
+//	+ Tweets por día
+//	+ Tweets por semana
+//	+ Tweets por mes
+//
+//SW: Alerts de requests y quitar alerts presentes:
+//  + PBTUser en todos los momentos en los que existe un error (valdría la pena crear un método de clase)
 //
 //SW: Comparar a dos usuarios en función de sus series de tiempo
 //	+ Crear una pantalla con dos columnas en donde haya datos.
@@ -41,8 +46,3 @@
 //	+ Coeficiente de correlación entre la hora a la que dos usuarios twittean
 //	+ Comparar distribuciones de twitts por hora
 //	+ Prueba de Kolmogorov-Smirnov para dos distribuciones
-//
-//SW: Añadir ticks-labels (URGENTE):
-//	+ Tweets por día
-//	+ Tweets por semana
-//	+ Tweets por mes

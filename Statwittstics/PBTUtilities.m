@@ -125,13 +125,24 @@ NSString* PBTStringFromTwitterDateWithFormat(NSDate *date, NSString *format){
 }
 
 NSInteger PBTCalendarUnitsBetweenDates(NSDate *fromDate, NSDate *toDate, NSCalendarUnit calendarUnit){
-    NSCalendar *calendar=[NSCalendar autoupdatingCurrentCalendar];
+    static NSCalendar *calendar;
     NSInteger outBuffer=0;
+    NSDate *_fromDate=nil, *_toDate=nil;
+    BOOL calculationCorrect=NO;
     
-    [calendar rangeOfUnit:NSDayCalendarUnit startDate:&fromDate interval:NULL forDate:fromDate];
-    [calendar rangeOfUnit:NSDayCalendarUnit startDate:&toDate interval:NULL forDate:toDate];
+    if (calendar == nil) {
+        calendar=[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    }
     
-    NSDateComponents *difference = [calendar components:calendarUnit fromDate:fromDate toDate:toDate options:0];
+    while (!calculationCorrect) {
+        calculationCorrect=[calendar rangeOfUnit:NSDayCalendarUnit startDate:&_fromDate interval:nil forDate:[[fromDate copy] autorelease]];
+    }
+    calculationCorrect=NO;
+    while (!calculationCorrect) {
+        calculationCorrect=[calendar rangeOfUnit:NSDayCalendarUnit startDate:&_toDate interval:nil forDate:[[toDate copy] autorelease]];
+    }
+    
+    NSDateComponents *difference = [calendar components:calendarUnit fromDate:_fromDate toDate:_toDate options:0];
     
     switch (calendarUnit) {
         case NSDayCalendarUnit:
@@ -149,6 +160,35 @@ NSInteger PBTCalendarUnitsBetweenDates(NSDate *fromDate, NSDate *toDate, NSCalen
     }
     
     return outBuffer;    
+}
+
+NSDate* PBTAddCalendarUnitToDate(NSDate *date, NSInteger addition, NSCalendarUnit calendarUnit){
+    static NSCalendar *calendar;
+    
+    if (calendar == nil) {
+        calendar=[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    }
+    
+    //Buffer date components
+    NSDateComponents *components = [[[NSDateComponents alloc] init] autorelease];
+    
+    switch (calendarUnit) {
+        case NSDayCalendarUnit:
+            [components setDay:addition];
+            break;
+        case NSWeekCalendarUnit:
+            [components setWeek:addition];
+            break;
+        case NSMonthCalendarUnit:
+            [components setMonth:addition];
+            break;
+        default:
+            [NSException raise:@"PBTUtilities" format:@"%s only provides support for days, weeks and months.", __PRETTY_FUNCTION__];
+            return nil;
+            break;
+    }
+    
+    return [[calendar dateByAddingComponents:components toDate:date options:0] autorelease];
 }
 
 NSMutableArray* PBTZeros(NSUInteger length){

@@ -63,7 +63,6 @@
         [timeFrameSegmentedControl addTarget:self action:@selector(segmentedControllSelected:) forControlEvents:UIControlEventValueChanged];
         [visualizationTypeSegmentedControl addTarget:self action:@selector(segmentedControllSelected:) forControlEvents:UIControlEventValueChanged];
         
-        
         //Slider for the selection of tweets
         numberOfTweetsSlider=[[UISlider alloc] initWithFrame:CGRectMake(530, 115, 480, 20)];
         [numberOfTweetsSlider setMinimumValue:200];
@@ -313,10 +312,12 @@
         
         //Plot attributes
         [[[linePlot graph] defaultPlotSpace] setAllowsUserInteraction:YES];
-        [linePlot setViewIsRestricted:YES];
         [linePlot setXAxisUpperBound:[[someDataSet maximumXValue] intValue] andLowerBound:0];
         [linePlot setYAxisUpperBound:[[someDataSet maximumYValue] intValue] andLowerBound:0];
+        
         [linePlot showGrids];
+        [self mendXTicksIntervalsFor:linePlot];
+        [linePlot setViewIsRestricted:YES];
         
         // Do any additional setup after loading the view.
         [[self visualizationSpace] addSubview:linePlot];
@@ -379,7 +380,8 @@
             [barPlot setXTicksLabels:[NSArray arrayWithObjects:HOURS_ARRAY, nil]];
         }
         else {
-            [barPlot setXAxisUpperBound:[[someDataSet maximumXValue] intValue] andLowerBound:0];
+            [barPlot setXAxisUpperBound:[[someDataSet maximumXValue] intValue]+1 andLowerBound:0];
+            [self mendXTicksIntervalsFor:barPlot];
         }
         
         //Y axis behaves the same for the bar plots
@@ -433,6 +435,7 @@
         case HVCVisualizationTypeLinePlot:
             [timeFrameSegmentedControl setEnabled:NO forSegmentAtIndex:HVCTimeFrameHourly];
             break;
+        case HVCVisualizationTypeBarPlot:
         default:
             break;
     }
@@ -443,6 +446,8 @@
         case HVCTimeFrameHourly:
             [visualizationTypeSegmentedControl setEnabled:NO forSegmentAtIndex:HVCVisualizationTypeScatterPlot];
             [visualizationTypeSegmentedControl setEnabled:NO forSegmentAtIndex:HVCVisualizationTypeLinePlot];
+            [visualizationTypeSegmentedControl setEnabled:NO forSegmentAtIndex:HVCVisualizationTypeScatterPlot];
+            break;
         case HVCTimeFrameDaily:
             [visualizationTypeSegmentedControl setEnabled:YES forSegmentAtIndex:HVCVisualizationTypeScatterPlot];
             break;
@@ -507,6 +512,53 @@ float HVCFixSliderValue(float sliderValue){
     }
     
     return;
+}
+
+-(void)mendXTicksIntervalsFor:(PBXYVisualization *)visualization{
+    NSMutableArray *arrayOfDates=[[NSMutableArray alloc] init];
+    
+    int i=0;
+    NSDate *startingDate=[[[subjectOfAnalysis tweets] lastObject] postDate];
+    NSDate *bufferDate=nil;
+    
+    //Keep the current appearance by retrieving these properties
+    CPTXYPlotSpace *plotSpace=(CPTXYPlotSpace *)[[visualization graph] defaultPlotSpace];
+    CPTXYAxisSet *axisSet=(CPTXYAxisSet *)[[visualization graph] axisSet];
+    CPTXYAxis *xAxis=[axisSet xAxis];
+    
+    //Avoid the over-head of repeating this calculations for each iteration
+    float majorTickInterval=CPTDecimalFloatValue([xAxis majorIntervalLength]);
+    
+    //The use of the ranges help us calculate how many ticks are visible in the scrreen
+    float rangeLocation=CPTDecimalFloatValue([[plotSpace xRange] location]);
+    float rangeLength=CPTDecimalFloatValue([[plotSpace xRange] length]);
+    int visibleTicks=(int)floor((rangeLength / majorTickInterval));
+    
+    NSCalendarUnit unitToUse=NSDayCalendarUnit;
+    
+    switch ([timeFrameSegmentedControl selectedSegmentIndex]) {
+        case HVCTimeFrameDaily:
+            unitToUse=NSDayCalendarUnit;
+            break;
+        case HVCTimeFrameWeekley:
+            unitToUse=NSWeekCalendarUnit;
+            break;
+        case HVCTimeFrameMonthly:
+            unitToUse=NSMonthCalendarUnit;
+        default:
+            break;
+    }
+    
+    //Go through every of the visible ticks and add the custom label provided
+    for(i=0; i<= visibleTicks; i++){
+        bufferDate=PBTAddCalendarUnitToDate(startingDate, rangeLocation+(i*majorTickInterval), unitToUse);
+        [arrayOfDates addObject:PBTStringFromTwitterDateWithFormat(bufferDate, @"dd/MMM/yyyy")];
+        
+        NSLog(@"Dude %@", PBTStringFromTwitterDateWithFormat(bufferDate, @"dd/MMM/yyyy"));
+    }
+    [visualization setXTicksLabels:arrayOfDates];
+    
+    [arrayOfDates release];
 }
 
 -(void)showTweetViewControllerWithImage:(UIImage *)imageToTweet{
