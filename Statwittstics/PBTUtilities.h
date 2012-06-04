@@ -16,7 +16,7 @@
 
 //General handler for the blocks, if an error occurs in the in the method where
 //the caller is called, the handler won't be called , to avoid conflicts.
-typedef void __block (^PBTSearchResult)(NSArray *arrayOfSubjects);
+typedef void __block (^PBTSearchResult)(NSArray *arrayOfSubjects, NSError *error);
 
 //These utilities requiere of a vailid PBTUser, otherwise you won't be able to
 //make the request; this method returns an auto-released array via the handler

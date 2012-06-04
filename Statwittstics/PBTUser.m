@@ -158,9 +158,9 @@ NSUInteger const kPBTRequestMaximum= 3200;
                 //Load the information from the JSON string
                 [self loadFromJSONString:jsonString];
                 
-                [self requestProfilePictureWithSize:TAImageSizeBigger andHandler:^{
+                [self requestProfilePictureWithSize:TAImageSizeBigger andHandler:^(NSError *error){
                     //Finally when everything is done, perform the handler
-                    handler();
+                    handler(nil);
                 }];
 
             }//JSON error
@@ -180,15 +180,18 @@ NSUInteger const kPBTRequestMaximum= 3200;
     
     [userData performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
         #ifdef DEBUG
-        NSLog(@"PBTUser(I)**:%@", [urlResponse URL]);
+        NSLog(@"PBTUser(REQUEST):%s**:%@", __PRETTY_FUNCTION__,[urlResponse URL]);
         #endif
         
         if (!error) {
             imageData=[[NSData alloc] initWithData:responseData];
-            handler();
+            handler(nil);
         }
         else {
-            NSLog(@"PBTUser(I)**:%@", [error localizedDescription]);
+            NSLog(@"PBTUser(REQUEST):%s**:%@", __PRETTY_FUNCTION__,[error localizedDescription]);
+            
+            //Make a copy and autorelease the error object
+            handler([[error copy] autorelease]);
         }
     }];
 }
@@ -286,7 +289,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
                 
                 //More tweets to retrieve
                 if ( _remainingTweets > 0 ) {
-                    [self requestMostRecentTweets:_remainingTweets withHandler:^{}];
+                    [self requestMostRecentTweets:_remainingTweets withHandler:^(NSError *error) {}];
                 }
                 else {
                     #ifdef DEBUG
@@ -303,7 +306,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     _remainingTweets=0;
 
                     //Finally call the handler, release and re-start the variable
-                    _vamooseHandler();
+                    _vamooseHandler(nil);
                     [_vamooseHandler release];
                     _vamooseHandler=nil;
                 }
@@ -331,8 +334,8 @@ NSUInteger const kPBTRequestMaximum= 3200;
     }
     
     //Have to do this in chunks of 200
-    [self requestMostRecentTweets:requestedTwitts withHandler:^{
-        handler();
+    [self requestMostRecentTweets:requestedTwitts withHandler:^(NSError *error){
+        handler(nil);
     }];
 }
 
@@ -617,7 +620,7 @@ void PBTRequestTweets(PBTUser *client, NSUInteger numberOfTweets,  NSString *las
                     NSLog(@"PBTUser:**Last call, total number of tweets %d", [_tweetsBuffer count]);
                     #endif
                     
-                    _handler();
+                    _handler(nil);
                 }
             }
             else {

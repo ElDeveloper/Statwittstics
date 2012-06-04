@@ -34,7 +34,7 @@
 //The initializer carries a user that allows search queries to be sent to twitter
 -(id)initWithResearchFellow:(PBTUser *)theResearchFellow andViewController:(HomeViewController *)someViewController;
 
--(void)loadResults;
+-(void)loadResults:(id)sender;
 -(void)updateProfilePictureForCellAtIndex:(NSIndexPath *)indexPath;
 
 @end

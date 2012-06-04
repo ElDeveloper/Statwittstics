@@ -14,7 +14,7 @@
 
 //General handler for the blocks, if an error occurs in the in the method where
 //the caller is called, the handler won't be called , to avoid conflicts.
-typedef void __block (^PBTRequestHandler)(void);
+typedef void __block (^PBTRequestHandler)(NSError *error);
 
 //General constants
 extern NSUInteger const kPBTRequestMaximum;

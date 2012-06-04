@@ -137,8 +137,10 @@
 
 #pragma mark - PBXYVisualizations Helpers
 +(float)ticksIntervalIn:(PBAxis)axisType dataSets:(NSArray *)dataSets{
+    #define NUMBER_OF_TICKS 5
+    
     float minValue=0, maxValue=0, tmin=0, tmax=0, intervalSize=0;
-    int values[5]={4, 6, 8, 10, 12}, i=0, position=0, minModuloValue=-1;
+    int values[NUMBER_OF_TICKS]={11, 7, 5, 4, 3}, i=0, position=0, minModuloValue=-1;
     
     //Go through each of the data sets, determine the maximum and minimum values
     for (PBDataSet *currentDataSet in dataSets) {
@@ -178,7 +180,7 @@
     position=0;
     
     //Go over the proposed values and seek for the one with the smallest modulo value
-    for (i=1 ; i<5 ; i++) {
+    for (i=1 ; i<NUMBER_OF_TICKS ; i++) {
         if (  minModuloValue > ((int)intervalSize)%values[i] ) {
             minModuloValue=((int)intervalSize)/values[i];
             position=i;

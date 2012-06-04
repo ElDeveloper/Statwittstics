@@ -130,7 +130,7 @@
             researchFellow=[[PBTUser alloc] initWithUsername:[theAccount username] andAuthorizedAccount:theAccount];
             subjectOfAnalysis=[researchFellow retain];
             
-            [subjectOfAnalysis requestUserData:^{
+            [subjectOfAnalysis requestUserData:^(NSError *error){
                 
                 #ifdef DEBUG
                 NSLog(@"The real name is %@, annoyingly tweeted %d", [subjectOfAnalysis realName], [subjectOfAnalysis tweetCount]);
@@ -405,7 +405,7 @@
     [subjectOfAnalysisView loadUser:subjectOfAnalysis];
     
     //Request for the data
-    [subjectOfAnalysis requestMostRecentTweets:[[numberOfTweetsLabel text] intValue] withHandler:^{
+    [subjectOfAnalysis requestMostRecentTweets:[[numberOfTweetsLabel text] intValue] withHandler:^(NSError *error){
         [loadingAlertView performSelectorOnMainThread:@selector(hideAlertWithSpinner) withObject:nil waitUntilDone:NO];
         
         //Go to the main thread and perform the GUI changes, here comes the magic ... 
@@ -553,8 +553,6 @@ float HVCFixSliderValue(float sliderValue){
     for(i=0; i<= visibleTicks; i++){
         bufferDate=PBTAddCalendarUnitToDate(startingDate, rangeLocation+(i*majorTickInterval), unitToUse);
         [arrayOfDates addObject:PBTStringFromTwitterDateWithFormat(bufferDate, @"dd/MMM/yyyy")];
-        
-        NSLog(@"Dude %@", PBTStringFromTwitterDateWithFormat(bufferDate, @"dd/MMM/yyyy"));
     }
     [visualization setXTicksLabels:arrayOfDates];
     

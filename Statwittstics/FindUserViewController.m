@@ -78,7 +78,12 @@
 }
 
 #pragma mark - FindUserViewController Behavioral Methods
--(void)loadResults{
+-(void)loadResults:(id)sender{
+    NSError *error=(NSError *)sender;
+    
+    GIDAAlertView *someAlert=nil;
+    UIAlertView *errorAlertView=nil;
+    
     //Upadate the GUI, remember the GUI can only be updated in the Main Thread    
     [[self tableView] beginUpdates];
     [[self tableView] reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationBottom];
@@ -86,19 +91,34 @@
     
     //Download have stopped, let the user know about this
     [alertView hideAlertWithSpinner];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    
+    //Check first if there is an error, if ther is a connection erro warn right there the user
+    if (error) {
+        errorAlertView=[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ %d", NSLocalizedString(@"Error", @"Error String"), [error code]] 
+                                                  message:[error localizedDescription] 
+                                                 delegate:nil 
+                                        cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String") 
+                                        otherButtonTitles:nil];
+        
+        [errorAlertView show];
+        [errorAlertView release];
+        
+        //Return now, don't blast the user with various alerts
+        return;
+    }
     
     //No results, present a simple alert to warn the user about the lack of results
     if ( ![searchResults count] ) {
-        GIDAAlertView *someAlert=[[GIDAAlertView alloc] initWithMessage:NSLocalizedString(@"No Results Found", @"No Results Found String") 
+        someAlert=[[GIDAAlertView alloc] initWithMessage:NSLocalizedString(@"No Results Found", @"No Results Found String") 
                                                           andAlertImage:[UIImage imageNamed:@"noresource.png"]];
         
         [someAlert setCenter:CGPointMake(270, 160)];
         [someAlert presentAlertFor:1.4 inView:[self view]];
         [someAlert release];
+        
+        return;
     }
-    
-    
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
 
 -(void)updateProfilePictureForCellAtIndex:(NSIndexPath *)indexPath{
@@ -152,7 +172,7 @@
         [[cell imageView] setImage:[UIImage imageWithData:[currentUser imageData]]];
     
         //Asycnchronously request the image in a regular size
-        [currentUser requestProfilePictureWithSize:TAImageSizeNormal andHandler:^{
+        [currentUser requestProfilePictureWithSize:TAImageSizeNormal andHandler:^(NSError *error){
             
             //When we get the data back, call on the main thread the update of the user interface
             [self performSelectorOnMainThread:@selector(updateProfilePictureForCellAtIndex:) withObject:indexPath waitUntilDone:NO];
@@ -209,7 +229,7 @@
     [alertView presentAlertWithSpinnerInView:[self view]];
     
     //Begin search ...
-    [PBTUtilities user:researchFellow requestUsersWithKeyword:[searchBar text] andResponseHandler:^(NSArray *arrayOfSubjects) {
+    [PBTUtilities user:researchFellow requestUsersWithKeyword:[searchBar text] andResponseHandler:^(NSArray *arrayOfSubjects, NSError *error) {
         
         //If there is something inside the array (try to avoid some over-head)
         if ([searchResults count] != 0) {
@@ -221,7 +241,7 @@
         [searchResults addObjectsFromArray:arrayOfSubjects];
         
         //Update the interface on the main thread
-        [self performSelectorOnMainThread:@selector(loadResults) withObject:nil waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(loadResults:) withObject:error waitUntilDone:NO];
     }]; 
 }
 

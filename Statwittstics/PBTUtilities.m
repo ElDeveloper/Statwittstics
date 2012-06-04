@@ -56,16 +56,18 @@
                 }
                 
                 //Return the contents of the data in a non-mutable autoreleased array
-                handler([NSArray arrayWithArray:bufferArray]);
+                handler([NSArray arrayWithArray:bufferArray], nil);
             }
             else {
                 //JSON serialization error management
-                NSLog(@"PBTUtilities(J)**:%@",[jsonError localizedDescription]);
+                NSLog(@"PBTUtilities(JSON)**:%@",[jsonError localizedDescription]);
+                handler([NSArray array], [[jsonError copy] autorelease]);
             }
         }
         else {
             //Request connection error
-            NSLog(@"PBTUtilities(R)**:%@",[error localizedDescription]);
+            NSLog(@"PBTUtilities(REQUEST)**:%@",[error localizedDescription]);
+            handler([NSArray array], [[error copy] autorelease]);
         }
     }];
 }
@@ -130,10 +132,12 @@ NSInteger PBTCalendarUnitsBetweenDates(NSDate *fromDate, NSDate *toDate, NSCalen
     NSDate *_fromDate=nil, *_toDate=nil;
     BOOL calculationCorrect=NO;
     
+    //Instantiate only once a gregorian calendar, the object is static
     if (calendar == nil) {
         calendar=[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
     }
     
+    //This calculations can go wrong, so just make sure they are done correctly
     while (!calculationCorrect) {
         calculationCorrect=[calendar rangeOfUnit:NSDayCalendarUnit startDate:&_fromDate interval:nil forDate:[[fromDate copy] autorelease]];
     }
@@ -142,8 +146,10 @@ NSInteger PBTCalendarUnitsBetweenDates(NSDate *fromDate, NSDate *toDate, NSCalen
         calculationCorrect=[calendar rangeOfUnit:NSDayCalendarUnit startDate:&_toDate interval:nil forDate:[[toDate copy] autorelease]];
     }
     
+    //Obtain the resulting date components between the two dates
     NSDateComponents *difference = [calendar components:calendarUnit fromDate:_fromDate toDate:_toDate options:0];
     
+    //Focus only on the days, weeks or months of the date
     switch (calendarUnit) {
         case NSDayCalendarUnit:
             outBuffer=[difference day];
@@ -155,6 +161,7 @@ NSInteger PBTCalendarUnitsBetweenDates(NSDate *fromDate, NSDate *toDate, NSCalen
             outBuffer=[difference month];
             break;
         default:
+            [NSException raise:@"PBTUtilities" format:@"%s only provides support for days, weeks and months.", __PRETTY_FUNCTION__];
             outBuffer=0;
             break;
     }
@@ -165,6 +172,7 @@ NSInteger PBTCalendarUnitsBetweenDates(NSDate *fromDate, NSDate *toDate, NSCalen
 NSDate* PBTAddCalendarUnitToDate(NSDate *date, NSInteger addition, NSCalendarUnit calendarUnit){
     static NSCalendar *calendar;
     
+    //Create only once the object, constantly creating this type of object is expensive
     if (calendar == nil) {
         calendar=[[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
     }
@@ -188,6 +196,7 @@ NSDate* PBTAddCalendarUnitToDate(NSDate *date, NSInteger addition, NSCalendarUni
             break;
     }
     
+    //Perform the actual calculation, autorelease it and return it
     return [[calendar dateByAddingComponents:components toDate:date options:0] autorelease];
 }
 
