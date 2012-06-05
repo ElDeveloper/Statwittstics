@@ -158,16 +158,31 @@ NSUInteger const kPBTRequestMaximum= 3200;
                 //Load the information from the JSON string
                 [self loadFromJSONString:jsonString];
                 
+                //Now request the image
                 [self requestProfilePictureWithSize:TAImageSizeBigger andHandler:^(NSError *error){
-                    //Finally when everything is done, perform the handler
-                    handler(nil);
+                    
+                    //Errors can also happen in this request, just notify them if so
+                    if (!error) {
+                        //Finally when everything is done, perform the handler
+                        handler(nil);
+                    }
+                    else {
+                        NSLog(@"PBTUser(REQUEST:IMAGE)**:%@", [error localizedDescription]);
+                        handler(error);
+                    }
                 }];
 
             }//JSON error
             else {
                 //JSON serialization error management
-                NSLog(@"PBTUser(J)**:%@",[jsonError localizedDescription]);
+                NSLog(@"PBTUser(JSON)**:%@",[jsonError localizedDescription]);
+                handler([[jsonError copy] autorelease]);
             }
+        }
+        else {
+            //Data request error
+            NSLog(@"PBTUser(REQUEST)**:%@", [error localizedDescription]);
+            handler([[jsonError copy] autorelease]);
         }//data request error
     }];//Twitter API request block
 
@@ -289,6 +304,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
                 
                 //More tweets to retrieve
                 if ( _remainingTweets > 0 ) {
+                    //Don't know if we should behave somehow
                     [self requestMostRecentTweets:_remainingTweets withHandler:^(NSError *error) {}];
                 }
                 else {
@@ -313,13 +329,25 @@ NSUInteger const kPBTRequestMaximum= 3200;
             }
             else {
                 //JSON serialization error management
-                NSLog(@"PBTUser(J)**:%@",[jsonError localizedDescription]);
+                NSLog(@"PBTUser(JSON)%s**:%@",__PRETTY_FUNCTION__, [jsonError localizedDescription]);
+                
+                //Manage the memory you know you won't be using
+                [_tempArray release];
+                _vamooseHandler([[jsonError copy] autorelease]);
+                [_vamooseHandler release];
+                _vamooseHandler=nil;
             }
             
         }
         else {
             //Connection error managment 
-            NSLog(@"PBTUser(R)**:%@", [error localizedDescription]);
+            NSLog(@"PBTUser(REQUEST)%s**::%@",__PRETTY_FUNCTION__, [error localizedDescription]);
+            
+            //Manage the memory you know you won't be using
+            [_tempArray release];
+            _vamooseHandler([[error copy] autorelease]);
+            [_vamooseHandler release];
+            _vamooseHandler=nil;
         }
     }];
 }
@@ -335,7 +363,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     
     //Have to do this in chunks of 200
     [self requestMostRecentTweets:requestedTwitts withHandler:^(NSError *error){
-        handler(nil);
+        handler([[error copy] autorelease]);
     }];
 }
 

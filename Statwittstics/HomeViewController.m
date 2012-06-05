@@ -117,6 +117,8 @@
     ACAccountStore *astore=[[ACAccountStore alloc] init];
     ACAccountType *twitterAccountType=[astore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
     
+    __block UIAlertView *errorAlertView=nil;
+    
     //Ask for permission to use the twitter credentials of the user
     [astore requestAccessToAccountsWithType:twitterAccountType withCompletionHandler:^(BOOL granted, NSError *error){
         
@@ -131,20 +133,32 @@
             subjectOfAnalysis=[researchFellow retain];
             
             [subjectOfAnalysis requestUserData:^(NSError *error){
-                
-                #ifdef DEBUG
-                NSLog(@"The real name is %@, annoyingly tweeted %d", [subjectOfAnalysis realName], [subjectOfAnalysis tweetCount]);
-                NSLog(@"Has %d followers and %d friends", [subjectOfAnalysis followers], [subjectOfAnalysis following]);
-                NSLog(@"The URL is: %@", [subjectOfAnalysis bioURL]);
-                NSLog(@"The location is: %@", [subjectOfAnalysis location]);
-                NSLog(@"The bio is: %@", [subjectOfAnalysis description]);
-                #endif
-                
-                //Hide the alert for the account request
-                [loadingAlertView performSelectorOnMainThread:@selector(hideAlertWithSpinner) withObject:nil waitUntilDone:YES];
-                
-                //Load the data into the view
-                [self performSelectorOnMainThread:@selector(downloadTweets) withObject:nil waitUntilDone:YES];
+                if (!error) {
+                    #ifdef DEBUG
+                    NSLog(@"The real name is %@, annoyingly tweeted %d", [subjectOfAnalysis realName], [subjectOfAnalysis tweetCount]);
+                    NSLog(@"Has %d followers and %d friends", [subjectOfAnalysis followers], [subjectOfAnalysis following]);
+                    NSLog(@"The URL is: %@", [subjectOfAnalysis bioURL]);
+                    NSLog(@"The location is: %@", [subjectOfAnalysis location]);
+                    NSLog(@"The bio is: %@", [subjectOfAnalysis description]);
+                    #endif
+                    
+                    //Hide the alert for the account request
+                    [loadingAlertView performSelectorOnMainThread:@selector(hideAlertWithSpinner) withObject:nil waitUntilDone:YES];
+                    
+                    //Load the data into the view
+                    [self performSelectorOnMainThread:@selector(downloadTweets) withObject:nil waitUntilDone:YES];
+                }
+                else {
+                    NSLog(@"HomeView_Controller:%s**:%@", __PRETTY_FUNCTION__, [error localizedDescription]);
+                    errorAlertView=[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ %d", NSLocalizedString(@"Error", @"Error String"), [error code]] 
+                                                              message:[error localizedDescription]
+                                                             delegate:nil 
+                                                    cancelButtonTitle:nil 
+                                                    otherButtonTitles:NSLocalizedString(@"Accept", @"Accept String"), nil];
+                    [errorAlertView show];
+                    [errorAlertView release];
+                    
+                }
             }];
         }
         else {
@@ -152,10 +166,10 @@
             NSLog(@"HomeViewController:Error** Statwittstics needs access to a twitter account.");
             NSLog(@"HomeViewController:Error** %@", [error localizedDescription]);
             
-            UIAlertView *errorAlertView=[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"Error String") 
+            errorAlertView=[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"Error String") 
                                                                    message:[error localizedDescription] 
                                                                   delegate:nil 
-                                                         cancelButtonTitle:NSLocalizedString(@"Cancel", @"Cancel String") 
+                                                         cancelButtonTitle:nil 
                                                          otherButtonTitles:NSLocalizedString(@"Accept", @"Accept String"), nil];
             
             [errorAlertView show];
@@ -406,10 +420,25 @@
     
     //Request for the data
     [subjectOfAnalysis requestMostRecentTweets:[[numberOfTweetsLabel text] intValue] withHandler:^(NSError *error){
-        [loadingAlertView performSelectorOnMainThread:@selector(hideAlertWithSpinner) withObject:nil waitUntilDone:NO];
+        UIAlertView *errorAlertView=nil;
         
-        //Go to the main thread and perform the GUI changes, here comes the magic ... 
-        [self performSelectorOnMainThread:@selector(segmentedControllSelected:) withObject:nil waitUntilDone:NO];
+        //Check for errors in the request for twitts
+        if (!error) {
+            [loadingAlertView performSelectorOnMainThread:@selector(hideAlertWithSpinner) withObject:nil waitUntilDone:NO];
+            
+            //Go to the main thread and perform the GUI changes, here comes the magic ... 
+            [self performSelectorOnMainThread:@selector(segmentedControllSelected:) withObject:nil waitUntilDone:NO];
+        }
+        else {
+            NSLog(@"HomeViewController:%s**:%@", __PRETTY_FUNCTION__, [error localizedDescription]);
+            errorAlertView=[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ %d", NSLocalizedString(@"Error", @"Error String"), [error code]]
+                                                      message:[error localizedDescription] 
+                                                     delegate:nil
+                                            cancelButtonTitle:nil 
+                                            otherButtonTitles:NSLocalizedString(@"Accept", @"Accept String"), nil];
+            [errorAlertView show];
+            [errorAlertView release];
+        }
     }];
 }
 
@@ -588,11 +617,6 @@ float HVCFixSliderValue(float sliderValue){
             default:
                 break;
         }
-        
-        //[self performSelectorOnMainThread:@selector(displayText:) withObject:nil waitUntilDone:NO];
-        
-        // Dismiss the tweet composition view controller.
-        //[self performSelectorOnMainThread:@selector(dismissModalViewControllerAnimated:) withObject:YES waitUntilDone:NO];
         [self dismissModalViewControllerAnimated:YES];
     }];
     
