@@ -93,13 +93,13 @@
     [alertView hideAlertWithSpinner];
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
     
-    //Check first if there is an error, if ther is a connection erro warn right there the user
+    //Check first if there is an error, and warn the user if so
     if (error) {
         errorAlertView=[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ %d", NSLocalizedString(@"Error", @"Error String"), [error code]] 
                                                   message:[error localizedDescription] 
-                                                 delegate:nil 
+                                                 delegate:self 
                                         cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String") 
-                                        otherButtonTitles:nil];
+                                        otherButtonTitles:NSLocalizedString(@"Try Again", @"Try Again String"), nil];
         
         [errorAlertView show];
         [errorAlertView release];
@@ -253,6 +253,13 @@
 
 -(void)searchBarResultsListButtonClicked:(UISearchBar *)searchBar{
     NSLog(@"AWESOME:%s", __PRETTY_FUNCTION__);
+}
+
+#pragma mark - UIAlertViewDelegate Methods
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 1) {
+        [self searchBarSearchButtonClicked:theSearchBar];
+    }
 }
 
 @end

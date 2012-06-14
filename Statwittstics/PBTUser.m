@@ -168,7 +168,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     }
                     else {
                         NSLog(@"PBTUser(REQUEST:IMAGE)**:%@", [error localizedDescription]);
-                        handler(error);
+                        handler([[error copy] autorelease]);
                     }
                 }];
 
@@ -182,7 +182,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
         else {
             //Data request error
             NSLog(@"PBTUser(REQUEST)**:%@", [error localizedDescription]);
-            handler([[jsonError copy] autorelease]);
+            handler([[error copy] autorelease]);
         }//data request error
     }];//Twitter API request block
 

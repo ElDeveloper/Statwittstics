@@ -44,7 +44,13 @@ typedef enum {
     HVCVisualizationTypeBarPlot
 }HVCVisualizationType;
 
-@interface HomeViewController : UIViewController <UIActionSheetDelegate>{
+//Alerts are presented if actions fail, tag each of the alerts to respond properly
+typedef enum {
+    HVCAlertAccessAccount=0,
+    HVCAlertDownloadTweets
+}HVCAlert;
+
+@interface HomeViewController : UIViewController <UIActionSheetDelegate, UIAlertViewDelegate>{
     
     PBVisualization *visualizationSpace;
     PBTUser *subjectOfAnalysis;

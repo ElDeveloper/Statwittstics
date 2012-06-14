@@ -14,7 +14,7 @@
 #import "HomeViewController.h"
 @class HomeViewController;
 
-@interface FindUserViewController : UITableViewController <UISearchDisplayDelegate, UISearchBarDelegate>{
+@interface FindUserViewController : UITableViewController <UISearchDisplayDelegate, UISearchBarDelegate, UIAlertViewDelegate>{
     PBTUser *researchFellow;
     UISearchBar *theSearchBar;
     HomeViewController *previousViewController;

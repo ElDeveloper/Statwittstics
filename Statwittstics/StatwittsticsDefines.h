@@ -23,7 +23,7 @@
 //DG: Arte para el PBTUserView
 //DG: Logotipo de la aplicación
 //DG: Selección de colores para toda la aplicación
-//
+//DG: Placeholder para la gráfica, algo cabrón
 //UX: Revisar si hace falta agregar sonidos
 //
 //PBPlot Framework:
@@ -32,13 +32,8 @@
 //
 //Statwittstics Framework:
 //
-//SW: Añadir ticks-labels (URGENTE):
-//	+ Tweets por día
-//	+ Tweets por semana
-//	+ Tweets por mes
-//
-//SW: Alerts de requests y quitar alerts presentes:
-//  + PBTUser en todos los momentos en los que existe un error (valdría la pena crear un método de clase)
+//SW: Agregar una animación a la creación de la gráfica (de expansión).
+//SW: Agregar animación a la aparición de los datos.
 //
 //SW: Comparar a dos usuarios en función de sus series de tiempo
 //	+ Crear una pantalla con dos columnas en donde haya datos.

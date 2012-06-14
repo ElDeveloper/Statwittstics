@@ -132,7 +132,7 @@
             researchFellow=[[PBTUser alloc] initWithUsername:[theAccount username] andAuthorizedAccount:theAccount];
             subjectOfAnalysis=[researchFellow retain];
             
-            [subjectOfAnalysis requestUserData:^(NSError *error){
+            [subjectOfAnalysis requestUserData:^(NSError *error){  
                 if (!error) {
                     #ifdef DEBUG
                     NSLog(@"The real name is %@, annoyingly tweeted %d", [subjectOfAnalysis realName], [subjectOfAnalysis tweetCount]);
@@ -152,9 +152,10 @@
                     NSLog(@"HomeView_Controller:%s**:%@", __PRETTY_FUNCTION__, [error localizedDescription]);
                     errorAlertView=[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ %d", NSLocalizedString(@"Error", @"Error String"), [error code]] 
                                                               message:[error localizedDescription]
-                                                             delegate:nil 
-                                                    cancelButtonTitle:nil 
-                                                    otherButtonTitles:NSLocalizedString(@"Accept", @"Accept String"), nil];
+                                                             delegate:self
+                                                    cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String")
+                                                    otherButtonTitles:NSLocalizedString(@"Try Again", @"Try Again String"), nil];
+                    [errorAlertView setTag:HVCAlertAccessAccount];
                     [errorAlertView show];
                     [errorAlertView release];
                     
@@ -167,11 +168,11 @@
             NSLog(@"HomeViewController:Error** %@", [error localizedDescription]);
             
             errorAlertView=[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"Error String") 
-                                                                   message:[error localizedDescription] 
-                                                                  delegate:nil 
-                                                         cancelButtonTitle:nil 
-                                                         otherButtonTitles:NSLocalizedString(@"Accept", @"Accept String"), nil];
-            
+                                                      message:[error localizedDescription] 
+                                                     delegate:self
+                                            cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String")
+                                            otherButtonTitles:NSLocalizedString(@"Try Again", @"Try Again String"), nil];
+            [errorAlertView setTag:HVCAlertAccessAccount];
             [errorAlertView show];
             [errorAlertView release];
         }
@@ -433,9 +434,10 @@
             NSLog(@"HomeViewController:%s**:%@", __PRETTY_FUNCTION__, [error localizedDescription]);
             errorAlertView=[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ %d", NSLocalizedString(@"Error", @"Error String"), [error code]]
                                                       message:[error localizedDescription] 
-                                                     delegate:nil
-                                            cancelButtonTitle:nil 
-                                            otherButtonTitles:NSLocalizedString(@"Accept", @"Accept String"), nil];
+                                                     delegate:self
+                                            cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String")
+                                            otherButtonTitles:NSLocalizedString(@"Try Again", @"Try Again String"), nil];
+            [errorAlertView setTag:HVCAlertDownloadTweets];
             [errorAlertView show];
             [errorAlertView release];
         }
@@ -607,11 +609,11 @@ float HVCFixSliderValue(float sliderValue){
         
         switch (result) {
             case TWTweetComposeViewControllerResultCancelled:
-                //Si se cancela el twitt
+                //Tweet is cancelled
 
                 break;
             case TWTweetComposeViewControllerResultDone:
-                //Se envía el twitt
+                //Tweet is sent
 
                 break;
             default:
@@ -623,7 +625,22 @@ float HVCFixSliderValue(float sliderValue){
     // Present the tweet composition view controller modally.
     [self presentModalViewController:tweetViewController animated:YES];
     [tweetViewController release];
+}
 
+#pragma mark - UIAlertViewDelegate Methods
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if (buttonIndex == 1) {
+        switch ([alertView tag]) {
+            case HVCAlertAccessAccount:
+                [self viewDidLoad];
+                break;
+            case HVCAlertDownloadTweets:
+                [self downloadTweets];
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 @end
