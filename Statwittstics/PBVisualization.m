@@ -50,4 +50,29 @@
     return theImage;
 }
 
+-(void)performAnimationWith:(PBAnimationStyle)style andHandler:(PBVoidHandler)handler{
+    CGPoint preAnimationCenter=[self center];
+    
+    if ((style & PBAnimationStyleExapand) == PBAnimationStyleExapand) {
+        [self setTransform:CGAffineTransformScale([self transform], 0.1, 0.1)];
+    }
+    if ((style & PBAnimationStyleFadeIn) == PBAnimationStyleFadeIn) {
+        [self setAlpha:0.1];
+    }
+    
+    [self setCenter:preAnimationCenter];
+    
+    [UIView animateWithDuration:kPBVisualizationAnimationDuration animations:^{
+                            if ((style & PBAnimationStyleExapand) == PBAnimationStyleExapand) {
+                                [self setTransform:CGAffineTransformScale([self transform], 10, 10)];
+                            }
+                            if ((style & PBAnimationStyleFadeIn) == PBAnimationStyleFadeIn) {
+                                [self setAlpha:1.0];
+                            }
+                        } 
+                     completion:^(BOOL finished){
+                            handler();
+                        }];
+}
+
 @end

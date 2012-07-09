@@ -409,6 +409,8 @@
         [barPlot release];
         [someDataSet release];
     }
+    
+    [[self visualizationSpace] performAnimationWith:PBAnimationStyleExapand|PBAnimationStyleFadeIn andHandler:^{}];
 }
 
 -(void)downloadTweets{

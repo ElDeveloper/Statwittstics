@@ -32,8 +32,8 @@
 //
 //Statwittstics Framework:
 //
-//SW: Agregar una animación a la creación de la gráfica (de expansión).
 //SW: Agregar animación a la aparición de los datos.
+//SW: Generar reportes.
 //
 //SW: Comparar a dos usuarios en función de sus series de tiempo
 //	+ Crear una pantalla con dos columnas en donde haya datos.

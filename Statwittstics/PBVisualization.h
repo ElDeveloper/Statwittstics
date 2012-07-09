@@ -9,6 +9,15 @@
 #import <Foundation/Foundation.h>
 #import "PBDefines.h"
 
+#define kPBVisualizationAnimationDuration 0.85
+
+typedef void __block (^PBVoidHandler)(void);
+
+typedef enum {
+    PBAnimationStyleFadeIn =  0,
+    PBAnimationStyleExapand = 1 >> 1,
+}PBAnimationStyle;
+
 @interface PBVisualization : UIView{
     NSMutableString *graphTitle;
     NSMutableArray *dataSets;
@@ -29,5 +38,7 @@
 -(id)initWithFrame:(CGRect)frame;
 
 -(UIImage *)imageRepresentation;
+
+-(void)performAnimationWith:(PBAnimationStyle)style andHandler:(PBVoidHandler)handler;
 
 @end
