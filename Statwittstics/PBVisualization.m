@@ -12,6 +12,7 @@
 
 @synthesize dataSets, graphTitle;
 @synthesize identifiers, plotSprites;
+@synthesize animationDuration;
 
 -(id)initWithFrame:(CGRect)frame{
     if ( self = [super initWithFrame:frame]) {
@@ -20,6 +21,8 @@
 
         identifiers=[[NSMutableArray alloc] init];
         plotSprites=[[NSMutableArray alloc] init];
+        
+        animationDuration=kPBVisualizationAnimationDuration;
     }
     return self;
 }
@@ -50,7 +53,7 @@
     return theImage;
 }
 
--(void)performAnimationWith:(PBAnimationStyle)style andHandler:(PBVoidHandler)handler{
+-(void)performAnimationWithStyle:(PBAnimationStyle)style andHandler:(PBVoidHandler)handler{
     CGPoint preAnimationCenter=[self center];
     
     if ((style & PBAnimationStyleExapand) == PBAnimationStyleExapand) {
@@ -62,7 +65,7 @@
     
     [self setCenter:preAnimationCenter];
     
-    [UIView animateWithDuration:kPBVisualizationAnimationDuration animations:^{
+    [UIView animateWithDuration:[self animationDuration] animations:^{
                             if ((style & PBAnimationStyleExapand) == PBAnimationStyleExapand) {
                                 [self setTransform:CGAffineTransformScale([self transform], 10, 10)];
                             }

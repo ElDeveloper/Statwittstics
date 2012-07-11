@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "PBDefines.h"
 
-#define kPBVisualizationAnimationDuration 0.85
+#define kPBVisualizationAnimationDuration 0.70
 
 typedef void __block (^PBVoidHandler)(void);
 
@@ -24,6 +24,8 @@ typedef enum {
     
     NSMutableArray *identifiers;
     NSMutableArray *plotSprites;
+    
+    float animationDuration;
 }
 
 //Basic descriptors of the graph
@@ -34,11 +36,13 @@ typedef enum {
 @property (nonatomic, retain) NSMutableArray *plotSprites;
 @property (nonatomic, retain) NSMutableArray *identifiers;
 
+//Duration in seconds of the animation performAnimationWithStyle:andHandler:
+@property (nonatomic, assign) float animationDuration;
+
 //General initializer
 -(id)initWithFrame:(CGRect)frame;
 
 -(UIImage *)imageRepresentation;
-
--(void)performAnimationWith:(PBAnimationStyle)style andHandler:(PBVoidHandler)handler;
+-(void)performAnimationWithStyle:(PBAnimationStyle)style andHandler:(PBVoidHandler)handler;
 
 @end

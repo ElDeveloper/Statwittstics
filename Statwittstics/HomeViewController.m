@@ -410,7 +410,7 @@
         [someDataSet release];
     }
     
-    [[self visualizationSpace] performAnimationWith:PBAnimationStyleExapand|PBAnimationStyleFadeIn andHandler:^{}];
+    [[self visualizationSpace] performAnimationWithStyle:PBAnimationStyleExapand|PBAnimationStyleFadeIn andHandler:^{}];
 }
 
 -(void)downloadTweets{
