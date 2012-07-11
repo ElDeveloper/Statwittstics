@@ -30,7 +30,8 @@
 @property (nonatomic, retain) NSString *xAxisTitle;
 @property (nonatomic, retain) NSString *yAxisTitle;
 
-//Allows to set the global-range to the provided by the bounds
+//Allows to set the global-range to the provided by the bounds, this property
+//must be set prior to setting the X an Y ranges, to ensure consistency
 @property (nonatomic, assign) BOOL viewIsRestricted;
 
 //Allows to keep track of the ranges, when restricted 

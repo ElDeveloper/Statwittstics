@@ -324,6 +324,7 @@
         [linePlot setXAxisTitle:xAxisTitle];
         [linePlot setYAxisTitle:NSLocalizedString(@"Number Of Tweets", @"Number Of Tweets String")];
         [linePlot setGraphTitle:[someDataSet dataSetTitle]];
+        [linePlot setViewIsRestricted:YES];
         
         //Plot attributes
         [[[linePlot graph] defaultPlotSpace] setAllowsUserInteraction:YES];
@@ -332,7 +333,6 @@
         
         [linePlot showGrids];
         [self mendXTicksIntervalsFor:linePlot];
-        [linePlot setViewIsRestricted:YES];
         
         // Do any additional setup after loading the view.
         [[self visualizationSpace] addSubview:linePlot];
