@@ -32,7 +32,7 @@ extern NSUInteger const kPBTRequestMaximum;
     NSInteger followers;
     NSInteger tweetCount;
     
-    NSArray *tweets;
+    NSMutableArray *tweets;
     
     BOOL requiresAuthentication;
     BOOL isVerified;
@@ -60,7 +60,7 @@ extern NSUInteger const kPBTRequestMaximum;
 @property (nonatomic, assign, readonly) BOOL isVerified;
 
 //A list of PBTweets objects
-@property (nonatomic, retain, readonly) NSArray *tweets;
+@property (nonatomic, retain, readonly) NSMutableArray *tweets;
 
 //Grant access to some private features from within the API
 @property (nonatomic, retain) ACAccount *account;

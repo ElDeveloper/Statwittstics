@@ -30,7 +30,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
         location=nil;
         bioURL=nil;
         imageData=nil;
-        tweets=nil;
+        tweets=[[NSMutableArray alloc] init];
         following=0;
         followers=0;
         tweetCount=0;
@@ -122,6 +122,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     [location release];
     [bioURL release];
     [imageData release];
+    [tweets release];
     
     [super dealloc];
 }
@@ -212,29 +213,48 @@ NSUInteger const kPBTRequestMaximum= 3200;
 }
 
 -(void)requestMostRecentTweets:(NSInteger)numberOfTweets withHandler:(PBTRequestHandler)handler{
+    NSString *stringNumberOfTweets=nil;
+    
+    //URL, parameters and request object initialized to retrieve the data
+    NSURL *userDataRequest=[NSURL URLWithString:TAUUserTimeline];
+    NSDictionary *parameters=nil;
+    
     #ifdef DEBUG
-    NSLog(@"PBTUSER:**Remaining to get %d", numberOfTweets);
+    NSLog(@"PBTUSER:**Requested %d tweets", numberOfTweets);
     #endif
+    
+    //Truncate the value if anything
+    if (numberOfTweets > kPBTRequestMaximum) {
+        numberOfTweets=kPBTRequestMaximum;
+    }
     
     //In case the user requests more than what you can actually get
     if ([self tweetCount] < numberOfTweets) {
         numberOfTweets=tweetCount;
     }
     
-    //If the total request needs you to ask for more than 200 tweets, truncate the number, using the ternary operator
-    NSString *stringNumberOfTweets=[NSString stringWithFormat:@"%d",(numberOfTweets > 200 ? 200 : numberOfTweets)];
-    
-    //URL, parameters and request object initialized to retrieve the data
-    NSURL *userDataRequest=[NSURL URLWithString:TAUUserTimeline];
-    NSDictionary *parameters=nil;
-    
-    //These variables get re-usede in recursive calls, so they shall be initialized every first time this 
-    //is called, for the first call you don't have a max_id property so, the dict goes as follows ...
-    if (_lastTweetID == nil) {
+    //These variables get re-usede in recursive calls, so they shall be init-
+    //ialized every first time this is called, 
+    if (_tempArray == nil) {
+        //Don't request the tweets you already have stored, this subtraction is
+        //only done the first time the recursive requests begin
+        numberOfTweets=numberOfTweets-[tweets count];
+        
+        #ifdef DEBUG
+        NSLog(@"PBTUSER:**Requesting %d tweets", numberOfTweets);
+        #endif
+        
         _tempArray=[[NSMutableArray alloc] init];
         _remainingTweets=numberOfTweets;
         _vamooseHandler=[handler copy];
+    }    
+    
+    //If the total request needs you to ask for more than 200 tweets, truncate the number, using the ternary operator
+    stringNumberOfTweets=[NSString stringWithFormat:@"%d",(numberOfTweets > 200 ? 200 : numberOfTweets)];
 
+    
+    //For the first call you don't have a max_id property so, the dict goes as follows ...
+    if (_lastTweetID == nil) {
         parameters=[NSDictionary dictionaryWithObjectsAndKeys:[self username], TAKeyUsername, 
                     stringNumberOfTweets, @"count", 
                     @"true", @"include_entities", nil];
@@ -313,12 +333,14 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     #endif
                     
                     //Assign the tweets to the user
-                    tweets=[[NSArray alloc] initWithArray:_tempArray];
+                    //tweets=[[NSMutableArray alloc] initWithArray:_tempArray];
+                    [tweets addObjectsFromArray:_tempArray];
+                    
                     [_tempArray release];
                     _tempArray=nil;
                     
                     //Re-initialize the properties
-                    _lastTweetID=nil;
+                    //_lastTweetID=nil;
                     _remainingTweets=0;
 
                     //Finally call the handler, release and re-start the variable
