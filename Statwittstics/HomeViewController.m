@@ -68,6 +68,7 @@
         [numberOfTweetsSlider setMinimumValue:200];
         [numberOfTweetsSlider setMaximumValue:3200];
         [numberOfTweetsSlider addTarget:self action:@selector(numberOfTweetsSliderValueChanged:) forControlEvents:UIControlEventValueChanged];
+        [numberOfTweetsSlider addTarget:self action:@selector(downloadTweets) forControlEvents:UIControlEventTouchUpInside];
         [[self view] addSubview:numberOfTweetsSlider];
         
         //Label indicating the UISlider fixed value
@@ -224,7 +225,7 @@
 	return YES;
 }
 
-#pragma mark - Button Callbacks
+#pragma mark - UIBarButton Callbacks
 -(void)optionsButtonPressed:(id)sender{
     //Do not cause overhead, the user could probably not use the options therefore you would be creating an action sheet when not needed
     if ( optionsActionSheet == nil) {
@@ -256,7 +257,40 @@
     
 }
 
-#pragma mark - HomeViewControllerStateManagers
+#pragma mark - Workflow Controllers
+-(void)downloadTweets{
+    //Show the spinner with a different message
+    [[loadingAlertView messageLabel] setText:NSLocalizedString(@"Downloading", @"Downloading String")];
+    [loadingAlertView presentAlertWithSpinnerInView:[self view]];
+    
+    //Load the data of the user into the PBTUserView
+    [subjectOfAnalysisView loadUser:subjectOfAnalysis];
+    
+    //Request for the data
+    [subjectOfAnalysis requestMostRecentTweets:[[numberOfTweetsLabel text] intValue] withHandler:^(NSError *error){
+        UIAlertView *errorAlertView=nil;
+        
+        //Check for errors in the request for twitts
+        if (!error) {
+            [loadingAlertView performSelectorOnMainThread:@selector(hideAlertWithSpinner) withObject:nil waitUntilDone:NO];
+            
+            //Go to the main thread and perform the GUI changes, here comes the magic ... 
+            [self performSelectorOnMainThread:@selector(segmentedControllSelected:) withObject:nil waitUntilDone:NO];
+        }
+        else {
+            NSLog(@"HomeViewController:%s**:%@", __PRETTY_FUNCTION__, [error localizedDescription]);
+            errorAlertView=[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ %d", NSLocalizedString(@"Error", @"Error String"), [error code]]
+                                                      message:[error localizedDescription] 
+                                                     delegate:self
+                                            cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String")
+                                            otherButtonTitles:NSLocalizedString(@"Try Again", @"Try Again String"), nil];
+            [errorAlertView setTag:HVCAlertDownloadTweets];
+            [errorAlertView show];
+            [errorAlertView release];
+        }
+    }];
+}
+
 -(void)segmentedControllSelected:(id)sender{
     PBDataSet *someDataSet=nil;
     NSUInteger calendarUnit=0;
@@ -413,40 +447,15 @@
     [[self visualizationSpace] performAnimationWithStyle:PBAnimationStyleExapand|PBAnimationStyleFadeIn andHandler:^{}];
 }
 
--(void)downloadTweets{
-    //Show the spinner with a different message
-    [[loadingAlertView messageLabel] setText:NSLocalizedString(@"Downloading", @"Downloading String")];
-    [loadingAlertView presentAlertWithSpinnerInView:[self view]];
+-(void)numberOfTweetsSliderValueChanged:(UISlider *)slider{
+    NSInteger newValue=0;
+    [numberOfTweetsSlider setValue:HVCFixSliderValue([slider value])];
+    newValue=(NSInteger)HVCFixSliderValue([slider value]);
     
-    //Load the data of the user into the PBTUserView
-    [subjectOfAnalysisView loadUser:subjectOfAnalysis];
-    
-    //Request for the data
-    [subjectOfAnalysis requestMostRecentTweets:[[numberOfTweetsLabel text] intValue] withHandler:^(NSError *error){
-        UIAlertView *errorAlertView=nil;
-        
-        //Check for errors in the request for twitts
-        if (!error) {
-            [loadingAlertView performSelectorOnMainThread:@selector(hideAlertWithSpinner) withObject:nil waitUntilDone:NO];
-            
-            //Go to the main thread and perform the GUI changes, here comes the magic ... 
-            [self performSelectorOnMainThread:@selector(segmentedControllSelected:) withObject:nil waitUntilDone:NO];
-        }
-        else {
-            NSLog(@"HomeViewController:%s**:%@", __PRETTY_FUNCTION__, [error localizedDescription]);
-            errorAlertView=[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ %d", NSLocalizedString(@"Error", @"Error String"), [error code]]
-                                                      message:[error localizedDescription] 
-                                                     delegate:self
-                                            cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String")
-                                            otherButtonTitles:NSLocalizedString(@"Try Again", @"Try Again String"), nil];
-            [errorAlertView setTag:HVCAlertDownloadTweets];
-            [errorAlertView show];
-            [errorAlertView release];
-        }
-    }];
+    [numberOfTweetsLabel setText:[NSString stringWithFormat:@"%d", newValue]];
 }
 
-#pragma mark - HomeVieControllerInterfaceManagerMethods
+#pragma mark - Utilities
 -(void)fixControllersInteraction{
     //Initial state, this six lines will save us from having to reset this state on every call
     [timeFrameSegmentedControl setEnabled:YES forSegmentAtIndex:HVCTimeFrameHourly];
@@ -496,15 +505,6 @@
     }
 }
 
--(void)numberOfTweetsSliderValueChanged:(UISlider *)slider{
-    NSInteger newValue=0;
-    [numberOfTweetsSlider setValue:HVCFixSliderValue([slider value])];
-    newValue=(NSInteger)HVCFixSliderValue([slider value]);
-    
-    [numberOfTweetsLabel setText:[NSString stringWithFormat:@"%d", newValue]];
-}
-
-#pragma mark - Utilities
 float HVCFixSliderValue(float sliderValue){
     NSUInteger i=0;
     
@@ -519,32 +519,6 @@ float HVCFixSliderValue(float sliderValue){
     
     //Should never happen, but return a zero value
     return 0;
-}
-
-#pragma mark - UIActionSheetDelegate Methods
--(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
-    //Load a view controller ... if needed
-    id viewController=nil;
-    UIImage *plotImage=nil;
-    
-    switch (buttonIndex) {
-        case HVCActionSheetButtonNew:
-            viewController=[[FindUserViewController alloc] initWithResearchFellow:researchFellow andViewController:self];
-            [[self navigationController] presentModalViewController:viewController animated:YES];
-            [viewController release];
-            break;
-        
-        case HVCActionSheetButtonShare:
-            plotImage=[[[visualizationSpace subviews] objectAtIndex:[[visualizationSpace subviews] count] - 1] imageRepresentation];
-            
-            [self showTweetViewControllerWithImage:plotImage];
-            break;
-            
-        default:
-            break;
-    }
-    
-    return;
 }
 
 -(void)mendXTicksIntervalsFor:(PBXYVisualization *)visualization{
@@ -590,6 +564,32 @@ float HVCFixSliderValue(float sliderValue){
     [visualization setXTicksLabels:arrayOfDates];
     
     [arrayOfDates release];
+}
+
+#pragma mark - UIActionSheetDelegate Methods
+-(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    //Load a view controller ... if needed
+    id viewController=nil;
+    UIImage *plotImage=nil;
+    
+    switch (buttonIndex) {
+        case HVCActionSheetButtonNew:
+            viewController=[[FindUserViewController alloc] initWithResearchFellow:researchFellow andViewController:self];
+            [[self navigationController] presentModalViewController:viewController animated:YES];
+            [viewController release];
+            break;
+        
+        case HVCActionSheetButtonShare:
+            plotImage=[[[visualizationSpace subviews] objectAtIndex:[[visualizationSpace subviews] count] - 1] imageRepresentation];
+            
+            [self showTweetViewControllerWithImage:plotImage];
+            break;
+            
+        default:
+            break;
+    }
+    
+    return;
 }
 
 -(void)showTweetViewControllerWithImage:(UIImage *)imageToTweet{

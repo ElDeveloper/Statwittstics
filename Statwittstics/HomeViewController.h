@@ -17,8 +17,13 @@
 
 #import "GIDAAlertView.h"
 
-#define HOURS_ARRAY @"00:00", @"01:00", @"02:00", @"03:00", @"04:00", @"05:00", @"06:00", @"07:00", @"08:00", @"09:00", @"10:00", @"11:00", @"12:00", @"13:00", @"14:00", @"15:00", @"16:00", @"17:00", @"18:00", @"19:00", @"20:00", @"21:00", @"22:00", @"23:00", @""
-#define DAYS @"", @"Domingo", @"Lunes", @"Martes", @"Miércoles", @"Jueves", @"Viernes", @"Sábado", @""
+#define HOURS_ARRAY @"00:00", @"01:00", @"02:00", @"03:00", @"04:00", @"05:00",\
+@"06:00", @"07:00", @"08:00", @"09:00", @"10:00", @"11:00", @"12:00", @"13:00",\
+@"14:00", @"15:00", @"16:00", @"17:00", @"18:00", @"19:00", @"20:00", @"21:00",\
+@"22:00", @"23:00", @""
+
+#define DAYS @"", @"Domingo", @"Lunes", @"Martes", @"Miércoles", @"Jueves",\
+@"Viernes", @"Sábado", @""
 
 //The main action sheet of the class displays three buttons only.
 typedef enum {
@@ -36,7 +41,7 @@ typedef enum {
     HVCTimeFrameMonthly
 }HVCTimeFrame;
 
-//There are three type of possible visualization types that can be used in the class
+//There are 3 type of possible visualization types that can be used in the class
 //the value will be also the index of the button for a UISegmentedController.
 typedef enum {
     HVCVisualizationTypeLinePlot=0,
@@ -95,23 +100,23 @@ typedef enum {
 -(void)optionsButtonPressed:(id)sender;
 -(void)aboutButtonPressed:(id)sender;
 
+//Request the data for the subject of analysis
+-(void)downloadTweets;
+
 //Top-level updater for the GUI, will create and change the visualizations, depending
 //on the current state of the controllers and on the data from the subject of analysis.
 -(void)segmentedControllSelected:(id)sender;
 
-//Present the share-view controller
--(void)showTweetViewControllerWithImage:(UIImage *)imageToTweet;
-
-//Request the data for the subject of analysis
--(void)downloadTweets;
-
-//Low-level controller helpers for the GUI
--(void)fixControllersInteraction;
 -(void)numberOfTweetsSliderValueChanged:(UISlider *)slider;
-
--(void)mendXTicksIntervalsFor:(PBXYVisualization *)visualization;
 
 //Utilities for the GUI
 float HVCFixSliderValue(float sliderValue);
+-(void)fixControllersInteraction;
+
+//Change the X-axis labels of the presented plots to show dates
+-(void)mendXTicksIntervalsFor:(PBXYVisualization *)visualization;
+
+//Present the share-view controller
+-(void)showTweetViewControllerWithImage:(UIImage *)imageToTweet;
 
 @end
