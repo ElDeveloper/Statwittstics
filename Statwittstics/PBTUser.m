@@ -417,18 +417,32 @@ NSUInteger const kPBTRequestMaximum= 3200;
     return (NSArray *)outputArray;
 }
 
--(PBDataSet *)dataSetOfTweetsPerCalendarUnit:(NSCalendarUnit)calendarUnit{
-    PBDataSet *outDataSet=nil;
-    
+-(PBDataSet *)dataSetOfTweets:(NSUInteger)numberOfTweets byCalendarUnit:(NSCalendarUnit)calendarUnit{
+    PBDataSet *outDataSet=nil;    
     NSUInteger calendarPoints=0, i=0, totalTweets=0, newIndex=0, *bufferArray=NULL;
     NSDate *startDate=nil, *endDate=nil;
     NSMutableArray *xData=nil, *yData=nil;
     NSMutableString *dataSetTitleHolder=nil;
-    NSArray *tempArray=nil;
+    NSArray *tempArray=nil, *truncatedArray=nil;
+    NSRange truncatedRange;
+    
+    //Truncate to the available tweets, this is mainly to patch an inconsistency
+    //encountered with the Twitter API when requesting twitts
+    if (numberOfTweets > [[self tweets] count]) {
+        numberOfTweets=[[self tweets] count]-1;
+    }
+    else {
+        numberOfTweets=numberOfTweets-1;
+    }
+    
+    //Chop down the array to what is required
+    truncatedRange.location=0;
+    truncatedRange.length=numberOfTweets;
+    truncatedArray=[[NSArray alloc] initWithArray:[[tweets copy] subarrayWithRange:truncatedRange]];
     
     //General usage constants, helps you build the linear space and plot
-    startDate=[[tweets objectAtIndex:0] postDate];
-    endDate=[[tweets objectAtIndex:[tweets count]-1] postDate];
+    startDate=[[truncatedArray objectAtIndex:0] postDate];
+    endDate=[[truncatedArray objectAtIndex:[truncatedArray count]-1] postDate];
     
     dataSetTitleHolder=[NSString stringWithFormat:@"Tweets From %@ To %@", 
                         PBTStringFromTwitterDateWithFormat(endDate, @"MMM/dd/yyyy"),  
@@ -438,7 +452,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     calendarPoints=(NSUInteger)PBTCalendarUnitsBetweenDates(endDate, startDate, calendarUnit);
     
     //Actual data holders
-    totalTweets=[tweets count];
+    totalTweets=[truncatedArray count];
     xData=[PBTLinspace(0, calendarPoints, calendarPoints) retain]; 
     yData=[[NSMutableArray alloc] initWithCapacity:calendarPoints];
     
@@ -457,7 +471,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     //Got through each tweet and count the number of tweets that are in a same week
     for (i=0; i<totalTweets; i++) {
         //Get the current difference
-        newIndex=PBTCalendarUnitsBetweenDates([[tweets objectAtIndex:i] postDate], startDate, calendarUnit);
+        newIndex=PBTCalendarUnitsBetweenDates([[truncatedArray objectAtIndex:i] postDate], startDate, calendarUnit);
         bufferArray[newIndex]=bufferArray[newIndex]+1;
     }
     
@@ -470,7 +484,6 @@ NSUInteger const kPBTRequestMaximum= 3200;
     tempArray=[[[yData reverseObjectEnumerator] allObjects] copy];
     [yData removeAllObjects];
     [yData addObjectsFromArray:tempArray];
-    [tempArray release];
     
     //Create the return value
     outDataSet=[[PBDataSet alloc] initWithXData:xData yData:yData andTitle:[NSString stringWithFormat:@"%@ For %@",dataSetTitleHolder, [self realName]]];
@@ -481,11 +494,13 @@ NSUInteger const kPBTRequestMaximum= 3200;
     
     [xData release];
     [yData release];
+    [truncatedArray release];
+    [tempArray release];
     
     return [outDataSet autorelease];
 }
 
--(PBDataSet *)dataSetOfTweetsForHourPerDay{
+-(PBDataSet *)dataSetOfTweetsAtHourAtDay:(NSUInteger)numberOfTweets{
     PBDataSet *outDataset=nil;
 
     NSString *endDate=nil;
@@ -497,10 +512,28 @@ NSUInteger const kPBTRequestMaximum= 3200;
     NSInteger hourRepresentation=0;
     NSInteger dayOfWeek=0;
     
-    endDate=[NSString stringWithString:PBTStringFromTwitterDateWithFormat([[tweets objectAtIndex:0] postDate], @"MMM/dd/yyyy")];
-    beginDate=[NSString stringWithString:PBTStringFromTwitterDateWithFormat([[tweets objectAtIndex:[tweets count]-1] postDate],  @"MMM/dd/yyyy")];
+    NSArray *truncatedArray=nil;
+    NSRange truncatedRange;
     
-    for (PBTweet *currentTweet in tweets) {
+    //Truncate to the available tweets, this is mainly to patch an inconsistency
+    //encountered with the Twitter API when requesting twitts
+    if (numberOfTweets > [[self tweets] count]) {
+        numberOfTweets=[[self tweets] count]-1;
+    }
+    else {
+        numberOfTweets=numberOfTweets-1;
+    }
+    
+    //Chop down the array to what is required
+    truncatedRange.location=0;
+    truncatedRange.length=numberOfTweets;
+    truncatedArray=[[NSArray alloc] initWithArray:[[tweets copy] subarrayWithRange:truncatedRange]];
+    
+    
+    endDate=[NSString stringWithString:PBTStringFromTwitterDateWithFormat([[truncatedArray objectAtIndex:0] postDate], @"MMM/dd/yyyy")];
+    beginDate=[NSString stringWithString:PBTStringFromTwitterDateWithFormat([[truncatedArray objectAtIndex:[truncatedArray count]-1] postDate],  @"MMM/dd/yyyy")];
+    
+    for (PBTweet *currentTweet in truncatedArray) {
         PBTScatterPointForDate([currentTweet postDate], &hourRepresentation, &dayOfWeek);
         [xDataArray addObject:[NSNumber numberWithInteger:hourRepresentation]];
         [yDataArray addObject:[NSNumber numberWithInteger:dayOfWeek]];
@@ -520,10 +553,12 @@ NSUInteger const kPBTRequestMaximum= 3200;
     [xDataArray release];
     [yDataArray release];
     
+    [truncatedArray release];
+    
     return [outDataset autorelease];
 }
 
--(PBDataSet *)dataSetOfTweetsPerHour{
+-(PBDataSet *)dataSetOfFrequencyOfTweetsPerHour:(NSUInteger)numberOfTweets{
     PBDataSet *outDataset=nil;
     
     NSUInteger hourOfTweet=0, *bufferArray=NULL, i=0;
@@ -533,9 +568,25 @@ NSUInteger const kPBTRequestMaximum= 3200;
     NSString *endDate=nil;
     NSString *beginDate=nil;
     
-    endDate=[NSString stringWithString:PBTStringFromTwitterDateWithFormat([[tweets objectAtIndex:0] postDate], @"MMM/dd/yyyy")];
-    beginDate=[NSString stringWithString:PBTStringFromTwitterDateWithFormat([[tweets objectAtIndex:[tweets count]-1] postDate],  @"MMM/dd/yyyy")];
-
+    NSArray *truncatedArray=nil;
+    NSRange truncatedRange;
+    
+    //Truncate to the available tweets, this is mainly to patch an inconsistency
+    //encountered with the Twitter API when requesting twitts
+    if (numberOfTweets > [[self tweets] count]) {
+        numberOfTweets=[[self tweets] count]-1;
+    }
+    else {
+        numberOfTweets=numberOfTweets-1;
+    }
+    
+    //Chop down the array to what is required
+    truncatedRange.location=0;
+    truncatedRange.length=numberOfTweets;
+    truncatedArray=[[NSArray alloc] initWithArray:[[tweets copy] subarrayWithRange:truncatedRange]];
+    
+    endDate=[NSString stringWithString:PBTStringFromTwitterDateWithFormat([[truncatedArray objectAtIndex:0] postDate], @"MMM/dd/yyyy")];
+    beginDate=[NSString stringWithString:PBTStringFromTwitterDateWithFormat([[truncatedArray objectAtIndex:[truncatedArray count]-1] postDate],  @"MMM/dd/yyyy")];
     
     //The number of hours in one day, duh
     bufferArray=malloc(sizeof(NSUInteger)*24);
@@ -545,7 +596,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
         bufferArray[i]=0;
     }
     
-    for (PBTweet *currentTweet in tweets) {
+    for (PBTweet *currentTweet in truncatedArray) {
         //Get the int representation from the 24 hour day 
         hourOfTweet=[PBTStringFromTwitterDateWithFormat([currentTweet postDate], @"HH") intValue];
         
@@ -572,6 +623,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     free(bufferArray);
     
     [yData release];
+    [truncatedArray release];
     
     return [outDataset autorelease];
 }

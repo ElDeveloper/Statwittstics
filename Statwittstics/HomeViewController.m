@@ -324,15 +324,15 @@
         
         //Unless it can be calculated with the calendar units
         if ([timeFrameSegmentedControl selectedSegmentIndex] == HVCTimeFrameHourly) {
-            someDataSet=[[subjectOfAnalysis dataSetOfTweetsPerHour] retain];
+            someDataSet=[[subjectOfAnalysis dataSetOfFrequencyOfTweetsPerHour:[[numberOfTweetsLabel text] integerValue]] retain];
         }
         else {
-            someDataSet=[[subjectOfAnalysis dataSetOfTweetsPerCalendarUnit:calendarUnit] retain];   
+            someDataSet=[[subjectOfAnalysis dataSetOfTweets:[[numberOfTweetsLabel text] integerValue] byCalendarUnit:calendarUnit] retain];   
         }
     }
     //Otherwise, just create the other type of data-set
     else {
-        someDataSet=[[subjectOfAnalysis dataSetOfTweetsForHourPerDay] retain];
+        someDataSet=[[subjectOfAnalysis dataSetOfTweetsAtHourAtDay:[[numberOfTweetsLabel text] integerValue]] retain];
     }
     
     if ([someDataSet dataSetLength] <= 1) {

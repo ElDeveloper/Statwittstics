@@ -92,11 +92,11 @@ extern NSUInteger const kPBTRequestMaximum;
 
 //Returns a PBDataSet, containing the tweets per unit of time specified by the
 //calendarUnit parameter, currently only (day/week/month) are supported
--(PBDataSet *)dataSetOfTweetsPerCalendarUnit:(NSCalendarUnit)calendarUnit;
+-(PBDataSet *)dataSetOfTweets:(NSUInteger)numberOfTweets byCalendarUnit:(NSCalendarUnit)calendarUnit;
 
--(PBDataSet *)dataSetOfTweetsForHourPerDay;
+-(PBDataSet *)dataSetOfTweetsAtHourAtDay:(NSUInteger)numberOfTweets;
 
--(PBDataSet *)dataSetOfTweetsPerHour;
+-(PBDataSet *)dataSetOfFrequencyOfTweetsPerHour:(NSUInteger)numberOfTweets;
 
 //Recursive way to request as many tweets as needed, requesting them in chunks of 200 tweets
 void PBTRequestTweets(PBTUser *client, NSUInteger numberOfTweets,  NSString *lastTweetID, NSMutableArray **tweetsBuffer, PBTRequestHandler handler);
