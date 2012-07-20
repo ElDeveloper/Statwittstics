@@ -100,6 +100,7 @@ void PBTScatterPointForDate(NSDate *date, NSInteger *hourRepresentation, NSInteg
     
     //Cast it and send it back
     *dayOfWeek=(NSInteger)[[dateFormatter stringFromDate:date] intValue];
+    [dateFormatter release];
 }
 
 #pragma mark - NSDate General Use Functions
@@ -113,7 +114,7 @@ NSString* PBTStringFromTwitterDateWithFormat(NSDate *date, NSString *format){
     
     //The date come from twitter in the following format Mon Apr 16 00:57:16 +0000 2012
     //therefore, our formatter has to know it is a US formatted date
-    dateFormatter=[[NSDateFormatter alloc] init];
+    dateFormatter=[[[NSDateFormatter alloc] init] autorelease];
     usLocale=[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
     [dateFormatter setLocale:usLocale]; 
     [dateFormatter setDateStyle:NSDateFormatterLongStyle];
@@ -197,7 +198,7 @@ NSDate* PBTAddCalendarUnitToDate(NSDate *date, NSInteger addition, NSCalendarUni
     }
     
     //Perform the actual calculation, autorelease it and return it
-    return [[calendar dateByAddingComponents:components toDate:date options:0] autorelease];
+    return [calendar dateByAddingComponents:components toDate:date options:0];
 }
 
 NSMutableArray* PBTZeros(NSUInteger length){
