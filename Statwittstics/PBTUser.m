@@ -454,7 +454,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     //Chop down the array to what is required
     truncatedRange.location=0;
     truncatedRange.length=numberOfTweets;
-    truncatedArray=[[NSArray alloc] initWithArray:[[tweets copy] subarrayWithRange:truncatedRange]];
+    truncatedArray=[[NSArray alloc] initWithArray:[tweets subarrayWithRange:truncatedRange]];
     
     //General usage constants, helps you build the linear space and plot
     startDate=[[truncatedArray objectAtIndex:0] postDate];
@@ -545,7 +545,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     //Chop down the array to what is required
     truncatedRange.location=0;
     truncatedRange.length=numberOfTweets;
-    truncatedArray=[[NSArray alloc] initWithArray:[[tweets copy] subarrayWithRange:truncatedRange]];
+    truncatedArray=[[NSArray alloc] initWithArray:[tweets subarrayWithRange:truncatedRange]];
     
     
     endDate=[NSString stringWithString:PBTStringFromTwitterDateWithFormat([[truncatedArray objectAtIndex:0] postDate], @"MMM/dd/yyyy")];
