@@ -187,6 +187,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
         }//data request error
     }];//Twitter API request block
 
+    [userData release];
 }
 
 -(void)requestProfilePictureWithSize:(TAImageSize)size andHandler:(PBTRequestHandler)handler{
@@ -210,6 +211,8 @@ NSUInteger const kPBTRequestMaximum= 3200;
             handler([[error copy] autorelease]);
         }
     }];
+    
+    [userData release];
 }
 
 -(void)requestMostRecentTweets:(NSInteger)numberOfTweets withHandler:(PBTRequestHandler)handler{
@@ -223,22 +226,31 @@ NSUInteger const kPBTRequestMaximum= 3200;
     NSLog(@"PBTUSER:**Requested %d tweets", numberOfTweets);
     #endif
     
-    //Truncate the value if anything
+    //Regardless the number of tweets requested on this call you must always
+    //truncate to the kPBTRequestMaximum, then worry about other constraints
     if (numberOfTweets > kPBTRequestMaximum) {
         numberOfTweets=kPBTRequestMaximum;
-    }
-    
-    //In case the user requests more than what you can actually get
-    if ([self tweetCount] < numberOfTweets) {
-        numberOfTweets=tweetCount;
     }
     
     //These variables get re-usede in recursive calls, so they shall be init-
     //ialized every first time this is called, 
     if (_tempArray == nil) {
-        //Don't request the tweets you already have stored, this subtraction is
-        //only done the first time the recursive requests begin
-        numberOfTweets=numberOfTweets-[tweets count];
+        //In case the user requests more than what you can actually get
+        if ([[self tweets] count] < numberOfTweets) {
+            numberOfTweets=numberOfTweets-[[self tweets] count];
+        }
+        else{ 
+            #ifdef DEBUG
+            NSLog(@"No need to make a request, already have the required tweets");
+            #endif
+            
+            handler(nil);
+            return;
+        }
+        
+        if (numberOfTweets <= 0) {
+            return;
+        }
         
         #ifdef DEBUG
         NSLog(@"PBTUSER:**Requesting %d tweets", numberOfTweets);
@@ -252,7 +264,6 @@ NSUInteger const kPBTRequestMaximum= 3200;
     //If the total request needs you to ask for more than 200 tweets, truncate the number, using the ternary operator
     stringNumberOfTweets=[NSString stringWithFormat:@"%d",(numberOfTweets > 200 ? 200 : numberOfTweets)];
 
-    
     //For the first call you don't have a max_id property so, the dict goes as follows ...
     if (_lastTweetID == nil) {
         parameters=[NSDictionary dictionaryWithObjectsAndKeys:[self username], TAKeyUsername, 
@@ -281,7 +292,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
         
         //There is no connection error, go for it
         if (!error) {
-            jsonString=[NSJSONSerialization JSONObjectWithData:responseData options:0 error:&jsonError];
+            jsonString=[NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableLeaves error:&jsonError];
             
             #ifdef JSON_STRINGS_DEBUG
             NSLog(@"PBTUser**:%@", jsonString);
@@ -335,6 +346,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     //Assign the tweets to the user
                     //tweets=[[NSMutableArray alloc] initWithArray:_tempArray];
                     [tweets addObjectsFromArray:_tempArray];
+                    tweetCount=[tweets count];
                     
                     [_tempArray release];
                     _tempArray=nil;
@@ -372,6 +384,8 @@ NSUInteger const kPBTRequestMaximum= 3200;
             _vamooseHandler=nil;
         }
     }];
+    
+    [userData release];
 }
 
 -(void)requestAllTweetsWithHandler:(PBTRequestHandler)handler{
@@ -428,12 +442,14 @@ NSUInteger const kPBTRequestMaximum= 3200;
     
     //Truncate to the available tweets, this is mainly to patch an inconsistency
     //encountered with the Twitter API when requesting twitts
-    if (numberOfTweets > [[self tweets] count]) {
-        numberOfTweets=[[self tweets] count]-1;
+    if ( numberOfTweets > [[self tweets] count]) {
+        numberOfTweets=[[self tweets] count];
     }
-    else {
-        numberOfTweets=numberOfTweets-1;
-    }
+    numberOfTweets=numberOfTweets-1;
+    
+    #ifdef DEBUG
+    NSLog(@"Trimming to a size of %d", numberOfTweets+1);
+    #endif
     
     //Chop down the array to what is required
     truncatedRange.location=0;
@@ -476,8 +492,8 @@ NSUInteger const kPBTRequestMaximum= 3200;
     }
     
     //Now add these values to the array of the y data
-    for (i=0; i<calendarPoints; i++) {
-        [yData addObject:[NSNumber numberWithUnsignedInteger:(NSUInteger)bufferArray[i]]];
+    for (i=0; i<calendarPoints; i++) { //EXC_BAD_ACCESS code=1
+        [yData addObject:[NSNumber numberWithUnsignedInteger:*(bufferArray+i)]];
     }
     
     //Set the order of the results being from newest to oldest
@@ -494,7 +510,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     
     [xData release];
     [yData release];
-    [truncatedArray release];
+    [truncatedArray release]; //truncatedArray is causing problems
     [tempArray release];
     
     return [outDataSet autorelease];
@@ -518,11 +534,13 @@ NSUInteger const kPBTRequestMaximum= 3200;
     //Truncate to the available tweets, this is mainly to patch an inconsistency
     //encountered with the Twitter API when requesting twitts
     if (numberOfTweets > [[self tweets] count]) {
-        numberOfTweets=[[self tweets] count]-1;
+        numberOfTweets=[[self tweets] count];
     }
-    else {
-        numberOfTweets=numberOfTweets-1;
-    }
+    numberOfTweets=numberOfTweets-1;
+    
+    #ifdef DEBUG
+    NSLog(@"Trimming to a size of %d", numberOfTweets+1);
+    #endif
     
     //Chop down the array to what is required
     truncatedRange.location=0;
@@ -574,11 +592,13 @@ NSUInteger const kPBTRequestMaximum= 3200;
     //Truncate to the available tweets, this is mainly to patch an inconsistency
     //encountered with the Twitter API when requesting twitts
     if (numberOfTweets > [[self tweets] count]) {
-        numberOfTweets=[[self tweets] count]-1;
+        numberOfTweets=[[self tweets] count];
     }
-    else {
-        numberOfTweets=numberOfTweets-1;
-    }
+    numberOfTweets=numberOfTweets-1;
+    
+    #ifdef DEBUG
+    NSLog(@"Trimming to a size of %d", numberOfTweets+1);
+    #endif
     
     //Chop down the array to what is required
     truncatedRange.location=0;
@@ -640,7 +660,7 @@ void PBTRequestTweets(PBTUser *client, NSUInteger numberOfTweets,  NSString *las
     __block NSUInteger _numberOfTweets=numberOfTweets;
     __block NSString *_lastTweetID=lastTweetID;
     __block NSMutableArray *_tweetsBuffer=*(tweetsBuffer);
-    PBTRequestHandler _handler;
+    PBTRequestHandler _handler=nil;
     
     //These variables get re-usede in recursive calls, so they shall be initialized every first time this 
     //is called, for the first call you don't have a max_id property so, the dict goes as follows ...
@@ -735,6 +755,8 @@ void PBTRequestTweets(PBTUser *client, NSUInteger numberOfTweets,  NSString *las
             NSLog(@"PBTUser(R)**:%@", [error localizedDescription]);
         }
     }];
+    
+    [userData release];
 }
 
 @end

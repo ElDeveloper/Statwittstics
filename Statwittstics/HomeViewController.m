@@ -68,7 +68,10 @@
         [numberOfTweetsSlider setMinimumValue:200];
         [numberOfTweetsSlider setMaximumValue:3200];
         [numberOfTweetsSlider addTarget:self action:@selector(numberOfTweetsSliderValueChanged:) forControlEvents:UIControlEventValueChanged];
-        [numberOfTweetsSlider addTarget:self action:@selector(downloadTweets) forControlEvents:UIControlEventTouchUpInside];
+        
+        //TouchUpInside and Outside are needed to catch the events when the
+        //UISlider is moving to the left (outside) and to the right (inside)
+        [numberOfTweetsSlider addTarget:self action:@selector(downloadTweets) forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchUpOutside];
         [[self view] addSubview:numberOfTweetsSlider];
         
         //Label indicating the UISlider fixed value
@@ -303,6 +306,7 @@
     switch ([timeFrameSegmentedControl selectedSegmentIndex]) {
         case HVCTimeFrameHourly:
             xAxisTitle=[NSString stringWithString:NSLocalizedString(@"Hours", @"Hours String")];
+            break;
         case HVCTimeFrameDaily:
             calendarUnit=NSDayCalendarUnit;
             xAxisTitle=[NSString stringWithString:NSLocalizedString(@"Days", @"Days String")];
@@ -522,10 +526,12 @@ float HVCFixSliderValue(float sliderValue){
 }
 
 -(void)mendXTicksIntervalsFor:(PBXYVisualization *)visualization{
-    NSMutableArray *arrayOfDates=[[NSMutableArray alloc] init];
+    NSMutableArray *arrayOfStringDates=[[NSMutableArray alloc] init];
+    
+    NSString *bufferString=nil;
     
     int i=0;
-    NSDate *startingDate=[[[subjectOfAnalysis tweets] lastObject] postDate];
+    NSDate *startingDate=[[[subjectOfAnalysis tweets] objectAtIndex:0] postDate];
     NSDate *bufferDate=nil;
     
     //Keep the current appearance by retrieving these properties
@@ -557,13 +563,15 @@ float HVCFixSliderValue(float sliderValue){
     }
     
     //Go through every of the visible ticks and add the custom label provided
-    for(i=0; i<= visibleTicks; i++){
-        bufferDate=PBTAddCalendarUnitToDate(startingDate, rangeLocation+(i*majorTickInterval), unitToUse);
-        [arrayOfDates addObject:PBTStringFromTwitterDateWithFormat(bufferDate, @"dd/MMM/yyyy")];
+    for(i=visibleTicks; i >= 0; i--){
+        bufferDate=PBTAddCalendarUnitToDate(startingDate, rangeLocation-(i*majorTickInterval), unitToUse);
+        bufferString=[PBTStringFromTwitterDateWithFormat(bufferDate, @"dd/MMM/yyyy") copy];
+        [arrayOfStringDates addObject:bufferString];
+        [bufferString release];
     }
-    [visualization setXTicksLabels:arrayOfDates];
+    [visualization setXTicksLabels:arrayOfStringDates];
     
-    [arrayOfDates release];
+    [arrayOfStringDates release];
 }
 
 #pragma mark - UIActionSheetDelegate Methods
@@ -642,6 +650,9 @@ float HVCFixSliderValue(float sliderValue){
             default:
                 break;
         }
+    }
+    else {
+        [loadingAlertView hideAlertWithSpinner];
     }
 }
 
