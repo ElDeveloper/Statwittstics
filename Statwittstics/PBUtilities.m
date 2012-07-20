@@ -145,13 +145,13 @@
     //Go through each of the data sets, determine the maximum and minimum values
     for (PBDataSet *currentDataSet in dataSets) {
         switch (axisType) {
-            case PBXAxis:
-                tmin=[[[currentDataSet dataPointsX] valueForKeyPath:@"@min.floatValue"] floatValue];
-                tmax=[[[currentDataSet dataPointsX] valueForKeyPath:@"@max.floatValue"] floatValue];
+            case PBXAxis: //EXEC BAD ACCESS en la siguiente linea
+                tmin=[[currentDataSet minimumXValue] floatValue];
+                tmax=[[currentDataSet maximumXValue] floatValue];
                 break;
             case PBYAxis:
-                tmin=[[[currentDataSet dataPointsY] valueForKeyPath:@"@min.floatValue"] floatValue];
-                tmax=[[[currentDataSet dataPointsY] valueForKeyPath:@"@max.floatValue"] floatValue];
+                tmin=[[currentDataSet minimumYValue] floatValue];
+                tmax=[[currentDataSet maximumYValue] floatValue];
                 break;
             default:
                 break;
