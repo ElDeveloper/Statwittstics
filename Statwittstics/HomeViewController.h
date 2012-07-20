@@ -69,6 +69,7 @@ typedef enum {
     @private UILabel *numberOfTweetsLabel;
     @private PBTUser *researchFellow;
     @private UIActionSheet *optionsActionSheet;
+    @private BOOL isFirstLoad;
     
     GIDAAlertView *loadingAlertView;
 }

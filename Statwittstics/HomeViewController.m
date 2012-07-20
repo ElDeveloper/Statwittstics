@@ -25,6 +25,8 @@
         // Custom initialization
         [self setTitle:@"Statwittstics"];
         
+        isFirstLoad=YES;
+        
         //1024 x 768
         visualizationSpace=[[PBVisualization alloc] initWithFrame:CGRectMake(9, 145, 1005, 550)];
         [[self view] addSubview:visualizationSpace];
@@ -40,7 +42,7 @@
         timeFrameSegmentedControl=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:
                                                                              NSLocalizedString(@"Hourly", @"Hourly String"),
                                                                              NSLocalizedString(@"Daily", @"Daily String"),
-                                                                             NSLocalizedString(@"Weekley", @"Weekley String"),
+                                                                             NSLocalizedString(@"Weekly", @"Weekley String"),
                                                                              NSLocalizedString(@"Monthly", @"Monthly String"), nil]];
         [timeFrameSegmentedControl setFrame:CGRectMake(530, 10, 480, 28)];
         [timeFrameSegmentedControl setMomentary:NO];
@@ -409,7 +411,7 @@
         [scatterPlot release];
         [someDataSet release];
     }
-    else if ([visualizationTypeSegmentedControl selectedSegmentIndex] == HVCVisualizationTypeBarPlot){
+    else /*if ([visualizationTypeSegmentedControl selectedSegmentIndex] == HVCVisualizationTypeBarPlot)*/{
         //Style for the bar plot
         [someDataSet setFillingColor:[CPTColor darkGrayColor]];
         
@@ -448,7 +450,11 @@
         [someDataSet release];
     }
     
-    [[self visualizationSpace] performAnimationWithStyle:PBAnimationStyleExapand|PBAnimationStyleFadeIn andHandler:^{}];
+    //Once per application-launch
+    if (isFirstLoad) {
+        isFirstLoad=NO;
+        [[self visualizationSpace] performAnimationWithStyle:PBAnimationStyleExapand|PBAnimationStyleFadeIn andHandler:^{}];
+    }
 }
 
 -(void)numberOfTweetsSliderValueChanged:(UISlider *)slider{
