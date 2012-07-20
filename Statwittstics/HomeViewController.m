@@ -531,7 +531,7 @@ float HVCFixSliderValue(float sliderValue){
     NSString *bufferString=nil;
     
     int i=0;
-    NSDate *startingDate=[[[subjectOfAnalysis tweets] objectAtIndex:0] postDate];
+    NSDate *finalDate=[[[subjectOfAnalysis tweets] objectAtIndex:0] postDate];
     NSDate *bufferDate=nil;
     
     //Keep the current appearance by retrieving these properties
@@ -563,8 +563,11 @@ float HVCFixSliderValue(float sliderValue){
     }
     
     //Go through every of the visible ticks and add the custom label provided
+    //Note: the look-up is being done reversely because the starting date is the
+    //first object of the available array of tweets for the subject of analysis,
+    //so we can avoid having to do other calculations to make this non-reversal
     for(i=visibleTicks; i >= 0; i--){
-        bufferDate=PBTAddCalendarUnitToDate(startingDate, rangeLocation-(i*majorTickInterval), unitToUse);
+        bufferDate=PBTAddCalendarUnitToDate(finalDate, rangeLocation-(i*majorTickInterval), unitToUse);
         bufferString=[PBTStringFromTwitterDateWithFormat(bufferDate, @"dd/MMM/yyyy") copy];
         [arrayOfStringDates addObject:bufferString];
         [bufferString release];
