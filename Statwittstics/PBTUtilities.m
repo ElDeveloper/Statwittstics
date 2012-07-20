@@ -70,6 +70,8 @@
             handler([NSArray array], [[error copy] autorelease]);
         }
     }];
+    
+    [userSearchRequest release];
 }
 
 #pragma mark - PBTweets General Use Function
