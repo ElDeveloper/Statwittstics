@@ -78,4 +78,43 @@
     return [dataPointsY valueForKeyPath:@"@max.floatValue"];
 }
 
+-(PBDataSet *)cropDataSetWithRange:(NSRange)cropRange{
+    
+    //Check the range and location are valid, else raise and exception, just to 
+    //make debugging easier, instead of a generic out of range exception
+    if (cropRange.length > [self dataSetLength] || 
+        cropRange.location > [self dataSetLength] ||
+        (cropRange.length + cropRange.location) > [self dataSetLength]) {
+        [NSException raise:@"PBDatSet" format:@"Length or Location out of range (%d - %d) current size %d", cropRange.location, cropRange.location + cropRange.length, [self dataSetLength]];
+    }
+    
+    NSArray *newXData=[[NSArray alloc] initWithArray:[[self dataPointsX] subarrayWithRange:cropRange]];
+    NSArray *newYData=[[NSArray alloc] initWithArray:[[self dataPointsY] subarrayWithRange:cropRange]];
+    
+    PBDataSet *outputDataSet=[[PBDataSet alloc] initWithXData:newXData yData:newYData andTitle:[self dataSetTitle]];
+    
+    //These two are optional, so just in case
+    if ([self lineColor] != nil) {
+        [outputDataSet setLineColor:[self lineColor]];
+    }
+    if ([self symbol] != nil){
+        [outputDataSet setSymbol:[self symbol]];
+    }
+    
+    [newXData release];
+    [newYData release];
+    
+    return [outputDataSet autorelease];
+}
+
++(NSArray *)cropArrayOfDataSets:(NSArray *)theDataSets withRange:(NSRange)cropRange{
+    NSMutableArray *bufferArray=[[NSMutableArray alloc] init];
+    
+    for (PBDataSet *someDataSet in theDataSets) {
+        [bufferArray addObject:[someDataSet cropDataSetWithRange:cropRange]];
+    }
+    
+    return [NSArray arrayWithArray:bufferArray];
+}
+
 @end

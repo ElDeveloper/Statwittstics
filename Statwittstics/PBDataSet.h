@@ -25,12 +25,15 @@
 //Similar to the PlotIdentifier
 @property (nonatomic, retain) NSString *dataSetTitle;
 
-//Data sources
+//Data sources for the plots
 @property (nonatomic, retain) NSArray *dataPointsX;
 @property (nonatomic, retain) NSArray *dataPointsY;
 @property (nonatomic, assign) NSUInteger dataSetLength;
 
-//Different style attributes to set for each plot
+//Different style attributes to set for each plot, the line color represents the
+//border of the bar plots when this object is used in conjuction with PBBar and
+//the filling color is the area between the plot and the x axis, for the PBBar
+//objects is the filling color of each of the bars in the plot
 @property (nonatomic, retain) CPTColor *lineColor;
 @property (nonatomic, retain) CPTColor *fillingColor;
 
@@ -44,5 +47,9 @@
 -(NSNumber *)minimumXValue;
 -(NSNumber *)maximumYValue;
 -(NSNumber *)minimumYValue;
+
+-(PBDataSet *)cropDataSetWithRange:(NSRange)cropRange;
+
++(NSArray *)cropArrayOfDataSets:(NSArray *)theDataSets withRange:(NSRange)cropRange;
 
 @end
