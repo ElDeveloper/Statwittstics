@@ -197,7 +197,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
     
     [userData performRequestWithHandler:^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
         #ifdef DEBUG
-        NSLog(@"PBTUser(REQUEST):%s**:%@", __PRETTY_FUNCTION__,[urlResponse URL]);
+        NSLog(@"PBTUser(REQUEST):** Downloading:%@",[urlResponse URL]);
         #endif
         
         if (!error) {
