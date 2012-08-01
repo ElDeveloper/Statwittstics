@@ -21,6 +21,7 @@
 @property(assign) id<PBBarDelegate> delegate;
 
 -(id)initWithFrame:(CGRect)frame andDataSets:(NSArray *)theDataSets;
+-(void)loadPlotsFromDataSets;
 
 @end
 

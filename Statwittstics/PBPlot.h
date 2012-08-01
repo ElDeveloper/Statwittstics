@@ -28,6 +28,7 @@
 @property (assign) id<PBPlotDelegate> delegate;
 
 -(id)initWithFrame:(CGRect)frame andDataSets:(NSArray *)theDataSets;
+-(void)loadPlotsFromDataSets;
 
 @end
 

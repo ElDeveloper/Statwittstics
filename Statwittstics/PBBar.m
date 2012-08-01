@@ -14,14 +14,11 @@
 -(id)initWithFrame:(CGRect)frame andDataSets:(NSArray *)theDataSets{
     self = [super initWithFrame:frame];
     if (self) {
-        // Initialization code
-        int i=0, sizeHelper=[[theDataSets objectAtIndex:0] dataSetLength];
-        
+        // Initialization code        
         [self setBackgroundColor:[UIColor clearColor]];
         [[self layer] setCornerRadius:12.0f];
         [[self layer] setMasksToBounds:YES];
         
-        PBDataSet *currentDataSet=nil;
         delegate = nil;
         
         //Data Set intitialization needed remember to retain your data
@@ -56,41 +53,8 @@
         [self setMajorTicksWithXInterval:floorf([PBUtilities ticksIntervalIn:PBXAxis dataSets:dataSets]) 
                             andYInterval:floorf([PBUtilities ticksIntervalIn:PBYAxis dataSets:dataSets])];
         
-        //One score plot per Data Set, must solve this shit
-        for (i=0; i<[dataSets count]; i++) {
-            currentDataSet=[dataSets objectAtIndex:i];
-            
-            //Check for possible problems with the run-time, ALL THE PBDataSets should have the sime dataSetLength
-            if ([currentDataSet dataSetLength] != sizeHelper) {
-                [NSException raise:@"PBBar Exception" format:@"The size of the PBDataSets should be the same."];
-            }
-            else {
-                sizeHelper=[currentDataSet dataSetLength];
-            }
-            
-            CPTBarPlot *plotSprite=[[CPTBarPlot alloc] init];
-            [plotSprite setDelegate:self];
-            [plotSprite setDataSource:self];
-            [plotSprite setBarBasesVary:NO];
-            [plotSprite setBarsAreHorizontal:NO];
-            [plotSprite setCornerRadius:0.9f];
-            
-            [plotSprite setBarWidth:CPTDecimalFromFloat(1.0)];
-            [plotSprite setBarOffset:CPTDecimalFromFloat(0.5)];
-            
-            //The identifier of each of the scatter plots is the same as the data set title, and
-            //is added to an array so it can be retrieved on the data-source delegate method
-            [plotSprite setIdentifier:[currentDataSet dataSetTitle]];
-            [identifiers addObject:[currentDataSet dataSetTitle]];
-            
-            //The properties for the line, the color should be either the one that's been set or a default color
-            [plotSprite setLineStyle:[PBUtilities lineStyleWithWidth:1.5 andColor:[PBUtilities defaultLineColorForDataSet:currentDataSet atIndex:i]]];
-            [plotSprite setFill:[PBUtilities fillWithGradient:[currentDataSet fillingColor]]];
-            
-            [graph addPlot:plotSprite];
-            [plotSprites addObject:plotSprite];
-            [plotSprite release];
-        }
+        //Load the plot sprites
+        [self loadPlotsFromDataSets];
         
         //Customizations protocol
         if ([[self delegate] respondsToSelector:@selector(additionalCustomizationsForPBPlot)]) {
@@ -98,6 +62,59 @@
         }
     }
     return self;
+}
+
+-(void)loadPlotsFromDataSets{
+    
+    int i=0, sizeHelper=[[dataSets objectAtIndex:0] dataSetLength];
+    PBDataSet *currentDataSet=nil;
+    CPTBarPlot *plotSprite=nil;
+    
+    
+    if ([identifiers count] != 0 || [plotSprites count] != 0) {
+        for (id identifier in identifiers) {
+            [graph removePlotWithIdentifier:nil];
+        }
+        
+        [identifiers removeAllObjects];
+        [plotSprites removeAllObjects];
+    }
+    
+    //One score plot per Data Set, must solve this shit
+    for (i=0; i<[dataSets count]; i++) {
+        currentDataSet=[dataSets objectAtIndex:i];
+        
+        //Check for possible problems with the run-time, ALL THE PBDataSets should have the sime dataSetLength
+        if ([currentDataSet dataSetLength] != sizeHelper) {
+            [NSException raise:@"PBBar Exception" format:@"The size of the PBDataSets should be the same."];
+        }
+        else {
+            sizeHelper=[currentDataSet dataSetLength];
+        }
+        
+        plotSprite=[[CPTBarPlot alloc] init];
+        [plotSprite setDelegate:self];
+        [plotSprite setDataSource:self];
+        [plotSprite setBarBasesVary:NO];
+        [plotSprite setBarsAreHorizontal:NO];
+        [plotSprite setCornerRadius:0.9f];
+        
+        [plotSprite setBarWidth:CPTDecimalFromFloat(1.0)];
+        [plotSprite setBarOffset:CPTDecimalFromFloat(0.5)];
+        
+        //The identifier of each of the scatter plots is the same as the data set title, and
+        //is added to an array so it can be retrieved on the data-source delegate method
+        [plotSprite setIdentifier:[currentDataSet dataSetTitle]];
+        [identifiers addObject:[currentDataSet dataSetTitle]];
+        
+        //The properties for the line, the color should be either the one that's been set or a default color
+        [plotSprite setLineStyle:[PBUtilities lineStyleWithWidth:1.5 andColor:[PBUtilities defaultLineColorForDataSet:currentDataSet atIndex:i]]];
+        [plotSprite setFill:[PBUtilities fillWithGradient:[currentDataSet fillingColor]]];
+        
+        [graph addPlot:plotSprite];
+        [plotSprites addObject:plotSprite];
+        [plotSprite release];
+    }
 }
 
 #pragma mark - CPTPlotDataSource
