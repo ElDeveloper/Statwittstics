@@ -13,7 +13,7 @@
 @synthesize dataSets, graphTitle;
 @synthesize identifiers, plotSprites;
 @synthesize animationDuration;
-@synthesize dataAnimationTimer, animationFrame;
+@synthesize dataSetsAnimationTimer, dataSetsAnimationFrame, dataSetsAnimationIsRunning;
 
 -(id)initWithFrame:(CGRect)frame{
     if ( self = [super initWithFrame:frame]) {
@@ -25,8 +25,9 @@
         
         animationDuration=kPBVisualizationAnimationDuration;
         
-        dataAnimationTimer=nil;
-        animationFrame=0;
+        dataSetsAnimationTimer=nil;
+        dataSetsAnimationFrame=0;
+        dataSetsAnimationIsRunning=NO;
     }
     return self;
 }
@@ -37,9 +38,9 @@
     [identifiers release];
     [plotSprites release];
     
-    if (dataAnimationTimer != nil) {
-        [dataAnimationTimer  invalidate];
-        [dataAnimationTimer release];
+    if (dataSetsAnimationTimer != nil) {
+        [dataSetsAnimationTimer  invalidate];
+        [dataSetsAnimationTimer release];
     }   
     
     [super dealloc];

@@ -27,8 +27,9 @@ typedef enum {
     
     float animationDuration;
 
-    @protected NSTimer *dataAnimationTimer;
-    @protected NSUInteger animationFrame;
+    @protected NSTimer *dataSetsAnimationTimer;
+    @protected NSUInteger dataSetsAnimationFrame;
+    @protected BOOL dataSetsAnimationIsRunning;
 }
 
 //Basic descriptors of the graph
@@ -42,8 +43,9 @@ typedef enum {
 //Duration in seconds of the animation performAnimationWithStyle:andHandler:
 @property (nonatomic, assign) float animationDuration;
 
-@property (nonatomic, retain) NSTimer *dataAnimationTimer;
-@property (nonatomic, assign) NSUInteger animationFrame;
+@property (nonatomic, retain) NSTimer *dataSetsAnimationTimer;
+@property (nonatomic, assign) NSUInteger dataSetsAnimationFrame;
+@property (nonatomic, assign) BOOL dataSetsAnimationIsRunning;
 
 //General initializer
 -(id)initWithFrame:(CGRect)frame;
