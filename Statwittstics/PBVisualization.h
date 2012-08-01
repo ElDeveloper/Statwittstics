@@ -26,6 +26,9 @@ typedef enum {
     NSMutableArray *plotSprites;
     
     float animationDuration;
+
+    @protected NSTimer *dataAnimationTimer;
+    @protected NSUInteger animationFrame;
 }
 
 //Basic descriptors of the graph
@@ -38,6 +41,9 @@ typedef enum {
 
 //Duration in seconds of the animation performAnimationWithStyle:andHandler:
 @property (nonatomic, assign) float animationDuration;
+
+@property (nonatomic, retain) NSTimer *dataAnimationTimer;
+@property (nonatomic, assign) NSUInteger animationFrame;
 
 //General initializer
 -(id)initWithFrame:(CGRect)frame;

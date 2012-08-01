@@ -13,6 +13,7 @@
 @synthesize dataSets, graphTitle;
 @synthesize identifiers, plotSprites;
 @synthesize animationDuration;
+@synthesize dataAnimationTimer, animationFrame;
 
 -(id)initWithFrame:(CGRect)frame{
     if ( self = [super initWithFrame:frame]) {
@@ -23,6 +24,9 @@
         plotSprites=[[NSMutableArray alloc] init];
         
         animationDuration=kPBVisualizationAnimationDuration;
+        
+        dataAnimationTimer=nil;
+        animationFrame=0;
     }
     return self;
 }
@@ -32,6 +36,11 @@
     [dataSets release];
     [identifiers release];
     [plotSprites release];
+    
+    if (dataAnimationTimer != nil) {
+        [dataAnimationTimer  invalidate];
+        [dataAnimationTimer release];
+    }   
     
     [super dealloc];
 }
