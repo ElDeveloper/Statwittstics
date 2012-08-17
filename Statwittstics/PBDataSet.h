@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "PBDefines.h"
 
-@interface PBDataSet : NSObject{
+@interface PBDataSet : NSObject <NSCoding, NSCopying>{
     NSString *dataSetTitle;
 
     NSArray *dataPointsX;

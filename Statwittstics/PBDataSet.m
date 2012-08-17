@@ -8,6 +8,15 @@
 
 #import "PBDataSet.h"
 
+// NSCoder suppor keys
+NSString * const kPBDataSetDataPointsX=@"PBDataSetDataPointsX";
+NSString * const kPBDataSetDataPointsY=@"PBDataSetDataPointsY";
+NSString * const kPBDataSetTitle=@"PBDataSetTitle";
+NSString * const kPBDataSetLength=@"PBDataSetLength";
+NSString * const kPBDataSetLineColor=@"PBDataSetLineColor";
+NSString * const kPBDataSetFillingColor=@"PBDataSetFillingColor";
+NSString * const kPBDataSetSymbol=@"PBDataSetSymbol";
+
 @implementation PBDataSet
 
 @synthesize dataSetTitle;
@@ -63,6 +72,50 @@
     
     [super dealloc];
 }
+
+#pragma mark - NSCoding
+- (void)encodeWithCoder:(NSCoder *)aCoder{
+    [aCoder encodeObject:dataPointsX forKey:kPBDataSetDataPointsX];
+    [aCoder encodeObject:dataPointsY forKey:kPBDataSetDataPointsY];
+    [aCoder encodeObject:dataSetTitle forKey:kPBDataSetTitle];
+    [aCoder encodeObject:[NSNumber numberWithUnsignedInteger:dataSetLength] forKey:kPBDataSetLength];
+    [aCoder encodeObject:lineColor forKey:kPBDataSetLineColor];
+    [aCoder encodeObject:fillingColor forKey:kPBDataSetFillingColor];
+    [aCoder encodeObject:symbol forKey:kPBDataSetSymbol];
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder{
+    if (self = [super init]) {
+        [self setDataSetTitle:[aDecoder decodeObjectForKey:kPBDataSetTitle]];
+        [self setDataPointsX:[aDecoder decodeObjectForKey:kPBDataSetDataPointsX]];
+        [self setDataPointsY:[aDecoder decodeObjectForKey:kPBDataSetDataPointsY]];
+        [self setDataSetLength:[[aDecoder decodeObjectForKey:kPBDataSetLength] unsignedIntegerValue]];
+        [self setLineColor:[aDecoder decodeObjectForKey:kPBDataSetLineColor]];
+        [self setFillingColor:[aDecoder decodeObjectForKey:kPBDataSetFillingColor]];
+        [self setSymbol:[aDecoder decodeObjectForKey:kPBDataSetSymbol]];
+    }
+    return self;
+}
+
+#pragma mark - NSCopying
+- (id)copyWithZone:(NSZone *)zone{
+    PBDataSet *copy=nil;
+    
+    copy = [[[self class] allocWithZone:zone] initWithXData:[[[self dataPointsX] copy] autorelease]
+                                                      yData:[[[self dataPointsY] copy] autorelease]
+                                                   andTitle:[[[self dataSetTitle] copy] autorelease]];
+    
+    if ([self lineColor]) {
+        [copy setLineColor:[[[self lineColor] copy] autorelease]];
+    }
+    
+    if ([self symbol]) {
+        [copy setSymbol:[[[self symbol] copy] autorelease]];
+    }
+    
+    return copy;
+}
+
 
 -(NSNumber *)maximumXValue{
     return [dataPointsX valueForKeyPath:@"@max.floatValue"];
