@@ -8,6 +8,51 @@
 
 #import "PBPlot.h"
 
+@interface PBPlot (DataPointAnimation)
+
+@property (nonatomic, retain) PBVoidHandler _completionHandler;
+
+-(void)dataSetsAnimationTimerCallback:(NSTimer *)someTimer;
+
+@end
+
+@implementation PBPlot (DataPointAnimation)
+
+@dynamic _completionHandler;
+
+-(void)dataSetsAnimationTimerCallback:(NSTimer *)someTimer{
+    //http://code.google.com/p/core-plot/source/browse/examples/CorePlotGallery/src/plots/RealTimePlot.m
+
+    #ifdef DEBUG
+    NSLog(@"PBPlot:**On timer callback, dataset size is %d", [[[someTimer userInfo] objectAtIndex:0] dataSetLength]);
+    #endif
+    
+    //When the timer reaches it's last call, reset everything, the last call is
+    //as defined by the length plus one given the way the array cropping is made
+    if (dataSetsAnimationFrame == ([[[someTimer userInfo] objectAtIndex:0] dataSetLength] + 1)) {
+        [dataSetsAnimationTimer invalidate];
+        [dataSetsAnimationTimer release];
+        dataSetsAnimationTimer=nil;
+        
+        dataSetsAnimationIsRunning=NO;
+        dataSetsAnimationFrame=0;
+        
+        //Run the handler and release the memory
+        _completionHandler();
+        [_completionHandler release];
+    }
+    else {
+        //Crop all the arrays to the new length
+        NSMutableArray *resizedDataSets=[NSMutableArray arrayWithArray:[PBDataSet cropArrayOfDataSets:[[self dataSetsAnimationTimer] userInfo] 
+                                                                                            withRange:NSMakeRange(0, dataSetsAnimationFrame)]];
+        [self loadPlotsFromArrayOfDataSets:resizedDataSets];
+        
+        dataSetsAnimationFrame=dataSetsAnimationFrame+1;
+    }
+}
+
+@end
+
 @implementation PBPlot
 
 @synthesize delegate;
@@ -26,9 +71,6 @@
         
         //PBDataSet *currentDataSet=nil;
         delegate=nil;
-        
-        //Data Set intitialization needed remember to retain your data
-        [dataSets addObjectsFromArray:theDataSets];
         
         //Set the hosting view, in this case it won't be resizable
         CPTGraphHostingView *hostingView = [[CPTGraphHostingView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
@@ -54,12 +96,12 @@
         //Set the place where the titel should be
         [graph setLegendAnchor:CPTRectAnchorLeft];
         
+        //Load the pltos
+        [self loadPlotsFromArrayOfDataSets:theDataSets];
+        
         //Set default spaced ticks
         [self setMajorTicksWithXInterval:floorf([PBUtilities ticksIntervalIn:PBXAxis dataSets:dataSets]) 
                             andYInterval:floorf([PBUtilities ticksIntervalIn:PBYAxis dataSets:dataSets])];
-        
-        //Load the pltos
-        [self loadPlotsFromDataSets];
         
         //Customizations protocol
         if ([[self delegate] respondsToSelector:@selector(additionalCustomizationsForPBPlot)]) {
@@ -74,14 +116,22 @@
     [super dealloc];
 }
 
--(void)loadPlotsFromDataSets{
-    int i=0, sizeHelper=[[dataSets objectAtIndex:0] dataSetLength];
+-(void)loadPlotsFromArrayOfDataSets:(NSArray *)someDataSets{
+    int i=0, sizeHelper=-1;
     PBDataSet *currentDataSet=nil;
     CPTScatterPlot *scatterPlot=nil;
     
+    if ([dataSets count] != 0) {
+        [dataSets removeAllObjects];
+    }
+        
+    [dataSets addObjectsFromArray:someDataSets];
+
+    //Check if you have to remove some of the plots that are already there this
+    //should usually only be executed posterior to the initialization 
     if ([identifiers count] != 0 || [plotSprites count] != 0) {
         for (id identifier in identifiers) {
-            [graph removePlotWithIdentifier:nil];
+            [graph removePlotWithIdentifier:identifier];
         }
         
         [identifiers removeAllObjects];
@@ -93,12 +143,10 @@
         currentDataSet=[dataSets objectAtIndex:i];
         
         //All the PBDataSets should have the sime dataSetLength
-        if ([currentDataSet dataSetLength] != sizeHelper) {
+        if ([currentDataSet dataSetLength] != sizeHelper && i != 0) {
             [NSException raise:@"PBPlot Exception" format:@"The size of the PBDataSets should be the same."];
         }
-        else {
-            sizeHelper=[currentDataSet dataSetLength];
-        }
+        sizeHelper=[currentDataSet dataSetLength];
         
         scatterPlot=[[CPTScatterPlot alloc] init];
         [scatterPlot setDelegate:self];
@@ -124,6 +172,32 @@
         [graph addPlot:scatterPlot];
         [plotSprites addObject:scatterPlot];
         [scatterPlot release];
+    }
+}
+
+-(void)beginDatPointsAnimationWithDuration:(float)seconds andCompletitionHandler:(PBVoidHandler)handler{
+    float intervalDuration=seconds/[[[self dataSets] objectAtIndex:0] dataSetLength];
+    
+    //Only start one timer at the time, don't allow simultaneous timers
+    if (dataSetsAnimationIsRunning == NO) {
+        if (dataSetsAnimationTimer == nil) {
+            dataSetsAnimationFrame=0;
+            
+            //We have to own a copy of this block to call it later
+            _completionHandler = [handler copy];
+            
+            // This timer will iterate through the callback that reloads data
+            dataSetsAnimationTimer = [[NSTimer timerWithTimeInterval:intervalDuration 
+                                                                target:self
+                                                              selector:@selector(dataSetsAnimationTimerCallback:)
+                                                              userInfo:[[[self dataSets] copy] autorelease]
+                                                               repeats:YES] retain];
+            dataSetsAnimationIsRunning=YES;
+            [[NSRunLoop mainRunLoop] addTimer:dataSetsAnimationTimer forMode:NSDefaultRunLoopMode];
+        }
+    }
+    else {
+        NSLog(@"PBPlot:WARNING:**dataSetsAnimation is already running can't re-run.");
     }
 }
 

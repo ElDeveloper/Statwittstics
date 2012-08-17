@@ -23,12 +23,17 @@
 
 @interface PBPlot : PBXYVisualization<CPTPlotDataSource, CPTScatterPlotDelegate>{
     id <PBPlotDelegate> delegate;
+    @private PBVoidHandler _completionHandler;
 }
 
 @property (assign) id<PBPlotDelegate> delegate;
 
 -(id)initWithFrame:(CGRect)frame andDataSets:(NSArray *)theDataSets;
--(void)loadPlotsFromDataSets;
+
+-(void)loadPlotsFromArrayOfDataSets:(NSArray *)someDataSets;
+
+
+-(void)beginDatPointsAnimationWithDuration:(float)seconds andCompletitionHandler:(PBVoidHandler)handler;
 
 @end
 
