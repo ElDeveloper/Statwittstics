@@ -20,7 +20,8 @@ typedef void __block (^PBTSearchResult)(NSArray *arrayOfSubjects, NSError *error
 
 //These utilities requiere of a vailid PBTUser, otherwise you won't be able to
 //make the request; this method returns an auto-released array via the handler
-+(void)user:(PBTUser *)user requestUsersWithKeyword:(NSString *)keyword andResponseHandler:(PBTSearchResult)handler;
+//this method can only return users who you are friend with or everyone 
++(void)user:(PBTUser *)user requestUsersWithKeyword:(NSString *)keyword onlyFriends:(BOOL)onlyFriends andResponseHandler:(PBTSearchResult)handler;
 
 //Return the position for a point/tweet in a scatter plot where the hour and day
 //position a point per tweet that happened at a specific moment.

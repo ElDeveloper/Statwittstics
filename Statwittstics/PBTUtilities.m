@@ -10,7 +10,7 @@
 
 @implementation PBTUtilities
 
-+(void)user:(PBTUser *)user requestUsersWithKeyword:(NSString *)keyword andResponseHandler:(PBTSearchResult)handler{
++(void)user:(PBTUser *)user requestUsersWithKeyword:(NSString *)keyword onlyFriends:(BOOL)onlyFriends andResponseHandler:(PBTSearchResult)handler{
     //URL, parameters and request object initialized to retrieve the data, see PBTConstants for the definitions
     NSURL *userSearchURL=[NSURL URLWithString:TAUUsersSearch];
     NSDictionary *parameters=[NSDictionary dictionaryWithObjectsAndKeys:keyword, TAKeyQuery, nil];
@@ -50,7 +50,17 @@
                 for ( NSDictionary *someDictionary in (NSArray *)jsonString ) {
                     //Add each object to the array, the array becomes the retainer of the object
                     temp=[[PBTUser alloc] initWithJSONString:someDictionary];
-                    [bufferArray addObject:temp];
+                    
+                    //Choose which users to retain and send back ... 
+                    if (onlyFriends) {
+                        if ([temp isFriend]) {
+                            [bufferArray addObject:temp];
+                        }
+                    }
+                    else {
+                        [bufferArray addObject:temp];
+                    }
+                    
                     [temp release];
                     temp=nil;
                 }
