@@ -22,7 +22,7 @@
         delegate = nil;
         
         //Data Set intitialization needed remember to retain your data
-        [dataSets addObjectsFromArray:theDataSets];
+        //[dataSets addObjectsFromArray:theDataSets];
         //dataSets=[theDataSets copy];
         
         //Set the hosting view, in this case it won't be resizable
@@ -49,12 +49,12 @@
         //Set where the title should be found
         [graph setLegendAnchor:CPTRectAnchorLeft];
         
+        //Load the plot sprites
+        [self loadPlotsFromArrayOfDataSets:theDataSets];
+        
         //Set default spaced ticks
         [self setMajorTicksWithXInterval:floorf([PBUtilities ticksIntervalIn:PBXAxis dataSets:dataSets]) 
                             andYInterval:floorf([PBUtilities ticksIntervalIn:PBYAxis dataSets:dataSets])];
-        
-        //Load the plot sprites
-        [self loadPlotsFromDataSets];
         
         //Customizations protocol
         if ([[self delegate] respondsToSelector:@selector(additionalCustomizationsForPBPlot)]) {
@@ -64,16 +64,18 @@
     return self;
 }
 
--(void)loadPlotsFromDataSets{
+-(void)loadPlotsFromArrayOfDataSets:(NSArray *)someDataSets{
+    [super loadPlotsFromArrayOfDataSets:someDataSets];
     
-    int i=0, sizeHelper=[[dataSets objectAtIndex:0] dataSetLength];
+    int i=0, sizeHelper=-1;
     PBDataSet *currentDataSet=nil;
     CPTBarPlot *plotSprite=nil;
     
-    
+    //Check if you have to remove some of the plots that are already there this
+    //should usually only be executed posterior to the initialization 
     if ([identifiers count] != 0 || [plotSprites count] != 0) {
         for (id identifier in identifiers) {
-            [graph removePlotWithIdentifier:nil];
+            [graph removePlotWithIdentifier:identifier];
         }
         
         [identifiers removeAllObjects];
@@ -85,12 +87,10 @@
         currentDataSet=[dataSets objectAtIndex:i];
         
         //Check for possible problems with the run-time, ALL THE PBDataSets should have the sime dataSetLength
-        if ([currentDataSet dataSetLength] != sizeHelper) {
+        if ([currentDataSet dataSetLength] != sizeHelper && i != 0) {
             [NSException raise:@"PBBar Exception" format:@"The size of the PBDataSets should be the same."];
         }
-        else {
-            sizeHelper=[currentDataSet dataSetLength];
-        }
+        sizeHelper=[currentDataSet dataSetLength];
         
         plotSprite=[[CPTBarPlot alloc] init];
         [plotSprite setDelegate:self];
