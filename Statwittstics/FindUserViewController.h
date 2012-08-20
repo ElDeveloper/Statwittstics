@@ -12,6 +12,12 @@
 #import "PBTKit.h"
 #import "GIDAAlertView.h"
 #import "HomeViewController.h"
+
+typedef enum {
+    FUVCScopeUsers=0,
+    FUVCScopeOnlyFriends=1
+}FUVCScope;
+
 @class HomeViewController;
 
 @interface FindUserViewController : UITableViewController <UISearchDisplayDelegate, UISearchBarDelegate, UIAlertViewDelegate>{

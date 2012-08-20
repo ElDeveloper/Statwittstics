@@ -214,6 +214,8 @@
 #pragma mark - UISearchBarDelegate Methods
 //This method is called everytime the userhits return in the keyboard
 -(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
+    BOOL onlyFriends = NO;
+    
     //Building a mutable array since a search bar can't be sent to a thread, in this
     //array you are able to pass the information comming from UISearchBar
     NSMutableArray *requestArray = [[NSMutableArray alloc] initWithObjects:
@@ -228,8 +230,20 @@
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
     [alertView presentAlertWithSpinnerInView:[self view]];
     
+    switch ([searchBar selectedScopeButtonIndex]) {
+        case FUVCScopeUsers:
+            onlyFriends = NO;
+            break;
+        case FUVCScopeOnlyFriends:
+            onlyFriends = YES;
+            break;
+        default:
+            onlyFriends = NO;
+            break;
+    }
+    
     //Begin search ...
-    [PBTUtilities user:researchFellow requestUsersWithKeyword:[searchBar text] andResponseHandler:^(NSArray *arrayOfSubjects, NSError *error) {
+    [PBTUtilities user:researchFellow requestUsersWithKeyword:[searchBar text] onlyFriends:onlyFriends andResponseHandler:^(NSArray *arrayOfSubjects, NSError *error) {
         
         //If there is something inside the array (try to avoid some over-head)
         if ([searchResults count] != 0) {
