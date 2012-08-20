@@ -37,6 +37,7 @@ extern TAKey TAKeyTweets;
 extern TAKey TAKeyProtected;
 extern TAKey TAKeyQuery;
 extern TAKey TAKeyVerified;
+extern TAKey TAKeyIsFriend;
 
 //Keys used for the JSON dictionaries that represent a tweet
 extern TAKey TAKeyEntities;
