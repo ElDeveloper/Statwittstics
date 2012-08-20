@@ -34,6 +34,7 @@ extern NSUInteger const kPBTRequestMaximum;
     
     NSMutableArray *tweets;
     
+    BOOL isFriend;
     BOOL requiresAuthentication;
     BOOL isVerified;
     
@@ -56,6 +57,7 @@ extern NSUInteger const kPBTRequestMaximum;
 @property (nonatomic, assign, readonly) NSInteger following;
 @property (nonatomic, assign, readonly) NSInteger followers;
 @property (nonatomic, assign, readonly) NSInteger tweetCount;
+@property (nonatomic, assign, readwrite) BOOL isFriend;
 @property (nonatomic, assign, readonly) BOOL requiresAuthentication;
 @property (nonatomic, assign, readonly) BOOL isVerified;
 

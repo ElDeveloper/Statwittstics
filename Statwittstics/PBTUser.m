@@ -15,7 +15,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
 @synthesize username, realName, description, location, bioURL;
 @synthesize imageData;
 @synthesize following, followers, tweetCount;
-@synthesize requiresAuthentication, isVerified;
+@synthesize requiresAuthentication, isVerified, isFriend;
 @synthesize tweets;
 @synthesize account;
 
@@ -36,6 +36,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
         tweetCount=0;
         requiresAuthentication=NO;
         isVerified=NO;
+        isFriend=NO;
         
         _lastTweetID=nil;
         _tempArray=nil;
@@ -108,10 +109,23 @@ NSUInteger const kPBTRequestMaximum= 3200;
     else {
         followers=[[jsonString objectForKey:TAKeyFollowers] intValue];
     }
-    
+
+    //If the user is a friend of the responsible ACAccount
+    if ([jsonString objectForKey:TAKeyIsFriend] != [NSNull null]) {
+        isFriend=[[jsonString objectForKey:TAKeyIsFriend] boolValue];
+    }
+    else {
+        isFriend=NO;
+    }
     
     //If the user is verified, choose from the value 
-    isVerified=[[jsonString objectForKey:TAKeyVerified] boolValue];
+    if ([jsonString objectForKey:TAKeyVerified] != [NSNull null]) {
+        isVerified=[[jsonString objectForKey:TAKeyVerified] boolValue];
+    }
+    else {
+        isVerified=NO;
+    }
+    
 }
 
 -(void)dealloc{
@@ -323,7 +337,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
                     #endif
                     
                     _lastTweetID=[tempTweet tweetID];
-                    [_tempArray addObject:tempTweet];
+                    [_tempArray addObject:tempTweet]; //EXC_BAD_ACCESS cuando hay un Cocoa error 3840 en HVC downloadTweets
                     [tempTweet release];
                 }
                 
