@@ -90,6 +90,11 @@
 }
 
 -(void)loadPlotsFromArrayOfDataSets:(NSArray *)someDataSets{
+    if ([dataSets count] != 0) {
+        [dataSets removeAllObjects];
+    }
+    
+    [dataSets addObjectsFromArray:someDataSets];
 }
 
 -(UIImage *)imageRepresentation{

@@ -77,12 +77,6 @@
     int i=0, sizeHelper=-1;
     PBDataSet *currentDataSet=nil;
     CPTScatterPlot *scatterPlot=nil;
-    
-    if ([dataSets count] != 0) {
-        [dataSets removeAllObjects];
-    }
-        
-    [dataSets addObjectsFromArray:someDataSets];
 
     //Check if you have to remove some of the plots that are already there this
     //should usually only be executed posterior to the initialization 
