@@ -9,7 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "StatwittsticsDefines.h"
 
-@interface AboutViewController : UIViewController
+@interface AboutViewController : UIViewController <UIWebViewDelegate>{
+    IBOutlet UIWebView *twitterUsernamesView;
+}
+
+@property (nonatomic, retain) IBOutlet UIWebView *twitterUsernamesView;
 
 -(IBAction)dismissCredits:(id)sender;
 

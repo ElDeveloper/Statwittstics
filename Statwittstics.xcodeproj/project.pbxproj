@@ -13,6 +13,10 @@
 		5046DEBF155F40F300AACBA9 /* PBBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 5046DEBE155F40F300AACBA9 /* PBBar.m */; };
 		5046DEC4155F697C00AACBA9 /* PBVisualization.m in Sources */ = {isa = PBXBuildFile; fileRef = 5046DEC3155F697C00AACBA9 /* PBVisualization.m */; };
 		5046DEC7155F724F00AACBA9 /* PBConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 5046DEC6155F724E00AACBA9 /* PBConstants.m */; };
+		504D7F1815E214B800859472 /* CreditsLogo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 504D7F1415E214B800859472 /* CreditsLogo@2x.png */; };
+		504D7F1915E214B800859472 /* CreditsCorePlotIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 504D7F1515E214B800859472 /* CreditsCorePlotIcon.png */; };
+		504D7F1A15E214B800859472 /* CreditsCorePlotIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 504D7F1615E214B800859472 /* CreditsCorePlotIcon@2x.png */; };
+		504D7F1B15E214B800859472 /* CreditsLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 504D7F1715E214B800859472 /* CreditsLogo.png */; };
 		506A369B156C8AEB006B3F64 /* libCorePlot-CocoaTouch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 506A369A156C8AEB006B3F64 /* libCorePlot-CocoaTouch.a */; };
 		506A36A3156C8B44006B3F64 /* DefaultUser.png in Resources */ = {isa = PBXBuildFile; fileRef = 506A369D156C8B44006B3F64 /* DefaultUser.png */; };
 		506A36A4156C8B44006B3F64 /* noresource.png in Resources */ = {isa = PBXBuildFile; fileRef = 506A369E156C8B44006B3F64 /* noresource.png */; };
@@ -63,6 +67,10 @@
 		5046DEC3155F697C00AACBA9 /* PBVisualization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBVisualization.m; sourceTree = "<group>"; };
 		5046DEC5155F724E00AACBA9 /* PBConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBConstants.h; sourceTree = "<group>"; };
 		5046DEC6155F724E00AACBA9 /* PBConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBConstants.m; sourceTree = "<group>"; };
+		504D7F1415E214B800859472 /* CreditsLogo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "CreditsLogo@2x.png"; sourceTree = "<group>"; };
+		504D7F1515E214B800859472 /* CreditsCorePlotIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CreditsCorePlotIcon.png; sourceTree = "<group>"; };
+		504D7F1615E214B800859472 /* CreditsCorePlotIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "CreditsCorePlotIcon@2x.png"; sourceTree = "<group>"; };
+		504D7F1715E214B800859472 /* CreditsLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CreditsLogo.png; sourceTree = "<group>"; };
 		506A364B156C8AEB006B3F64 /* _CPTConstraintsFixed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _CPTConstraintsFixed.h; sourceTree = "<group>"; };
 		506A364C156C8AEB006B3F64 /* _CPTConstraintsRelative.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _CPTConstraintsRelative.h; sourceTree = "<group>"; };
 		506A364D156C8AEB006B3F64 /* _CPTDarkGradientTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _CPTDarkGradientTheme.h; sourceTree = "<group>"; };
@@ -223,6 +231,17 @@
 			name = Uitilities;
 			sourceTree = "<group>";
 		};
+		504D7F1215E2149C00859472 /* About */ = {
+			isa = PBXGroup;
+			children = (
+				504D7F1415E214B800859472 /* CreditsLogo@2x.png */,
+				504D7F1515E214B800859472 /* CreditsCorePlotIcon.png */,
+				504D7F1615E214B800859472 /* CreditsCorePlotIcon@2x.png */,
+				504D7F1715E214B800859472 /* CreditsLogo.png */,
+			);
+			name = About;
+			sourceTree = "<group>";
+		};
 		506A3649156C8AEB006B3F64 /* CorePlot */ = {
 			isa = PBXGroup;
 			children = (
@@ -321,6 +340,7 @@
 		506A369C156C8B44006B3F64 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				504D7F1215E2149C00859472 /* About */,
 				506A369D156C8B44006B3F64 /* DefaultUser.png */,
 				506A369E156C8B44006B3F64 /* noresource.png */,
 				506A369F156C8B44006B3F64 /* noresource@2x.png */,
@@ -520,6 +540,10 @@
 				50DAD19F15C5162900097176 /* Icon.png in Resources */,
 				50DAD1A015C5162900097176 /* Icon@2x.png in Resources */,
 				50DAD1A115C5162900097176 /* iTunesArtwork.png in Resources */,
+				504D7F1815E214B800859472 /* CreditsLogo@2x.png in Resources */,
+				504D7F1915E214B800859472 /* CreditsCorePlotIcon.png in Resources */,
+				504D7F1A15E214B800859472 /* CreditsCorePlotIcon@2x.png in Resources */,
+				504D7F1B15E214B800859472 /* CreditsLogo.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

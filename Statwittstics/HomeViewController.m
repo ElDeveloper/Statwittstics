@@ -373,7 +373,7 @@
         
         [linePlot showGrids];
         [self mendXTicksIntervalsFor:linePlot];
-        
+        [linePlot beginDataPointsAnimationWithDuration:2 andCompletionHandler:^{}];
         // Do any additional setup after loading the view.
         [[self visualizationSpace] addSubview:linePlot];
         [linePlot release];
