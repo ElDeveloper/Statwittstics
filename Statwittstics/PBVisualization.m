@@ -8,6 +8,49 @@
 
 #import "PBVisualization.h"
 
+#import "PBDataSet.h"
+
+@interface PBVisualization (DataPointAnimation)
+
+-(void)dataSetsAnimationTimerCallback:(NSTimer *)someTimer;
+
+@end
+
+@implementation PBVisualization (DataPointAnimation)
+
+-(void)dataSetsAnimationTimerCallback:(NSTimer *)someTimer{
+    //http://code.google.com/p/core-plot/source/browse/examples/CorePlotGallery/src/plots/RealTimePlot.m
+    
+    #ifdef DEBUG
+    NSLog(@"PBVisualization:**On NSTimer callback, dataset size is %d", [[[someTimer userInfo] objectAtIndex:0] dataSetLength]);
+    #endif
+    
+    //When the timer reaches it's last call, reset everything, the last call is
+    //as defined by the length plus one given the way the array cropping is made
+    if (dataSetsAnimationFrame == ([[[someTimer userInfo] objectAtIndex:0] dataSetLength] + 1)) {
+        [dataSetsAnimationTimer invalidate];
+        [dataSetsAnimationTimer release];
+        dataSetsAnimationTimer=nil;
+        
+        dataSetsAnimationIsRunning=NO;
+        dataSetsAnimationFrame=0;
+        
+        //Run the handler and release the memory
+        _completionHandler();
+        [_completionHandler release];
+    }
+    else {
+        //Crop all the arrays to the new length
+        NSMutableArray *resizedDataSets=[NSMutableArray arrayWithArray:[PBDataSet cropArrayOfDataSets:[[self dataSetsAnimationTimer] userInfo] 
+                                                                                            withRange:NSMakeRange(0, dataSetsAnimationFrame)]];
+        [self loadPlotsFromArrayOfDataSets:resizedDataSets];
+        
+        dataSetsAnimationFrame=dataSetsAnimationFrame+1;
+    }
+}
+
+@end
+
 @implementation PBVisualization
 
 @synthesize dataSets, graphTitle;
@@ -44,6 +87,9 @@
     }   
     
     [super dealloc];
+}
+
+-(void)loadPlotsFromArrayOfDataSets:(NSArray *)someDataSets{
 }
 
 -(UIImage *)imageRepresentation{
@@ -86,6 +132,32 @@
                      completion:^(BOOL finished){
                             handler();
                         }];
+}
+
+-(void)beginDataPointsAnimationWithDuration:(float)seconds andCompletionHandler:(PBVoidHandler)handler{
+    float intervalDuration=seconds/[[[self dataSets] objectAtIndex:0] dataSetLength];
+    
+    //Only start one timer at the time, don't allow simultaneous timers
+    if (dataSetsAnimationIsRunning == NO) {
+        if (dataSetsAnimationTimer == nil) {
+            dataSetsAnimationFrame=0;
+            
+            //We have to own a copy of this block to call it later
+            _completionHandler = [handler copy];
+            
+            // This timer will iterate through the callback that reloads data
+            dataSetsAnimationTimer = [[NSTimer timerWithTimeInterval:intervalDuration 
+                                                              target:self
+                                                            selector:@selector(dataSetsAnimationTimerCallback:)
+                                                            userInfo:[[[self dataSets] copy] autorelease]
+                                                             repeats:YES] retain];
+            dataSetsAnimationIsRunning=YES;
+            [[NSRunLoop mainRunLoop] addTimer:dataSetsAnimationTimer forMode:NSDefaultRunLoopMode];
+        }
+    }
+    else {
+        NSLog(@"PBVisualization:WARNING:**beginDatPointsAnimationWithDuration:andCompletionHandler: is already running can't re-run.");
+    }
 }
 
 @end

@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "PBDefines.h"
 
+@class PBDataSet;
+
 #define kPBVisualizationAnimationDuration 0.70
 
 typedef void __block (^PBVoidHandler)(void);
@@ -30,6 +32,8 @@ typedef enum {
     @protected NSTimer *dataSetsAnimationTimer;
     @protected NSUInteger dataSetsAnimationFrame;
     @protected BOOL dataSetsAnimationIsRunning;
+    
+    @protected PBVoidHandler _completionHandler;
 }
 
 //Basic descriptors of the graph
@@ -50,7 +54,13 @@ typedef enum {
 //General initializer
 -(id)initWithFrame:(CGRect)frame;
 
+//The way objects should load their plots
+-(void)loadPlotsFromArrayOfDataSets:(NSArray *)someDataSets;
+
 -(UIImage *)imageRepresentation;
+
+// Animation methods
 -(void)performAnimationWithStyle:(PBAnimationStyle)style andHandler:(PBVoidHandler)handler;
+-(void)beginDataPointsAnimationWithDuration:(float)seconds andCompletionHandler:(PBVoidHandler)handler;
 
 @end
