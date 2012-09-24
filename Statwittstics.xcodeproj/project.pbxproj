@@ -17,13 +17,13 @@
 		504D7F1915E214B800859472 /* CreditsCorePlotIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 504D7F1515E214B800859472 /* CreditsCorePlotIcon.png */; };
 		504D7F1A15E214B800859472 /* CreditsCorePlotIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 504D7F1615E214B800859472 /* CreditsCorePlotIcon@2x.png */; };
 		504D7F1B15E214B800859472 /* CreditsLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 504D7F1715E214B800859472 /* CreditsLogo.png */; };
-		506A369B156C8AEB006B3F64 /* libCorePlot-CocoaTouch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 506A369A156C8AEB006B3F64 /* libCorePlot-CocoaTouch.a */; };
 		506A36A3156C8B44006B3F64 /* DefaultUser.png in Resources */ = {isa = PBXBuildFile; fileRef = 506A369D156C8B44006B3F64 /* DefaultUser.png */; };
 		506A36A4156C8B44006B3F64 /* noresource.png in Resources */ = {isa = PBXBuildFile; fileRef = 506A369E156C8B44006B3F64 /* noresource.png */; };
 		506A36A5156C8B44006B3F64 /* noresource@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 506A369F156C8B44006B3F64 /* noresource@2x.png */; };
 		506A36A6156C8B44006B3F64 /* ProfilePicturePlaceholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 506A36A0156C8B44006B3F64 /* ProfilePicturePlaceholder.png */; };
 		506A36A7156C8B44006B3F64 /* VerifiedTwitter.png in Resources */ = {isa = PBXBuildFile; fileRef = 506A36A1156C8B44006B3F64 /* VerifiedTwitter.png */; };
 		506A36A8156C8B44006B3F64 /* VerifiedTwitter@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 506A36A2156C8B44006B3F64 /* VerifiedTwitter@2x.png */; };
+		5077A0DD1610358F00CBA87F /* libCorePlot-CocoaTouch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 506A369A156C8AEB006B3F64 /* libCorePlot-CocoaTouch.a */; };
 		5089487815315CB000A66EFA /* PBTweet.m in Sources */ = {isa = PBXBuildFile; fileRef = 5089487715315CB000A66EFA /* PBTweet.m */; };
 		5089487B153160F800A66EFA /* PBTUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 5089487A153160F700A66EFA /* PBTUser.m */; };
 		5089487D1531742500A66EFA /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5089487C1531742500A66EFA /* Twitter.framework */; };
@@ -215,7 +215,7 @@
 				50B5DEFE152EBA3700661492 /* QuartzCore.framework in Frameworks */,
 				5089487D1531742500A66EFA /* Twitter.framework in Frameworks */,
 				50B5DE8B152EB92800661492 /* UIKit.framework in Frameworks */,
-				506A369B156C8AEB006B3F64 /* libCorePlot-CocoaTouch.a in Frameworks */,
+				5077A0DD1610358F00CBA87F /* libCorePlot-CocoaTouch.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -509,6 +509,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				English,
 			);
 			mainGroup = 50B5DE7B152EB92800661492;
 			productRefGroup = 50B5DE87152EB92800661492 /* Products */;
@@ -649,11 +650,17 @@
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/CorePlot\"",
 				);
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-all_load",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				"VALID_ARCHS[sdk=*]" = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -669,6 +676,11 @@
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/CorePlot\"",
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = (
+					"-ObjC",
+					"-all_load",
 				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
