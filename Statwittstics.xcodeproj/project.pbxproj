@@ -44,6 +44,7 @@
 		50CAAC451544F0A300641D90 /* FindUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CAAC441544F0A300641D90 /* FindUserViewController.m */; };
 		50CAAC52154525A600641D90 /* PBTUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CAAC51154525A600641D90 /* PBTUtilities.m */; };
 		50CD10C2153BC640004F7229 /* PBTConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 50CD10C1153BC640004F7229 /* PBTConstants.m */; };
+		50D208AA163A5A2800EB4E49 /* UIImage+PBUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 50D208A9163A5A2800EB4E49 /* UIImage+PBUtilities.m */; };
 		50DAD19C15C5162900097176 /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = 50DAD19615C5162900097176 /* Icon-72.png */; };
 		50DAD19D15C5162900097176 /* Icon-Small-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 50DAD19715C5162900097176 /* Icon-Small-50.png */; };
 		50DAD19E15C5162900097176 /* Icon-Small.png in Resources */ = {isa = PBXBuildFile; fileRef = 50DAD19815C5162900097176 /* Icon-Small.png */; };
@@ -194,6 +195,8 @@
 		50CAAC51154525A600641D90 /* PBTUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBTUtilities.m; sourceTree = "<group>"; };
 		50CD10C0153BC640004F7229 /* PBTConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBTConstants.h; sourceTree = "<group>"; };
 		50CD10C1153BC640004F7229 /* PBTConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBTConstants.m; sourceTree = "<group>"; };
+		50D208A8163A5A2800EB4E49 /* UIImage+PBUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+PBUtilities.h"; sourceTree = "<group>"; };
+		50D208A9163A5A2800EB4E49 /* UIImage+PBUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+PBUtilities.m"; sourceTree = "<group>"; };
 		50DAD19615C5162900097176 /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
 		50DAD19715C5162900097176 /* Icon-Small-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small-50.png"; sourceTree = "<group>"; };
 		50DAD19815C5162900097176 /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small.png"; sourceTree = "<group>"; };
@@ -227,6 +230,8 @@
 			children = (
 				503B6D57154D0831003904F9 /* GIDAAlertView.h */,
 				503B6D58154D0831003904F9 /* GIDAAlertView.m */,
+				50D208A8163A5A2800EB4E49 /* UIImage+PBUtilities.h */,
+				50D208A9163A5A2800EB4E49 /* UIImage+PBUtilities.m */,
 			);
 			name = Uitilities;
 			sourceTree = "<group>";
@@ -573,6 +578,7 @@
 				5046DEC4155F697C00AACBA9 /* PBVisualization.m in Sources */,
 				5046DEC7155F724F00AACBA9 /* PBConstants.m in Sources */,
 				50E4E2B0155F9F8C00AF606C /* PBXYVisualization.m in Sources */,
+				50D208AA163A5A2800EB4E49 /* UIImage+PBUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

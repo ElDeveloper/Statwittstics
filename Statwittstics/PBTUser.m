@@ -174,7 +174,7 @@ NSUInteger const kPBTRequestMaximum= 3200;
                 [self loadFromJSONString:jsonString];
                 
                 //Now request the image
-                [self requestProfilePictureWithSize:TAImageSizeBigger andHandler:^(NSError *error){
+                [self requestProfilePictureWithSize:TAImageSizeOriginal andHandler:^(NSError *error){
                     
                     //Errors can also happen in this request, just notify them if so
                     if (!error) {

@@ -15,6 +15,7 @@
 //#define COMPACTED_LAYOUT
 
 extern CGSize const KPBTCGSize;
+extern CGSize const kPBTProfilePictureSize;
 
 @interface PBTUserView : UIView{
     PBTUser *theUser;

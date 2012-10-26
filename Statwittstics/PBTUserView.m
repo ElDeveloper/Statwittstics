@@ -7,6 +7,7 @@
 //
 
 #import "PBTUserView.h"
+#import "UIImage+PBUtilities.h"
 
 #ifdef EXPANDED_LAYOUT
 CGSize const KPBTCGSize={.width=510.0f, .height=125.0f};
@@ -14,6 +15,8 @@ CGSize const KPBTCGSize={.width=510.0f, .height=125.0f};
 #ifdef COMPACTED_LAYOUT
 CGSize const KPBTCGSize={.width=510.0f, .height=125.0f};
 #endif
+
+CGSize const kPBTProfilePictureSize={.width=95.0f, .height=100.0f};
 
 @implementation PBTUserView
 
@@ -212,7 +215,7 @@ CGSize const KPBTCGSize={.width=510.0f, .height=125.0f};
         //Only change the image if the new image has already been 
         //retrieved, else leave the placeholder in the view 
         if ([theUser imageData] != nil) {
-            [profilePicture setImage:[UIImage imageWithData:[theUser imageData]]];
+            [profilePicture setImage:[UIImage resizeImage:[UIImage imageWithData:[theUser imageData]] newSize:kPBTProfilePictureSize]];
         }
     }
     
