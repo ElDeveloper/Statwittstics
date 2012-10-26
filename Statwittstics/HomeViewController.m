@@ -78,7 +78,7 @@
         
         //Label indicating the UISlider fixed value
         numberOfTweetsLabel=[[UILabel alloc] initWithFrame:CGRectMake(0, 0, 125, 25)];
-        [numberOfTweetsLabel setText:[NSString stringWithString:@""]];
+        [numberOfTweetsLabel setText:@""];
         [numberOfTweetsLabel setCenter:CGPointMake(770, 95)];
         [numberOfTweetsLabel setFont:[UIFont fontWithName:@"Helvetica-Bold" size:25]];
         [numberOfTweetsLabel setAdjustsFontSizeToFitWidth:NO];

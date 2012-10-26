@@ -21,7 +21,6 @@
 
 //DG: Imágen de placeholder para la gráfica, podría ser el ícono en relieves
 //DG: Arte para el PBTUserView
-//DG: Logotipo de la aplicación
 //DG: Selección de colores para toda la aplicación
 //DG: Placeholder para la gráfica, algo cabrón
 //UX: Revisar si hace falta agregar sonidos
@@ -32,7 +31,6 @@
 //
 //Statwittstics Framework:
 //
-//SW: Agregar animación a la aparición de los datos.
 //SW: Generar reportes.
 //
 //SW: Comparar a dos usuarios en función de sus series de tiempo
