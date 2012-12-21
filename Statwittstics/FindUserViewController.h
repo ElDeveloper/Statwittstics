@@ -8,39 +8,46 @@
 
 #import <UIKit/UIKit.h>
 #import "StatwittsticsDefines.h"
-
 #import "PBTKit.h"
 #import "GIDAAlertView.h"
-#import "HomeViewController.h"
 
 typedef enum {
     FUVCScopeUsers=0,
     FUVCScopeOnlyFriends=1
 }FUVCScope;
 
-@class HomeViewController;
+@protocol FindUserViewControllerDelegate;
 
 @interface FindUserViewController : UITableViewController <UISearchDisplayDelegate, UISearchBarDelegate, UIAlertViewDelegate>{
+	id<FindUserViewControllerDelegate> delegate;
+
     PBTUser *researchFellow;
     UISearchBar *theSearchBar;
-    HomeViewController *previousViewController;
-    
+
     @private NSMutableArray *searchResults;
     @private GIDAAlertView *alertView;
 }
 
+@property (assign) id<FindUserViewControllerDelegate> delegate;
+
 @property (nonatomic, retain) PBTUser *researchFellow;
 @property (nonatomic, retain) UISearchBar *theSearchBar;
-@property (nonatomic, retain) HomeViewController *previousViewController;
 
 //Private appearance properties
 @property (nonatomic, retain) NSMutableArray *searchResults;
 @property (nonatomic, retain) GIDAAlertView *alertView;
 
-//The initializer carries a user that allows search queries to be sent to twitter
--(id)initWithResearchFellow:(PBTUser *)theResearchFellow andViewController:(HomeViewController *)someViewController;
+//The research fellow is a credential provider to perform queries in Twitter
+-(id)initWithResearchFellow:(PBTUser *)theResearchFellow;
 
 -(void)loadResults:(id)sender;
 -(void)updateProfilePictureForCellAtIndex:(NSIndexPath *)indexPath;
+
+@end
+
+@protocol FindUserViewControllerDelegate <NSObject>
+
+@optional
+-(void)subjectWasSelected:(PBTUser *)newSubject;
 
 @end

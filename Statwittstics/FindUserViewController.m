@@ -10,18 +10,18 @@
 
 @implementation FindUserViewController
 
-@synthesize researchFellow, theSearchBar, searchResults, alertView, previousViewController;
+@synthesize delegate, researchFellow, theSearchBar, searchResults, alertView;
 
 #pragma mark - UITableViewController Life-cycle
 
--(id)initWithResearchFellow:(PBTUser *)theResearchFellow andViewController:(HomeViewController *)someViewController{
+-(id)initWithResearchFellow:(PBTUser *)theResearchFellow{
     //The class only implements UITableViewStylePlain, this is a direct dependency
     //over the fact that the users are presented in custom plain-style cells
     self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
         //Allow the wide-use of the account
         researchFellow=[theResearchFellow retain];
-        [self setPreviousViewController:someViewController];
+
         alertView=[[GIDAAlertView alloc] initAlertWithSpinnerAndMessage:NSLocalizedString(@"Searching For Users", @"Searching For Users String")];
         //[alertView setCenter:CGPointMake(270, 160)];
         
@@ -68,7 +68,6 @@
     [theSearchBar release];
     [searchResults release];
     [alertView release];
-    [previousViewController release];
     
     [super dealloc];
 }
@@ -193,13 +192,15 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
+
+
     //Dismiss the view controller
     [self dismissModalViewControllerAnimated:YES];
     
-    [[searchResults objectAtIndex:[indexPath row]] setAccount:[[previousViewController researchFellow] account]];
-    [previousViewController setSubjectOfAnalysis:[searchResults objectAtIndex:[indexPath row]]];
-    [previousViewController performSelectorOnMainThread:@selector(downloadTweets) withObject:nil waitUntilDone:NO];
+	//Delegate callback
+	if([[self delegate] respondsToSelector:@selector(subjectWasSelected:)]){
+		[[self delegate] subjectWasSelected:[searchResults objectAtIndex:[indexPath row]]];
+	}
 }
 
 #pragma mark - UISearchDisplayControllerDelegate Methods
