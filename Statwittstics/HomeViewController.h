@@ -8,9 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "StatwittsticsDefines.h"
-
-#import "AboutViewController.h"
 #import "FindUserViewController.h"
+#import "AboutViewController.h"
 
 #import "PBTKit.h"
 #import "PBKit.h"
@@ -55,7 +54,7 @@ typedef enum {
     HVCAlertDownloadTweets
 }HVCAlert;
 
-@interface HomeViewController : UIViewController <UIActionSheetDelegate, UIAlertViewDelegate>{
+@interface HomeViewController : UIViewController <UIActionSheetDelegate, UIAlertViewDelegate, FindUserViewControllerDelegate>{
     
     PBVisualization *visualizationSpace;
     PBTUser *subjectOfAnalysis;

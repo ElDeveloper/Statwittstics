@@ -8,6 +8,8 @@
 
 #import "HomeViewController.h"
 
+#import "FindUserViewController.h"
+
 @implementation HomeViewController
 
 @synthesize visualizationSpace;
@@ -591,7 +593,8 @@ float HVCFixSliderValue(float sliderValue){
     
     switch (buttonIndex) {
         case HVCActionSheetButtonNew:
-            viewController=[[FindUserViewController alloc] initWithResearchFellow:researchFellow andViewController:self];
+            viewController=[[FindUserViewController alloc] initWithResearchFellow:researchFellow];
+			[viewController setDelegate:self];
             [[self navigationController] presentModalViewController:viewController animated:YES];
             [viewController release];
             break;
@@ -663,6 +666,21 @@ float HVCFixSliderValue(float sliderValue){
     else {
         [loadingAlertView hideAlertWithSpinner];
     }
+}
+
+
+#pragma mark - FindUserViewControllerDelegate Methods
+- (void)subjectWasSelected:(PBTUser *)newSubject{
+	#ifdef DEBUG
+	NSLog(@"The selected subject is %@", [newSubject username]);
+	#endif
+
+	//Grant access to this new subject
+	[self setSubjectOfAnalysis:newSubject];
+	[[self subjectOfAnalysis] setAccount:[researchFellow account]];
+
+	// Start requesting the most recent N twitts for the new subject
+	[self performSelectorOnMainThread:@selector(downloadTweets) withObject:nil waitUntilDone:NO];
 }
 
 @end
