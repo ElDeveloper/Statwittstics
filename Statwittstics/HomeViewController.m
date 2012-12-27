@@ -9,6 +9,13 @@
 #import "HomeViewController.h"
 
 #import "FindUserViewController.h"
+#import "AccountSelectorViewController.h"
+
+@interface HomeViewController (PrivateAPI)
+
+-(void)showAccountSelector:(AccountSelectorViewController *)viewController;
+
+@end
 
 @implementation HomeViewController
 
@@ -131,51 +138,68 @@
     [astore requestAccessToAccountsWithType:twitterAccountType withCompletionHandler:^(BOOL granted, NSError *error){
         
         //Check for no errors and for granted access
-        if (granted == YES || error == nil) {
+        if (granted == YES && !error) {
             //Request the first twitter account available 
             NSArray *twitterAccounts=[astore accountsWithAccountType:twitterAccountType];
-            ACAccount *theAccount=[twitterAccounts objectAtIndex:0];
-            
-            //Twitter test
-            researchFellow=[[PBTUser alloc] initWithUsername:[theAccount username] andAuthorizedAccount:theAccount];
-            subjectOfAnalysis=[researchFellow retain];
-            
-            [subjectOfAnalysis requestUserData:^(NSError *error){  
-                if (!error) {
-                    #ifdef DEBUG
-                    NSLog(@"The real name is %@, annoyingly tweeted %d", [subjectOfAnalysis realName], [subjectOfAnalysis tweetCount]);
-                    NSLog(@"Has %d followers and %d friends", [subjectOfAnalysis followers], [subjectOfAnalysis following]);
-                    NSLog(@"The URL is: %@", [subjectOfAnalysis bioURL]);
-                    NSLog(@"The location is: %@", [subjectOfAnalysis location]);
-                    NSLog(@"The bio is: %@", [subjectOfAnalysis description]);
-                    #endif
-                    
-                    //Hide the alert for the account request
-                    [loadingAlertView performSelectorOnMainThread:@selector(hideAlertWithSpinner) withObject:nil waitUntilDone:YES];
-                    
-                    //Load the data into the view
-                    [self performSelectorOnMainThread:@selector(downloadTweets) withObject:nil waitUntilDone:YES];
-                }
-                else {
-                    NSLog(@"HomeView_Controller:%s**:%@", __PRETTY_FUNCTION__, [error localizedDescription]);
-                    errorAlertView=[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ %d", NSLocalizedString(@"Error", @"Error String"), [error code]] 
-                                                              message:[error localizedDescription]
-                                                             delegate:self
-                                                    cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String")
-                                                    otherButtonTitles:NSLocalizedString(@"Try Again", @"Try Again String"), nil];
-                    [errorAlertView setTag:HVCAlertAccessAccount];
-                    [errorAlertView show];
-                    [errorAlertView release];
-                    
-                }
-            }];
+			AccountSelectorViewController *viewController=[[AccountSelectorViewController alloc] initWithAccounts:twitterAccounts andCompletionHandler:^(ACAccount *selectedAccount, NSError *error){
+
+				//Make sure we have an account and no errors
+				if (selectedAccount && !error) {
+					//Work with the selected account from the available accounts
+					researchFellow=[[PBTUser alloc] initWithUsername:[selectedAccount username] andAuthorizedAccount:selectedAccount];
+					subjectOfAnalysis=[researchFellow retain];
+
+					[subjectOfAnalysis requestUserData:^(NSError *error){
+						if (!error) {
+							#ifdef DEBUG
+							NSLog(@"The real name is %@, annoyingly tweeted %d", [subjectOfAnalysis realName], [subjectOfAnalysis tweetCount]);
+							NSLog(@"Has %d followers and %d friends", [subjectOfAnalysis followers], [subjectOfAnalysis following]);
+							NSLog(@"The URL is: %@", [subjectOfAnalysis bioURL]);
+							NSLog(@"The location is: %@", [subjectOfAnalysis location]);
+							NSLog(@"The bio is: %@", [subjectOfAnalysis description]);
+							#endif
+
+							//Hide the alert for the account request
+							[loadingAlertView performSelectorOnMainThread:@selector(hideAlertWithSpinner) withObject:nil waitUntilDone:YES];
+
+							//Load the data into the view
+							[self performSelectorOnMainThread:@selector(downloadTweets) withObject:nil waitUntilDone:YES];
+						}
+						else {
+							NSLog(@"HomeView_Controller:%s**:%@", __PRETTY_FUNCTION__, [error localizedDescription]);
+							errorAlertView=[[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ %d", NSLocalizedString(@"Error", @"Error String"), [error code]]
+																	  message:[error localizedDescription]
+																	 delegate:self
+															cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String")
+															otherButtonTitles:NSLocalizedString(@"Try Again", @"Try Again String"), nil];
+							[errorAlertView setTag:HVCAlertAccessAccount];
+							[errorAlertView show];
+							[errorAlertView release];	
+						}
+					}];// subject of analysis request of data
+				}
+				else{
+					// This error handling should be improved
+					errorAlertView=[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"Error String")
+															  message:NSLocalizedString(@"Cannot use Statwittstics, sorry", @"Apology String")
+															 delegate:self
+													cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String")
+													otherButtonTitles:nil];
+					[errorAlertView show];
+					[errorAlertView release];
+				}
+			}];// AccountSelectorViewController completion handler
+
+			[viewController setModalPresentationStyle:UIModalPresentationFormSheet];
+			[self performSelectorOnMainThread:@selector(showAccountSelector:) withObject:viewController waitUntilDone:NO];
+
         }
         else {
-            //Must implement a GUI alert 
+            //Must implement a GUI alert
             NSLog(@"HomeViewController:Error** Statwittstics needs access to a twitter account.");
             NSLog(@"HomeViewController:Error** %@", [error localizedDescription]);
-            
-            errorAlertView=[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"Error String") 
+
+            errorAlertView=[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"Error String")
                                                       message:[error localizedDescription] 
                                                      delegate:self
                                             cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String")
@@ -265,6 +289,11 @@
 }
 
 #pragma mark - Workflow Controllers
+-(void)showAccountSelector:(AccountSelectorViewController *)viewController{
+	[[self navigationController] presentModalViewController:viewController animated:YES];
+	[viewController release];
+}
+
 -(void)downloadTweets{
     //Show the spinner with a different message
     [[loadingAlertView messageLabel] setText:NSLocalizedString(@"Downloading", @"Downloading String")];
