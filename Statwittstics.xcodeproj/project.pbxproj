@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		50115C67168BFD4A00D372B4 /* AccountSelectorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 50115C66168BFD4A00D372B4 /* AccountSelectorViewController.m */; };
 		5029638F153E6C3500DFD6AF /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5029638D153E6C3500DFD6AF /* AboutViewController.m */; };
 		50296390153E6C3500DFD6AF /* AboutViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5029638E153E6C3500DFD6AF /* AboutViewController.xib */; };
 		503B6D59154D0832003904F9 /* GIDAAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 503B6D58154D0831003904F9 /* GIDAAlertView.m */; };
@@ -55,6 +56,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		50115C65168BFD4A00D372B4 /* AccountSelectorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountSelectorViewController.h; sourceTree = "<group>"; };
+		50115C66168BFD4A00D372B4 /* AccountSelectorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountSelectorViewController.m; sourceTree = "<group>"; };
 		5029638C153E6C3500DFD6AF /* AboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutViewController.h; sourceTree = "<group>"; };
 		5029638D153E6C3500DFD6AF /* AboutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutViewController.m; sourceTree = "<group>"; };
 		5029638E153E6C3500DFD6AF /* AboutViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutViewController.xib; sourceTree = "<group>"; };
@@ -427,6 +430,8 @@
 				50CAAC441544F0A300641D90 /* FindUserViewController.m */,
 				5029638C153E6C3500DFD6AF /* AboutViewController.h */,
 				5029638D153E6C3500DFD6AF /* AboutViewController.m */,
+				50115C65168BFD4A00D372B4 /* AccountSelectorViewController.h */,
+				50115C66168BFD4A00D372B4 /* AccountSelectorViewController.m */,
 				50B5DF00152EBAA700661492 /* PBKit */,
 				5089487415315C6A00A66EFA /* Twitter */,
 				503B6D5B154D0838003904F9 /* Uitilities */,
@@ -596,6 +601,7 @@
 				5046DEC7155F724F00AACBA9 /* PBConstants.m in Sources */,
 				50E4E2B0155F9F8C00AF606C /* PBXYVisualization.m in Sources */,
 				50D208AA163A5A2800EB4E49 /* UIImage+PBUtilities.m in Sources */,
+				50115C67168BFD4A00D372B4 /* AccountSelectorViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
