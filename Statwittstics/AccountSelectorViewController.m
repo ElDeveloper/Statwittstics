@@ -31,7 +31,7 @@
 }
 
 -(id)initWithAccounts:(NSArray *)theAccounts andCompletionHandler:(ASCompletionHandler)completion{
-	[self initWithStyle:UITableViewStylePlain];
+	[self initWithStyle:UITableViewStyleGrouped];
 
 	accounts=[[NSArray alloc] initWithArray:theAccounts];
 	completionHandler=Block_copy(completion);
@@ -93,6 +93,14 @@
     
     return cell;
 }
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+	return NSLocalizedString(@"Please select an account to access the Twitter API", @"Account Selector Header");
+}
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
+	return NSLocalizedString(@"This account will grant you access to private content, such as friend's information that maybe private to the public.", @"Account Selector Footer");
+}
+
 
 #pragma mark - Table view delegate
 
