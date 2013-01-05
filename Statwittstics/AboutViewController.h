@@ -11,9 +11,11 @@
 
 @interface AboutViewController : UIViewController <UIWebViewDelegate>{
     IBOutlet UIWebView *twitterUsernamesView;
+	IBOutlet UILabel *repositoryInformation;
 }
 
 @property (nonatomic, retain) IBOutlet UIWebView *twitterUsernamesView;
+@property (nonatomic, retain) IBOutlet UILabel *repositoryInformation;
 
 -(IBAction)dismissCredits:(id)sender;
 

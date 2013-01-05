@@ -20,7 +20,7 @@
 
 @implementation AboutViewController
 
-@synthesize twitterUsernamesView;
+@synthesize twitterUsernamesView, repositoryInformation;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -35,7 +35,8 @@
 
 -(void)dealloc{
     [twitterUsernamesView release];
-    
+	[repositoryInformation release];
+
     [super dealloc];
 }
 
@@ -48,6 +49,21 @@
     [[self twitterUsernamesView] setBackgroundColor:[UIColor clearColor]];
     [[self twitterUsernamesView] setOpaque:NO];
     [[self twitterUsernamesView] loadHTMLString:TWITTER_USERNAMES_HTML_STRING baseURL:nil];
+
+	//Get the information from the plist
+	NSDictionary *dictionary = [[NSBundle mainBundle] infoDictionary];;
+	NSString *hash = [dictionary objectForKey:@"GitSHA"];
+	NSString *status = [dictionary objectForKey:@"GitStatus"];
+	NSString *branch = [dictionary objectForKey:@"GitBranch"];
+
+	// If the current branch is master do not output any extra information but
+	// the SHA, else then print SHA@BRANCH_NAME for the info in head
+	NSString *head = [NSString stringWithFormat:@"%@%@", hash, ([branch isEqualToString:@"master"] ? @"" : [NSString stringWithFormat:@"@%@", branch])];
+
+	// when status is 1 the repository has unstaged changes, therefore append a
+	// star to tipify a non-clean repository, else just print the SHA1
+	[repositoryInformation setText:[NSString stringWithFormat:@"(%@%@)",head,([status isEqualToString:@"1"] ? @" *" : @"")]];
+
 }
 
 -(IBAction)dismissCredits:(id)sender{
