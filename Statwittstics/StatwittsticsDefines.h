@@ -10,11 +10,10 @@
 #define Statwittstics_StatwittsticsDefines_h
 
 #define STATWITTSTICS_VERSION @"1.0"
-#define STATWITTSTICS_BUILD   @"XXXX"
 
-#define kDefaultNumberOfTweets 200
+#import "StatwittsticsConstants.h"
 
-#define DEBUG
+//#define DEBUG
 //#define VERBOSE_DEBUG
 
 #endif
