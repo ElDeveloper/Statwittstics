@@ -347,27 +347,32 @@
 	AccountSelectorViewController *viewController=[[AccountSelectorViewController alloc] initWithAccounts:[self authorizedAccounts] andCompletionHandler:^(ACAccount *selectedAccount, NSError *error){
 
 		if (!error) {
-			[selectedAccount retain];
+			if ([[selectedAccount username] isEqualToString:[[self researchFellow] username]]) {
+				return;
+			}
+			else{
+				[selectedAccount retain];
 
-			__block PBTUser *newResearchFellow=[[[PBTUser alloc] initWithUsername:[selectedAccount username] andAuthorizedAccount:selectedAccount] autorelease];
-			[newResearchFellow requestUserData:^(NSError *error){
-				if (!error) {
-					[self setResearchFellow:newResearchFellow];
-				}
-				else{
-					UIAlertView *errorAlertView=nil;
-					errorAlertView=[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"Error String")
-															  message:[error localizedDescription]
-															 delegate:nil
-													cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String")
-													otherButtonTitles:nil, nil];
-					[errorAlertView show];
-					[errorAlertView release];
-				}
-			}];
+				__block PBTUser *newResearchFellow=[[[PBTUser alloc] initWithUsername:[selectedAccount username] andAuthorizedAccount:selectedAccount] autorelease];
+				[newResearchFellow requestUserData:^(NSError *error){
+					if (!error) {
+						[self setResearchFellow:newResearchFellow];
+					}
+					else{
+						UIAlertView *errorAlertView=nil;
+						errorAlertView=[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"Error String")
+																  message:[error localizedDescription]
+																 delegate:nil
+														cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String")
+														otherButtonTitles:nil, nil];
+						[errorAlertView show];
+						[errorAlertView release];
+					}
+				}];
 
 
-			[selectedAccount release];
+				[selectedAccount release];
+			}
 		}
 		else{
 			// error managment in account reselection should be here
