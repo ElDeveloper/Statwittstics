@@ -10,6 +10,7 @@
 
 #import "FindUserViewController.h"
 #import "AccountSelectorViewController.h"
+#import "StatwittsticsUtils.h"
 
 @interface HomeViewController (PrivateAPI)
 
@@ -118,7 +119,7 @@
         
         [[self navigationItem] setRightBarButtonItem:optionsBarButton];
         [optionsBarButton release];
-        
+
         [[self navigationItem] setLeftBarButtonItem:aboutBarButton];
         [aboutBarButton release];
     }
@@ -140,14 +141,27 @@
         //Check for no errors and for granted access
         if (granted == YES && !error) {
             //Request the first twitter account available 
-            NSArray *twitterAccounts=[astore accountsWithAccountType:twitterAccountType];
-			AccountSelectorViewController *viewController=[[AccountSelectorViewController alloc] initWithAccounts:twitterAccounts andCompletionHandler:^(ACAccount *selectedAccount, NSError *error){
+			NSArray *twitterAccounts=[astore accountsWithAccountType:twitterAccountType];
+			NSString *selectedUsername=[StatwittsticsUtils readDefaultUser];
+
+			#ifdef DEBUG
+			NSLog(@"Read username is:%@", selectedUsername);
+			#endif
+
+			// General way to respond to whatever the outcome of the decision is
+			ASCompletionHandler completionHandlerFunction=^(ACAccount *selectedAccount, NSError *error){
 
 				//Make sure we have an account and no errors
 				if (selectedAccount && !error) {
+					// Grant the fact that we will have this data
+					[selectedAccount retain];
+
+					[StatwittsticsUtils writeNewDefaultUser:[selectedAccount username]];
+
 					//Work with the selected account from the available accounts
 					researchFellow=[[PBTUser alloc] initWithUsername:[selectedAccount username] andAuthorizedAccount:selectedAccount];
 					subjectOfAnalysis=[researchFellow retain];
+
 
 					[subjectOfAnalysis requestUserData:^(NSError *error){
 						if (!error) {
@@ -174,9 +188,12 @@
 															otherButtonTitles:NSLocalizedString(@"Try Again", @"Try Again String"), nil];
 							[errorAlertView setTag:HVCAlertAccessAccount];
 							[errorAlertView show];
-							[errorAlertView release];	
+							[errorAlertView release];
 						}
 					}];// subject of analysis request of data
+
+					// We no longer need to retain this guy here
+					[selectedAccount release];
 				}
 				else{
 					// This error handling should be improved
@@ -188,11 +205,18 @@
 					[errorAlertView show];
 					[errorAlertView release];
 				}
-			}];// AccountSelectorViewController completion handler
+			};
 
-			[viewController setModalPresentationStyle:UIModalPresentationFormSheet];
-			[self performSelectorOnMainThread:@selector(showAccountSelector:) withObject:viewController waitUntilDone:NO];
 
+			if ([StatwittsticsUtils arrayOfAccounts:twitterAccounts containsUsername:selectedUsername]){
+				// Retrieve the account and send it to the completion handler
+				completionHandlerFunction([StatwittsticsUtils accountForUsername:selectedUsername inArrayOfAccounts:twitterAccounts], nil);
+			}
+			else{
+				AccountSelectorViewController *viewController=[[AccountSelectorViewController alloc] initWithAccounts:twitterAccounts andCompletionHandler:completionHandlerFunction];
+				[viewController setModalPresentationStyle:UIModalPresentationFormSheet];
+				[self performSelectorOnMainThread:@selector(showAccountSelector:) withObject:viewController waitUntilDone:NO];
+			}
         }
         else {
             //Must implement a GUI alert
