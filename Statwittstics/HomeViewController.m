@@ -14,7 +14,10 @@
 
 @interface HomeViewController (PrivateAPI)
 
--(void)showAccountSelector:(AccountSelectorViewController *)viewController;
+-(void)showAccountSelector:(id)sender;
+
+-(void)showAccountReselector;
+-(void)dismissAccountReselector:(id)sender;
 
 @end
 
@@ -24,7 +27,7 @@
 @synthesize subjectOfAnalysis, subjectOfAnalysisView;
 @synthesize timeFrameSegmentedControl, visualizationTypeSegmentedControl;
 @synthesize numberOfTweetsSlider, numberOfTweetsLabel;
-@synthesize researchFellow;
+@synthesize researchFellow, authorizedAccounts;
 @synthesize optionsActionSheet;
 @synthesize loadingAlertView;
 
@@ -47,7 +50,8 @@
         [[self view] addSubview:subjectOfAnalysisView];
 
         optionsActionSheet=nil;
-        
+		authorizedAccounts=nil;
+
         //Segmented controllers
         timeFrameSegmentedControl=[[UISegmentedControl alloc] initWithItems:[NSArray arrayWithObjects:
                                                                              NSLocalizedString(@"Hourly", @"Hourly String"),
@@ -144,6 +148,9 @@
 			NSArray *twitterAccounts=[astore accountsWithAccountType:twitterAccountType];
 			NSString *selectedUsername=[StatwittsticsUtils readDefaultUser];
 
+			//If we grant access to the accounts, don't lose this credentials
+			authorizedAccounts=[[NSArray alloc] initWithArray:twitterAccounts];
+
 			#ifdef DEBUG
 			NSLog(@"Read username is:%@", selectedUsername);
 			#endif
@@ -213,9 +220,7 @@
 				completionHandlerFunction([StatwittsticsUtils accountForUsername:selectedUsername inArrayOfAccounts:twitterAccounts], nil);
 			}
 			else{
-				AccountSelectorViewController *viewController=[[AccountSelectorViewController alloc] initWithAccounts:twitterAccounts andCompletionHandler:completionHandlerFunction];
-				[viewController setModalPresentationStyle:UIModalPresentationFormSheet];
-				[self performSelectorOnMainThread:@selector(showAccountSelector:) withObject:viewController waitUntilDone:NO];
+				[self performSelectorOnMainThread:@selector(showAccountSelector:) withObject:Block_copy(completionHandlerFunction) waitUntilDone:NO];
 			}
         }
         else {
@@ -258,6 +263,10 @@
     if (optionsActionSheet != nil) {
         [optionsActionSheet release];
     }
+
+	if (authorizedAccounts != nil) {
+		[authorizedAccounts release];
+	}
     
     [super dealloc];
 }
@@ -288,7 +297,9 @@
                                                  delegate:self 
                                         cancelButtonTitle:NSLocalizedString(@"Cancel", @"Cancel String") 
                                    destructiveButtonTitle:NSLocalizedString(@"Hide", @"Hide String") 
-                                        otherButtonTitles:NSLocalizedString(@"New Subject", @"New Subject String"), NSLocalizedString(@"Share on Twitter", @"Share on Twitter String"), nil];
+                                        otherButtonTitles:NSLocalizedString(@"New Subject", @"New Subject String"),
+														  NSLocalizedString(@"Share on Twitter", @"Share on Twitter String"),
+														  NSLocalizedString(@"Change User", @"Change User String"),nil];
         
         //The only implementation needed is the actionSheet:clickedButtonAtIndex: method
         [optionsActionSheet setDelegate:self];
@@ -312,10 +323,69 @@
     
 }
 
+-(void)dismissAccountReselector{
+	[[self navigationController] dismissModalViewControllerAnimated:YES];
+}
+
 #pragma mark - Workflow Controllers
--(void)showAccountSelector:(AccountSelectorViewController *)viewController{
+-(void)showAccountSelector:(id)sender{
+	ASCompletionHandler completionHandlerFunction=(ASCompletionHandler)sender;
+	AccountSelectorViewController *viewController=[[AccountSelectorViewController alloc] initWithAccounts:[self authorizedAccounts] andCompletionHandler:completionHandlerFunction];
+	[viewController setModalPresentationStyle:UIModalPresentationFormSheet];
+
 	[[self navigationController] presentModalViewController:viewController animated:YES];
 	[viewController release];
+
+	Block_release(completionHandlerFunction);
+}
+
+-(void)showAccountReselector{
+	UIBarButtonItem *cancelButton=[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(dismissAccountReselector)];
+	UIBarButtonItem *acceptButton=[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismissAccountReselector)];
+
+	UINavigationController *navigationController=nil;
+	AccountSelectorViewController *viewController=[[AccountSelectorViewController alloc] initWithAccounts:[self authorizedAccounts] andCompletionHandler:^(ACAccount *selectedAccount, NSError *error){
+
+		if (!error) {
+			[selectedAccount retain];
+
+			__block PBTUser *newResearchFellow=[[[PBTUser alloc] initWithUsername:[selectedAccount username] andAuthorizedAccount:selectedAccount] autorelease];
+			[newResearchFellow requestUserData:^(NSError *error){
+				if (!error) {
+					[self setResearchFellow:newResearchFellow];
+				}
+				else{
+					UIAlertView *errorAlertView=nil;
+					errorAlertView=[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"Error String")
+															  message:[error localizedDescription]
+															 delegate:nil
+													cancelButtonTitle:NSLocalizedString(@"Accept", @"Accept String")
+													otherButtonTitles:nil, nil];
+					[errorAlertView show];
+					[errorAlertView release];
+				}
+			}];
+
+
+			[selectedAccount release];
+		}
+		else{
+			// error managment in account reselection should be here
+		}
+	}];
+	navigationController=[[UINavigationController alloc] initWithRootViewController:viewController];
+	[navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+
+	[viewController setTitle:NSLocalizedString(@"Authorized Accounts", @"Authorized Accounts String")];
+	[[viewController navigationItem] setRightBarButtonItem:acceptButton];
+	[[viewController navigationItem] setLeftBarButtonItem:cancelButton];
+
+	[[self navigationController] presentModalViewController:navigationController animated:YES];
+
+	[viewController release];
+	[navigationController release];
+	[acceptButton release];
+	[cancelButton release];
 }
 
 -(void)downloadTweets{
@@ -657,7 +727,11 @@ float HVCFixSliderValue(float sliderValue){
             
             [self showTweetViewControllerWithImage:plotImage];
             break;
-            
+
+		case HVCActionSheetButtonChangeUser:
+			[self showAccountReselector];
+			return;
+
         default:
             break;
     }

@@ -28,7 +28,8 @@
 typedef enum {
     HVCActionSheetButtonCancel=0,
     HVCActionSheetButtonNew=1,
-    HVCActionSheetButtonShare=2
+    HVCActionSheetButtonShare=2,
+	HVCActionSheetButtonChangeUser=3
 }HVCActionSheetButton;
 
 //There are three type of possible time-frames that can be used in the class
@@ -67,6 +68,7 @@ typedef enum {
     
     @private UILabel *numberOfTweetsLabel;
     @private PBTUser *researchFellow;
+	@private NSArray *authorizedAccounts;
     @private UIActionSheet *optionsActionSheet;
     @private BOOL isFirstLoad;
     
@@ -90,6 +92,7 @@ typedef enum {
 
 //This user is required and will be the default for application launch
 @property (nonatomic, retain) PBTUser *researchFellow;
+@property (nonatomic, retain) NSArray *authorizedAccounts;
 
 //General private attributes of the ViewController
 @property (nonatomic, weak) UIActionSheet *optionsActionSheet;
